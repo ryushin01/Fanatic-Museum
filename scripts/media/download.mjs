@@ -336,6 +336,12 @@ async function download(item, slug) {
   return { file, size };
 }
 
+async function fileMd5(path) {
+  const hash = createHash('md5');
+  await pipeline(createReadStream(path), hash);
+  return hash.digest('hex');
+}
+
 /** 받은 파일의 MD5 목록. 기록에 없으면 계산해 .md5-cache.json에 저장합니다(처음 한 번만 오래 걸립니다). */
 async function buildMd5Index(everywhere) {
   const cacheFile = join(MEDIA, '.md5-cache.json');
@@ -348,9 +354,7 @@ async function buildMd5Index(everywhere) {
     let md5 = entry.md5 ?? cache[cacheKey];
     if (!md5) {
       try {
-        const hash = createHash('md5');
-        await pipeline(createReadStream(path), hash);
-        md5 = hash.digest('hex');
+        md5 = await fileMd5(path);
         cache[cacheKey] = md5;
         computed++;
       } catch {
@@ -437,10 +441,6 @@ async function main() {
           return;
         }
         const item = pending.shift();
-        if (item.size && used + reserved + item.size > LIMIT_BYTES) {
-          leftover = true;
-          continue;
-        }
         keys.add(item.key);
         if (DRY_RUN) {
           added++;
@@ -474,6 +474,12 @@ async function main() {
             await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
           }
         }
+        // 하드 링크는 용량을 쓰지 않으므로, 용량 검사는 실제로 받을 때만 합니다.
+        if (item.size && used + reserved + item.size > LIMIT_BYTES) {
+          keys.delete(item.key);
+          leftover = true;
+          continue;
+        }
         const reservation = item.size ?? 0;
         reserved += reservation;
         let released = false;
@@ -492,14 +498,15 @@ async function main() {
             page: item.page,
             origin: item.origin,
             author: item.author,
-            md5: item.md5,
+            // 출처가 MD5를 주지 않으면(Steam·교보문고) 받은 파일로 계산합니다.
+            md5: item.md5 ?? (await fileMd5(join(MEDIA, task.slug, file))),
             tags: item.tags.slice(0, 40),
             downloadedAt: now(),
           };
           await appendFile(join(MEDIA, task.slug, 'manifest.jsonl'), JSON.stringify(entry) + '\n');
           everywhere.set(item.key, { ...entry, dir: task.slug });
-          if (item.md5 && !md5Index.has(item.md5))
-            md5Index.set(item.md5, { ...entry, dir: task.slug });
+          if (entry.md5 && !md5Index.has(entry.md5))
+            md5Index.set(entry.md5, { ...entry, dir: task.slug });
         } catch (error) {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
