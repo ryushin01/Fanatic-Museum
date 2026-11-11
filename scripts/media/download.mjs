@@ -176,6 +176,12 @@ function moebooru(base, prefix) {
   };
 }
 
+/** 주소의 파일 확장자(jpg, png, gif 등). 알 수 없으면 jpg */
+function extensionOf(url) {
+  const match = new URL(url).pathname.match(/\.([a-z0-9]{3,4})$/i);
+  return match ? match[1].toLowerCase() : 'jpg';
+}
+
 /** 출처별로 한 페이지를 받아 공통 형식의 후보 목록으로 바꿉니다. 더 없으면 null. */
 const adapters = {
   yandere: moebooru('https://yande.re', 'yandere'),
@@ -273,12 +279,14 @@ const adapters = {
           ...common,
           key: `naver-${source.titleId}-title-${i}`,
           fileUrl: url,
+          ext: extensionOf(url),
           page: `https://comic.naver.com/webtoon/list?titleId=${source.titleId}`,
           origin: info.titleName,
         }),
       );
     }
-    const res = await politeFetch(`${base}/list?titleId=${source.titleId}&page=${page}`, {
+    // 오름차순으로 받아야 받는 도중 새 회차가 올라와도 쪽이 밀리지 않습니다.
+    const res = await politeFetch(`${base}/list?titleId=${source.titleId}&page=${page}&sort=ASC`, {
       headers,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -290,11 +298,13 @@ const adapters = {
         ...common,
         key: `naver-${source.titleId}-ep${article.no}`,
         fileUrl: article.thumbnailUrl,
+        ext: extensionOf(article.thumbnailUrl),
         page: `https://comic.naver.com/webtoon/detail?titleId=${source.titleId}&no=${article.no}`,
         origin: article.subtitle ?? null,
       });
     }
-    return items.length ? items : null;
+    // 썸네일이 없는 쪽이 있어도 마지막 쪽까지는 계속 봅니다.
+    return items;
   },
   /** Steam은 게임 하나를 한 페이지로 봅니다. 공식 스크린샷과 배경 이미지입니다. */
   async steam(source, page) {
