@@ -111,14 +111,17 @@ async function politeFetch(url, init = {}) {
   }
 }
 /** 이미지 파일 요청. 목록 요청 간격과 별개로 재시도만 합니다. */
-async function fetchFile(url) {
+async function fetchFile(url, extraHeaders = {}) {
   for (let attempt = 1; attempt <= 4; attempt++) {
     // 응답 머리가 2분 안에 오지 않으면 다시 시도합니다. 머리를 받으면 시간 제한을 풀고,
     // 본문은 download()에서 멈춤(60초 무응답)만 검사합니다.
     const headers = new AbortController();
     const timer = setTimeout(() => headers.abort(new Error('2분 동안 응답 없음')), 2 * 60 * 1000);
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: headers.signal });
+      const res = await fetch(url, {
+        headers: { 'User-Agent': UA, ...extraHeaders },
+        signal: headers.signal,
+      });
       clearTimeout(timer);
       if (res.status === 429 || res.status >= 500) {
         await res.body?.cancel();
@@ -238,6 +241,61 @@ const adapters = {
     }
     return items.length ? items : page === 1 ? [] : null;
   },
+  /**
+   * 네이버 웹툰: 1쪽에서 작품 포스터, 그 뒤로 회차 목록 쪽마다 회차 대표 이미지(썸네일)를 받습니다.
+   * 회차 본문 원고는 받지 않습니다.
+   */
+  async naver(source, page) {
+    const base = 'https://comic.naver.com/api/article';
+    const headers = { 'User-Agent': 'Mozilla/5.0' };
+    const items = [];
+    const common = {
+      ext: 'jpg',
+      size: null,
+      width: 0,
+      height: 0,
+      rating: null,
+      official: true,
+      tags: [],
+      author: null,
+      // 네이버 이미지 서버는 웹툰 페이지에서 온 요청만 허용합니다.
+      headers: { Referer: 'https://comic.naver.com/' },
+    };
+    if (page === 1) {
+      const res = await politeFetch(`${base}/list/info?titleId=${source.titleId}`, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const info = await res.json();
+      const urls = new Set(
+        [info.sharedThumbnailUrl, info.posterThumbnailUrl, info.thumbnailUrl].filter(Boolean),
+      );
+      [...urls].forEach((url, i) =>
+        items.push({
+          ...common,
+          key: `naver-${source.titleId}-title-${i}`,
+          fileUrl: url,
+          page: `https://comic.naver.com/webtoon/list?titleId=${source.titleId}`,
+          origin: info.titleName,
+        }),
+      );
+    }
+    const res = await politeFetch(`${base}/list?titleId=${source.titleId}&page=${page}`, {
+      headers,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    if (page > (list.pageInfo?.totalPages ?? 0) && !items.length) return null;
+    for (const article of list.articleList ?? []) {
+      if (!article.thumbnailUrl) continue;
+      items.push({
+        ...common,
+        key: `naver-${source.titleId}-ep${article.no}`,
+        fileUrl: article.thumbnailUrl,
+        page: `https://comic.naver.com/webtoon/detail?titleId=${source.titleId}&no=${article.no}`,
+        origin: article.subtitle ?? null,
+      });
+    }
+    return items.length ? items : null;
+  },
   /** Steam은 게임 하나를 한 페이지로 봅니다. 공식 스크린샷과 배경 이미지입니다. */
   async steam(source, page) {
     const appid = source.appids[page - 1];
@@ -302,10 +360,10 @@ async function download(item, slug) {
   const file = `${item.key}.${item.ext}`;
   const target = join(dir, file);
   const partial = `${target}.part`;
-  let res = await fetchFile(item.fileUrl);
+  let res = await fetchFile(item.fileUrl, item.headers);
   if (!res.ok && item.fallbackUrl) {
     await res.body?.cancel();
-    res = await fetchFile(item.fallbackUrl);
+    res = await fetchFile(item.fallbackUrl, item.headers);
   }
   if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
   const type = res.headers.get('content-type') ?? '';
@@ -371,13 +429,16 @@ async function buildMd5Index(everywhere) {
 }
 
 async function main() {
-  const { works, artists = {} } = await loadJson(join(ROOT, 'scripts', 'media', 'sources.json'), {
-    works: {},
-  });
-  // 작품은 <slug>/, 작가 모음은 artists/<slug>/ 폴더에 받습니다.
+  const {
+    works,
+    artists = {},
+    collections = {},
+  } = await loadJson(join(ROOT, 'scripts', 'media', 'sources.json'), { works: {} });
+  // 작품은 <slug>/, 작가 모음은 artists/<slug>/, 회사·시리즈 모음은 collections/<slug>/ 폴더에 받습니다.
   const groups = Object.fromEntries([
     ...Object.entries(works),
     ...Object.entries(artists).map(([slug, sources]) => [`artists/${slug}`, sources]),
+    ...Object.entries(collections).map(([slug, sources]) => [`collections/${slug}`, sources]),
   ]);
   await mkdir(MEDIA, { recursive: true });
   const state = await loadJson(STATE_FILE, { cursors: {}, done: {} });
