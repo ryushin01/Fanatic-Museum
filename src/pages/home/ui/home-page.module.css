@@ -1,0 +1,147 @@
+.hero {
+  padding-block: clamp(48px, 9vw, 140px) clamp(40px, 6vw, 96px);
+}
+
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: clamp(24px, 4vw, 48px);
+}
+
+.title {
+  font-size: var(--text-display);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+.titleLine {
+  display: block;
+}
+
+.accent {
+  color: var(--color-accent);
+}
+
+.intro {
+  display: grid;
+  gap: 24px;
+  margin-top: clamp(32px, 5vw, 64px);
+}
+
+@media (min-width: 900px) {
+  .intro {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+}
+
+.lede {
+  max-width: 40ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 8px 40px;
+}
+
+@media (min-width: 900px) {
+  .stats {
+    justify-content: end;
+  }
+}
+
+.stats dt {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.stats dd {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.section {
+  margin-top: clamp(72px, 10vw, 160px);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.more {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.categories {
+  display: grid;
+  border-top: 1px solid var(--color-text);
+}
+
+@media (min-width: 768px) {
+  .categories {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--gutter);
+  }
+}
+
+.category a {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--color-line);
+  text-decoration: none;
+}
+
+.category a:hover .categoryName {
+  color: var(--color-accent);
+}
+
+.categoryIndex {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.categoryName {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.categoryName small {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.categoryCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}

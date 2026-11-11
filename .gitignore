@@ -1,0 +1,16 @@
+node_modules/
+build/
+.react-router/
+storybook-static/
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# 로컬 이미지 보관함: 저작권이 있는 원본과 변환본은 저장소와 배포에 넣지 않습니다
+media/
+public/media/

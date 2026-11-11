@@ -1,0 +1,109 @@
+.list {
+  border-top: 1px solid var(--color-text);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 8px 16px;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--color-line);
+  transition: background-color 200ms var(--ease-out);
+}
+
+@media (min-width: 900px) {
+  .row {
+    grid-template-columns: 4.5rem minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 96px;
+    align-items: start;
+    padding-block: 28px;
+  }
+}
+
+.row:hover,
+.row:focus-within {
+  background: var(--color-surface);
+}
+
+.number {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.title a {
+  text-decoration: none;
+}
+
+/* 행 전체를 누를 수 있게 링크 영역을 넓힙니다. */
+.title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.title a:focus-visible {
+  outline: none;
+}
+
+.row:has(.title a:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+}
+
+.original {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 2;
+}
+
+.tag {
+  padding: 2px 8px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.summary {
+  grid-column: 2;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.thumb {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .tags,
+  .summary {
+    grid-column: auto;
+  }
+
+  .thumb {
+    display: block;
+  }
+}
+
+.empty {
+  padding-block: 40px;
+  color: var(--color-muted);
+}

@@ -1,0 +1,21 @@
+.header {
+  padding-block: clamp(40px, 7vw, 112px) clamp(32px, 4vw, 56px);
+}
+
+.eyebrow {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.description {
+  max-width: 48ch;
+  margin-top: 20px;
+  font-size: var(--text-lg);
+  color: var(--color-muted);
+}

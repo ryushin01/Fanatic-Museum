@@ -1,0 +1,43 @@
+.sections {
+  display: grid;
+  gap: clamp(48px, 7vw, 96px);
+}
+
+.section {
+  display: grid;
+  gap: 16px;
+  border-top: 1px solid var(--color-text);
+  padding-top: 20px;
+}
+
+@media (min-width: 900px) {
+  .section {
+    grid-template-columns: 1fr 2fr;
+    gap: var(--gutter);
+  }
+}
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: 800;
+}
+
+.text {
+  display: grid;
+  gap: 16px;
+  max-width: 62ch;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+}
+
+.list li {
+  padding-left: 1em;
+  text-indent: -1em;
+}
+
+.list li::before {
+  content: '— ';
+}

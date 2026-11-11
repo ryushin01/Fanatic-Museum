@@ -1,0 +1,178 @@
+openapi: 3.1.0
+info:
+  title: Fanatic Museum Archive API
+  version: 0.1.0
+  description: |
+    파나틱 뮤지엄의 소장품(작품)과 카테고리를 읽는 정적 JSON API입니다.
+    빌드할 때 미리 만들어지며, 화면의 데이터 타입은 이 문서에서 생성합니다(`pnpm api:types`).
+servers:
+  - url: /
+paths:
+  /api/works.json:
+    get:
+      operationId: listWorks
+      summary: 소장품 목록
+      responses:
+        '200':
+          description: 번호순으로 정렬된 소장품 전체
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkList'
+  /api/works/{slug}.json:
+    get:
+      operationId: getWork
+      summary: 소장품 하나
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+      responses:
+        '200':
+          description: 소장품 상세
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Work'
+        '404':
+          description: 없는 소장품
+  /api/categories.json:
+    get:
+      operationId: listCategories
+      summary: 카테고리 목록
+      responses:
+        '200':
+          description: 정해진 순서의 카테고리 전체와 소장품 수
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategorySummary'
+components:
+  schemas:
+    CategorySlug:
+      type: string
+      enum: [game, novel, light-novel, comic, animation, figure, plastic-model]
+    Category:
+      type: object
+      required: [slug, name, englishName, description]
+      properties:
+        slug:
+          $ref: '#/components/schemas/CategorySlug'
+        name:
+          type: string
+          examples: [게임]
+        englishName:
+          type: string
+          examples: [Games]
+        description:
+          type: string
+    CategorySummary:
+      allOf:
+        - $ref: '#/components/schemas/Category'
+        - type: object
+          required: [count]
+          properties:
+            count:
+              type: integer
+              minimum: 0
+    Creator:
+      type: object
+      required: [role, name]
+      properties:
+        role:
+          type: string
+          examples: [글, 그림, 제작, 기획]
+        name:
+          type: string
+    Origin:
+      type: string
+      description: 작품이 처음 나온 나라
+      enum: [일본, 한국, 미국, 영국, 프랑스]
+    Image:
+      type: object
+      required: [src, srcSet, width, height, alt]
+      properties:
+        src:
+          type: string
+          description: 가장 큰 변환본 주소
+        srcSet:
+          type: string
+          description: 너비별 변환본 목록(`srcset` 형식)
+        width:
+          type: integer
+        height:
+          type: integer
+        alt:
+          type: string
+        sourcePage:
+          type: [string, 'null']
+          description: 원본 이미지가 올라온 페이지
+    Work:
+      type: object
+      required:
+        [slug, number, title, categories, creators, origin, summary, accent, images, related]
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        number:
+          type: integer
+          minimum: 1
+          description: 전시 번호
+        title:
+          type: string
+        originalTitle:
+          type: string
+          description: 원제(제목과 다를 때)
+        nickname:
+          type: string
+          description: 팬들이 부르는 줄임말
+        categories:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CategorySlug'
+        creators:
+          type: array
+          items:
+            $ref: '#/components/schemas/Creator'
+        origin:
+          $ref: '#/components/schemas/Origin'
+        firstReleased:
+          type: integer
+          description: 처음 나온 해
+        summary:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+          description: 전시 메모
+        accent:
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+          description: 자리 표시 그래픽에 쓰는 대표 색
+        related:
+          type: array
+          items:
+            type: string
+          description: 함께 보면 좋은 소장품 slug
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+    WorkList:
+      type: object
+      required: [total, items]
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Work'
