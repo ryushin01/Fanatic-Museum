@@ -1,0 +1,243 @@
+/*
+ * 전시관: 어두운 전시 공간 안에 대표 소장품을 걸어 둡니다.
+ * 기본은 차례로 쌓인 정지 화면이고, 스크롤 타임라인을 지원하면 공간이 화면 가득 펼쳐집니다.
+ * 전시 공간은 테마와 상관없이 어둡게 두어 밝은 글자의 명도 대비를 지킵니다.
+ */
+.halls {
+  margin-top: clamp(72px, 10vw, 160px);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.list {
+  display: grid;
+  gap: 16px;
+  padding-inline: var(--gutter);
+}
+
+.room {
+  --hall-bg: #141312;
+  --hall-text: #f1efe9;
+  --hall-muted: #b9b5ab;
+
+  position: relative;
+  display: grid;
+  gap: clamp(24px, 4vw, 48px);
+  min-height: min(88dvh, 760px);
+  padding: clamp(24px, 5vw, 72px);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 24px;
+  background:
+    radial-gradient(80% 60% at 70% 20%, rgb(255 255 255 / 8%), transparent 70%),
+    linear-gradient(to bottom, transparent 70%, rgb(255 255 255 / 4%) 70% 70.4%, transparent 70.4%),
+    var(--hall-bg);
+  color: var(--hall-text);
+  text-decoration: none;
+}
+
+.room:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+@media (min-width: 900px) {
+  .room {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+  }
+}
+
+.caption {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.hallNo {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hall-muted);
+}
+
+.name {
+  font-size: clamp(2.25rem, 1rem + 5vw, 5.5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.name small {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hall-muted);
+}
+
+.description {
+  max-width: 32ch;
+  color: var(--hall-muted);
+}
+
+.count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.room:hover .name {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+/* 벽에 건 소장품 세 점: 가운데가 크고 양옆이 작게, 높이를 달리해 겁니다 */
+.wall {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  align-items: center;
+  gap: clamp(10px, 2vw, 28px);
+}
+
+/* 좁은 화면에서는 두 점만 크게 겁니다 */
+@media (max-width: 599px) {
+  .wall {
+    grid-template-columns: 1fr 1.25fr;
+  }
+
+  .piece[data-depth='2'] {
+    display: none;
+  }
+}
+
+.piece {
+  display: block;
+  box-shadow: 0 24px 48px rgb(0 0 0 / 45%);
+}
+
+.piece[data-depth='0'] {
+  translate: 0 12%;
+}
+
+.piece[data-depth='2'] {
+  translate: 0 -10%;
+}
+
+@keyframes hall-open {
+  from {
+    clip-path: inset(14% 10% round 48px);
+    scale: 0.94;
+  }
+  to {
+    clip-path: inset(0 round 24px);
+    scale: 1;
+  }
+}
+
+@keyframes hall-recede {
+  to {
+    scale: 0.92;
+    filter: brightness(0.55);
+  }
+}
+
+@keyframes caption-rise {
+  from {
+    opacity: 0;
+    translate: 0 48px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes piece-drift {
+  from {
+    transform: translateY(var(--drift));
+  }
+  to {
+    transform: translateY(calc(var(--drift) * -1));
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .list {
+      gap: 0;
+    }
+
+    /* 전시관마다 화면에 붙어 있다가 다음 전시관이 위를 덮습니다 */
+    .hall {
+      position: sticky;
+      top: calc(var(--header-height) + 12px);
+      padding-bottom: 4dvh;
+      view-timeline-name: var(--self);
+      view-timeline-axis: block;
+    }
+
+    /* 화면에 붙은 동안은 자기 타임라인이 멈추므로, 들어오는 동안 펼치고 다음 전시관이 들어올 때 물러납니다 */
+    /* 붙은 위치에서 패널 전체가 화면 안에 들어와야 들어오기 단계가 끝까지 진행됩니다 */
+    .room {
+      min-height: 0;
+      height: calc(100dvh - var(--header-height) - 12px - 4dvh - 24px);
+      max-height: 760px;
+      animation:
+        hall-open linear both,
+        hall-recede linear both;
+      animation-timeline: var(--self), var(--next);
+      animation-range:
+        entry 0% entry 100%,
+        entry 0% entry 100%;
+      transform-origin: 50% 0;
+    }
+
+    .hall[data-last] .room {
+      animation: hall-open linear both;
+      animation-timeline: var(--self);
+      animation-range: entry 0% entry 100%;
+    }
+
+    .caption {
+      animation: caption-rise linear both;
+      animation-timeline: var(--self);
+      animation-range: entry 35% entry 100%;
+    }
+
+    .piece {
+      animation: piece-drift linear both;
+      animation-timeline: var(--self);
+      animation-range: entry 0% entry 100%;
+    }
+
+    .piece[data-depth='0'] {
+      --drift: 10%;
+    }
+
+    .piece[data-depth='1'] {
+      --drift: -6%;
+    }
+
+    .piece[data-depth='2'] {
+      --drift: 16%;
+    }
+  }
+}

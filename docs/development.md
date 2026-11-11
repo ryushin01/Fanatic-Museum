@@ -71,6 +71,7 @@ pnpm build && pnpm preview
 - 갤러리는 WAI-ARIA APG 캐러셀 패턴(자동 넘김 없음)입니다. 터치 스와이프는 CSS scroll-snap이 처리하고, 이전·다음 버튼과 위치 안내(`aria-live`)를 함께 둡니다.
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다.
 - `eslint-plugin-jsx-a11y`(strict)로 코드를 쓸 때 검사하고, E2E에서 모든 페이지를 axe로 검사합니다.
+- 홈 전시관의 움직임은 CSS 스크롤 타임라인(`animation-timeline: view()`)으로만 만듭니다. `@supports`와 `prefers-reduced-motion: no-preference` 안에만 두어, 지원하지 않거나 동작 줄이기를 켜면 정지 화면입니다. 화면에 붙는(sticky) 패널은 붙은 동안 자기 타임라인이 멈추므로, 패널 높이를 화면 안에 맞추고 물러나는 효과는 다음 전시관의 타임라인(`timeline-scope`)에 겁니다.
 
 ## 테스트와 품질
 
