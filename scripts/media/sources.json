@@ -894,6 +894,16 @@
         "match": "Three Houses",
         "pages": 2
       }
+    ],
+    "rondo-of-swords": [
+      {
+        "type": "safebooru",
+        "tags": "rondo_of_swords"
+      },
+      {
+        "type": "safebooru",
+        "tags": "itsuwari_no_rondo"
+      }
     ]
   }
 }
