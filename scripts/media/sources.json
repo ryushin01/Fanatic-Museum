@@ -1,5 +1,5 @@
 {
-  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
+  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/, collections(회사·시리즈·상품 모음, merch-*는 HobbyLink Japan 상품 사진)는 collections/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
   "works": {
     "cyber-formula": [
       {
@@ -31,6 +31,10 @@
         "query": "시원찮은 그녀를 위한 육성방법",
         "match": "시원찮은 그녀",
         "pages": 3
+      },
+      {
+        "type": "konachan",
+        "tags": "saenai_heroine_no_sodatekata"
       }
     ],
     "fate": [
@@ -49,6 +53,14 @@
       {
         "type": "steam",
         "appids": [2396980, 2396990, 1902690, 622220]
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/stay_night"
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/zero"
       }
     ],
     "sword-art-online": [
@@ -65,6 +77,10 @@
         "query": "소드 아트 온라인 카와하라 레키",
         "match": "소드 아트 온라인",
         "pages": 4
+      },
+      {
+        "type": "konachan",
+        "tags": "sword_art_online"
       }
     ],
     "final-fantasy": [
@@ -83,6 +99,10 @@
       {
         "type": "steam",
         "appids": [1173770, 1462040, 2909400, 2515020, 1004640, 1608070, 637650, 1173820]
+      },
+      {
+        "type": "konachan",
+        "tags": "final_fantasy"
       }
     ],
     "genesis-war": [
@@ -102,6 +122,10 @@
       },
       {
         "type": "yandere",
+        "tags": "gundam_wing"
+      },
+      {
+        "type": "konachan",
         "tags": "gundam_wing"
       }
     ],
@@ -127,6 +151,10 @@
         "query": "브레이커 박진환",
         "match": "브레이커",
         "pages": 3
+      },
+      {
+        "type": "naver",
+        "titleId": 794383
       }
     ],
     "black-god": [
@@ -224,8 +252,8 @@
     "eight-dragons": [
       {
         "type": "kyobo",
-        "query": "8용신전설 박성우",
-        "match": "8용신",
+        "query": "팔용신전설",
+        "match": "팔용신|8용신",
         "pages": 3
       }
     ],
@@ -247,34 +275,26 @@
     ],
     "maruhan": [
       {
-        "type": "kyobo",
-        "query": "마루한 박성우",
-        "match": "마루한",
-        "pages": 3
+        "type": "naver",
+        "titleId": 624632
       }
     ],
     "trinity-wonder": [
       {
-        "type": "kyobo",
-        "query": "트리니티 원더 박진환",
-        "match": "트리니티 원더",
-        "pages": 3
+        "type": "naver",
+        "titleId": 786266
       }
     ],
     "nanyak": [
       {
-        "type": "kyobo",
-        "query": "난약 박진환",
-        "match": "난약",
-        "pages": 3
+        "type": "naver",
+        "titleId": 729044
       }
     ],
     "absolute-regression": [
       {
-        "type": "kyobo",
-        "query": "절대회귀 박진환",
-        "match": "절대회귀",
-        "pages": 3
+        "type": "naver",
+        "titleId": 828715
       }
     ]
   },
@@ -302,12 +322,6 @@
       },
       {
         "type": "kyobo",
-        "query": "8용신전설 박성우",
-        "match": "8용신",
-        "pages": 3
-      },
-      {
-        "type": "kyobo",
         "query": "천랑열전 박성우",
         "match": "천랑열전",
         "pages": 3
@@ -320,9 +334,55 @@
       },
       {
         "type": "kyobo",
-        "query": "마루한 박성우",
-        "match": "마루한",
+        "query": "페이건즈 박성우",
+        "match": "페이건즈",
         "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "데자부 윤인완",
+        "match": "데자부",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "학사검전",
+        "match": "학사검전",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "파동 박성우",
+        "match": "^파동",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "제로 흐름의 원",
+        "match": "흐름의 원",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "メテオエンブレム",
+        "match": "メテオ",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "팔용신전설",
+        "match": "팔용신|8용신",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "사이버 돌",
+        "match": "사이버 ?돌",
+        "pages": 3
+      },
+      {
+        "type": "naver",
+        "titleId": 624632
       }
     ],
     "kim-hyung-tae": [
@@ -369,6 +429,10 @@
         "query": "놀이의 관계",
         "match": "놀이의 관계",
         "pages": 3
+      },
+      {
+        "type": "konachan",
+        "tags": "misaki_kurehito"
       }
     ],
     "kuroya-shinobu": [
@@ -378,6 +442,10 @@
       },
       {
         "type": "safebooru",
+        "tags": "kuroya_shinobu"
+      },
+      {
+        "type": "konachan",
         "tags": "kuroya_shinobu"
       }
     ],
@@ -453,6 +521,320 @@
       {
         "type": "steam",
         "appids": [1902690]
+      }
+    ],
+    "park-jin-hwan": [
+      {
+        "type": "yandere",
+        "tags": "park_jin-hwan"
+      },
+      {
+        "type": "yandere",
+        "tags": "the_breaker"
+      },
+      {
+        "type": "kyobo",
+        "query": "브레이커 박진환",
+        "match": "브레이커",
+        "pages": 4
+      },
+      {
+        "type": "kyobo",
+        "query": "아크로드 박진환",
+        "match": "아크로드",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "4버디스",
+        "match": "버디스",
+        "pages": 3
+      },
+      {
+        "type": "naver",
+        "titleId": 794383
+      },
+      {
+        "type": "naver",
+        "titleId": 786266
+      },
+      {
+        "type": "naver",
+        "titleId": 729044
+      },
+      {
+        "type": "naver",
+        "titleId": 828715
+      }
+    ],
+    "lee-kyung-young": [
+      {
+        "type": "kyobo",
+        "query": "가즈 나이트 이경영",
+        "match": "가즈 ?나이트",
+        "pages": 4
+      },
+      {
+        "type": "kyobo",
+        "query": "이노센트 이경영",
+        "match": "이노센트",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "리콜렉션 이경영",
+        "match": "리콜렉션",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "BSP 이경영",
+        "match": "BSP",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "섀델 크로이츠 이경영",
+        "match": "섀델",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "비그리드 이경영",
+        "match": "비그리드",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "레드혼 이경영",
+        "match": "레드 ?혼",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "흑선 이경영",
+        "match": "^흑선",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "그라니트 이경영",
+        "match": "그라니트",
+        "pages": 3
+      }
+    ]
+  },
+  "collections": {
+    "type-moon": [
+      {
+        "type": "yandere",
+        "tags": "type-moon"
+      },
+      {
+        "type": "konachan",
+        "tags": "type-moon"
+      },
+      {
+        "type": "yandere",
+        "tags": "tsukihime"
+      },
+      {
+        "type": "konachan",
+        "tags": "shingetsutan_tsukihime"
+      },
+      {
+        "type": "yandere",
+        "tags": "mahou_tsukai_no_yoru"
+      },
+      {
+        "type": "konachan",
+        "tags": "mahou_tsukai_no_yoru"
+      },
+      {
+        "type": "yandere",
+        "tags": "kara_no_kyoukai"
+      },
+      {
+        "type": "konachan",
+        "tags": "kara_no_kyoukai"
+      },
+      {
+        "type": "yandere",
+        "tags": "melty_blood"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/hollow_ataraxia"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/apocrypha"
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/apocrypha"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/extra"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/extra_ccc"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/kaleid_liner_prisma_illya"
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/kaleid_liner_prisma_illya"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/strange_fake"
+      },
+      {
+        "type": "steam",
+        "appids": [2052410, 1372280, 1590580, 4113000, 511680, 622220]
+      },
+      {
+        "type": "kyobo",
+        "query": "공의 경계 나스 키노코",
+        "match": "공의 경계",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "Fate/Zero 우로부치 겐",
+        "match": "Fate ?/ ?Zero|페이트 ?제로",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "Fate/Apocrypha",
+        "match": "Apocrypha|아포크리파",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "로드 엘멜로이 2세의 사건부",
+        "match": "엘멜로이",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "Fate/strange Fake",
+        "match": "strange ?Fake",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "프리즈마 이리야",
+        "match": "이리야",
+        "pages": 3
+      }
+    ],
+    "ff7-compilation": [
+      {
+        "type": "yandere",
+        "tags": "final_fantasy_vii"
+      },
+      {
+        "type": "konachan",
+        "tags": "final_fantasy_vii"
+      },
+      {
+        "type": "konachan",
+        "tags": "final_fantasy_vii_advent_children"
+      },
+      {
+        "type": "konachan",
+        "tags": "crisis_core_final_fantasy_vii"
+      },
+      {
+        "type": "safebooru",
+        "tags": "final_fantasy_vii"
+      },
+      {
+        "type": "steam",
+        "appids": [3837340, 1462040, 2909400, 1608070, 4354570]
+      },
+      {
+        "type": "kyobo",
+        "query": "파이널판타지 VII",
+        "match": "Final Fantasy (VII|7)|파이널 ?판타지 ?(VII|7)",
+        "pages": 3
+      }
+    ],
+    "merch-wing-gundam": [
+      {
+        "type": "hlj",
+        "query": "wing gundam",
+        "match": "wing-gundam",
+        "pages": 15
+      },
+      {
+        "type": "safebooru",
+        "tags": "wing_gundam photo_(medium)"
+      }
+    ],
+    "merch-cyber-formula": [
+      {
+        "type": "hlj",
+        "query": "cyber formula",
+        "match": "cyber-formula|asurada",
+        "pages": 8
+      },
+      {
+        "type": "hlj",
+        "query": "asurada",
+        "match": "asurada",
+        "pages": 5
+      }
+    ],
+    "merch-gojo-satoru": [
+      {
+        "type": "hlj",
+        "query": "gojo satoru",
+        "match": "gojo",
+        "pages": 10
+      },
+      {
+        "type": "safebooru",
+        "tags": "gojou_satoru photo_(medium)"
+      }
+    ],
+    "merch-final-fantasy-vii": [
+      {
+        "type": "hlj",
+        "query": "final fantasy vii",
+        "match": "final-fantasy-vii|ffvii|ff7",
+        "pages": 15
+      },
+      {
+        "type": "hlj",
+        "query": "play arts kai final fantasy",
+        "match": "final-fantasy-vii|cloud|sephiroth|tifa|aerith|barret|zack|vincent",
+        "pages": 5
+      },
+      {
+        "type": "safebooru",
+        "tags": "final_fantasy_vii figure"
+      }
+    ],
+    "merch-saekano": [
+      {
+        "type": "hlj",
+        "query": "saekano",
+        "match": "saekano|megumi-kato|kato-megumi|eriri|utaha|michiru|izumi",
+        "pages": 8
+      },
+      {
+        "type": "hlj",
+        "query": "megumi kato",
+        "match": "megumi-kato|kato-megumi",
+        "pages": 5
       }
     ]
   }
