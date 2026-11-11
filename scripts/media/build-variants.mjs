@@ -24,7 +24,11 @@ const args = process.argv.slice(2);
 const perWorkIndex = args.indexOf('--per-work');
 const PER_WORK = perWorkIndex >= 0 ? Number(args[perWorkIndex + 1]) : 24;
 
-const exists = (path) => stat(path).then(() => true, () => false);
+const exists = (path) =>
+  stat(path).then(
+    () => true,
+    () => false,
+  );
 
 function sourceOf(key) {
   return key.split('-')[0];
@@ -51,7 +55,10 @@ function interleave(entries, limit) {
 
 async function readManifest(slug) {
   const text = await readFile(join(ORIGINALS, slug, 'manifest.jsonl'), 'utf8').catch(() => '');
-  return text.split('\n').filter(Boolean).map((line) => JSON.parse(line));
+  return text
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
 }
 
 async function main() {

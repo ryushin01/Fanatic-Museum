@@ -43,11 +43,43 @@ const MIN_SCORE = 0;
 const REQUEST_GAP_MS = 1100;
 const FILE_CONCURRENCY = 4;
 const BLOCKED_TAGS = new Set([
-  'animated', 'animated_gif', 'loli', 'shota', 'nude', 'naked',
-  'nipples', 'underwear', 'panties', 'pantsu', 'pantyshot', 'upskirt', 'bra', 'lingerie',
-  'bikini', 'swimsuit', 'cleavage', 'breasts', 'large_breasts', 'ass', 'bondage', 'bdsm',
-  'blood', 'guro', 'violence', 'see_through', 'wet_clothes', 'bathing', 'onsen', 'naked_towel',
-  'cameltoe', 'erect_nipples', 'no_bra', 'bottomless', 'topless', 'thong', 'garter_belt',
+  'animated',
+  'animated_gif',
+  'loli',
+  'shota',
+  'nude',
+  'naked',
+  'nipples',
+  'underwear',
+  'panties',
+  'pantsu',
+  'pantyshot',
+  'upskirt',
+  'bra',
+  'lingerie',
+  'bikini',
+  'swimsuit',
+  'cleavage',
+  'breasts',
+  'large_breasts',
+  'ass',
+  'bondage',
+  'bdsm',
+  'blood',
+  'guro',
+  'violence',
+  'see_through',
+  'wet_clothes',
+  'bathing',
+  'onsen',
+  'naked_towel',
+  'cameltoe',
+  'erect_nipples',
+  'no_bra',
+  'bottomless',
+  'topless',
+  'thong',
+  'garter_belt',
 ]);
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -111,7 +143,9 @@ function isAcceptable({ width, height, tags, rating, score, official }, source =
 const adapters = {
   async yandere(source, page) {
     const q = encodeURIComponent(`${source.tags} rating:s order:score`);
-    const posts = await getJson(`https://yande.re/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`);
+    const posts = await getJson(
+      `https://yande.re/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`,
+    );
     if (!posts.length) return null;
     return posts.map((p) => ({
       key: `yandere-${p.id}`,
@@ -162,7 +196,10 @@ const adapters = {
     const seen = new Set();
     const items = [];
     for (const [, isbn, rawName] of html.matchAll(/(\d{13})" data-name="([^"]+)"/g)) {
-      const name = rawName.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      const name = rawName
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
       if (seen.has(isbn) || !match.test(name)) continue;
       seen.add(isbn);
       items.push({
@@ -188,7 +225,9 @@ const adapters = {
   async steam(source, page) {
     const appid = source.appids[page - 1];
     if (appid === undefined) return null;
-    const json = await getJson(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=korean`);
+    const json = await getJson(
+      `https://store.steampowered.com/api/appdetails?appids=${appid}&l=korean`,
+    );
     const data = json?.[appid]?.data;
     if (!data) return [];
     const items = (data.screenshots ?? []).map((s) => ({
@@ -209,7 +248,13 @@ const adapters = {
       items.push({
         key: `steam-${appid}-background`,
         fileUrl: data.background_raw.split('?')[0],
-        ext: 'jpg', size: null, width: 1920, height: 1080, rating: null, official: true, tags: [],
+        ext: 'jpg',
+        size: null,
+        width: 1920,
+        height: 1080,
+        rating: null,
+        official: true,
+        tags: [],
         page: `https://store.steampowered.com/app/${appid}/`,
         origin: data.name,
         author: (data.publishers ?? []).join(', ') || null,
@@ -229,7 +274,10 @@ async function loadJson(file, fallback) {
 
 async function readManifest(slug) {
   const text = await readFile(join(MEDIA, slug, 'manifest.jsonl'), 'utf8').catch(() => '');
-  return text.split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  return text
+    .split('\n')
+    .filter(Boolean)
+    .map((l) => JSON.parse(l));
 }
 
 async function download(item, slug) {
@@ -282,7 +330,9 @@ async function main() {
 
   const queue = Object.entries(groups)
     .filter(([slug]) => !ONLY || ONLY.some((o) => slug === o || slug.startsWith(`${o}/`)))
-    .flatMap(([slug, sources]) => sources.map((source, i) => ({ slug, source, id: `${slug}#${i}` })))
+    .flatMap(([slug, sources]) =>
+      sources.map((source, i) => ({ slug, source, id: `${slug}#${i}` })),
+    )
     .filter((s) => !state.done[s.id]);
 
   // 작품마다 한 번씩 돌아가며 한 페이지씩 받습니다.
@@ -322,13 +372,20 @@ async function main() {
         const existing = everywhere.get(item.key);
         if (existing) {
           try {
-            await link(join(MEDIA, existing.dir, existing.file), join(MEDIA, task.slug, existing.file));
+            await link(
+              join(MEDIA, existing.dir, existing.file),
+              join(MEDIA, task.slug, existing.file),
+            );
             added++;
             const entry = { ...existing, dir: undefined, linked: true, linkedFrom: existing.dir };
-            await appendFile(join(MEDIA, task.slug, 'manifest.jsonl'), JSON.stringify(entry) + '\n');
+            await appendFile(
+              join(MEDIA, task.slug, 'manifest.jsonl'),
+              JSON.stringify(entry) + '\n',
+            );
             continue;
           } catch (error) {
-            if (error.code !== 'EEXIST') await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
+            if (error.code !== 'EEXIST')
+              await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
           }
         }
         try {
@@ -336,9 +393,16 @@ async function main() {
           used += size;
           added++;
           const entry = {
-            key: item.key, file, bytes: size, width: item.width, height: item.height,
-            page: item.page, origin: item.origin, author: item.author,
-            tags: item.tags.slice(0, 40), downloadedAt: now(),
+            key: item.key,
+            file,
+            bytes: size,
+            width: item.width,
+            height: item.height,
+            page: item.page,
+            origin: item.origin,
+            author: item.author,
+            tags: item.tags.slice(0, 40),
+            downloadedAt: now(),
           };
           await appendFile(join(MEDIA, task.slug, 'manifest.jsonl'), JSON.stringify(entry) + '\n');
           everywhere.set(item.key, { ...entry, dir: task.slug });
