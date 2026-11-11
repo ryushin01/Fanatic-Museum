@@ -54,6 +54,7 @@ pnpm build && pnpm preview
 - 다운로드는 일반 등급만 받고, 선정적 태그·저해상도(긴 변 2000px 미만)·낮은 점수 이미지를 거릅니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
 - 중간에 멈춰도 다시 실행하면 이어서 받습니다. 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
 - `public/media/`가 없으면(CI, 배포) 로더가 빈 목록을 받고, 화면은 번호와 대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
+- Vercel CLI는 `.gitignore`를 따르지 않으므로 `.vercelignore`에서 `media/`·`public/media/`를 뺍니다. 그래도 들어가는 일이 없도록 `VERCEL`·`CI` 환경의 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).
 
 ## 모니터링
 
