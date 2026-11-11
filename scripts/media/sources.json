@@ -1,0 +1,459 @@
+{
+  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
+  "works": {
+    "cyber-formula": [
+      {
+        "type": "yandere",
+        "tags": "cyber_formula"
+      },
+      {
+        "type": "yandere",
+        "tags": "future_gpx_cyber_formula"
+      },
+      {
+        "type": "safebooru",
+        "tags": "cyber_formula"
+      }
+    ],
+    "asurada-figure": [
+      {
+        "type": "safebooru",
+        "tags": "super_asurada_01"
+      }
+    ],
+    "saekano": [
+      {
+        "type": "yandere",
+        "tags": "saenai_heroine_no_sodatekata"
+      },
+      {
+        "type": "kyobo",
+        "query": "시원찮은 그녀를 위한 육성방법",
+        "match": "시원찮은 그녀",
+        "pages": 3
+      }
+    ],
+    "fate": [
+      {
+        "type": "yandere",
+        "tags": "fate/stay_night"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/zero"
+      },
+      {
+        "type": "yandere",
+        "tags": "fate/grand_order"
+      },
+      {
+        "type": "steam",
+        "appids": [2396980, 2396990, 1902690, 622220]
+      }
+    ],
+    "sword-art-online": [
+      {
+        "type": "yandere",
+        "tags": "sword_art_online"
+      },
+      {
+        "type": "steam",
+        "appids": [1858630, 2371630, 626690, 840720, 1009290, 1566880, 607890, 638650]
+      },
+      {
+        "type": "kyobo",
+        "query": "소드 아트 온라인 카와하라 레키",
+        "match": "소드 아트 온라인",
+        "pages": 4
+      }
+    ],
+    "final-fantasy": [
+      {
+        "type": "yandere",
+        "tags": "final_fantasy"
+      },
+      {
+        "type": "yandere",
+        "tags": "final_fantasy_vii"
+      },
+      {
+        "type": "yandere",
+        "tags": "final_fantasy_xiv"
+      },
+      {
+        "type": "steam",
+        "appids": [1173770, 1462040, 2909400, 2515020, 1004640, 1608070, 637650, 1173820]
+      }
+    ],
+    "genesis-war": [
+      {
+        "type": "steam",
+        "appids": [5099430]
+      }
+    ],
+    "wing-gundam-custom": [
+      {
+        "type": "yandere",
+        "tags": "wing_gundam_zero"
+      },
+      {
+        "type": "yandere",
+        "tags": "wing_gundam"
+      },
+      {
+        "type": "yandere",
+        "tags": "gundam_wing"
+      }
+    ],
+    "gunpla": [
+      {
+        "type": "safebooru",
+        "tags": "gunpla"
+      }
+    ],
+    "figures": [
+      {
+        "type": "safebooru",
+        "tags": "figure photo_(medium)"
+      }
+    ],
+    "the-breaker": [
+      {
+        "type": "yandere",
+        "tags": "the_breaker"
+      },
+      {
+        "type": "kyobo",
+        "query": "브레이커 박진환",
+        "match": "브레이커",
+        "pages": 3
+      }
+    ],
+    "black-god": [
+      {
+        "type": "safebooru",
+        "tags": "kurokami park_sung_woo"
+      },
+      {
+        "type": "kyobo",
+        "query": "흑신 박성우",
+        "match": "흑신",
+        "pages": 3
+      }
+    ],
+    "now": [
+      {
+        "type": "kyobo",
+        "query": "나우 박성우",
+        "match": "^나우",
+        "pages": 3
+      }
+    ],
+    "gods-knight": [
+      {
+        "type": "kyobo",
+        "query": "가즈 나이트 이경영",
+        "match": "가즈\\s?나이트",
+        "pages": 4
+      }
+    ],
+    "granit": [
+      {
+        "type": "kyobo",
+        "query": "그라니트 이경영",
+        "match": "그라니트",
+        "pages": 3
+      }
+    ],
+    "tears-drinker": [
+      {
+        "type": "kyobo",
+        "query": "눈물을 마시는 새 이영도",
+        "match": "눈물을 마시는 새",
+        "pages": 3
+      }
+    ],
+    "blood-drinker": [
+      {
+        "type": "kyobo",
+        "query": "피를 마시는 새 이영도",
+        "match": "피를 마시는 새",
+        "pages": 3
+      }
+    ],
+    "dragon-raja": [
+      {
+        "type": "kyobo",
+        "query": "드래곤 라자 이영도",
+        "match": "드래곤 라자",
+        "pages": 3
+      }
+    ],
+    "future-walker": [
+      {
+        "type": "kyobo",
+        "query": "퓨처 워커 이영도",
+        "match": "퓨처 워커",
+        "pages": 3
+      }
+    ],
+    "polaris-rhapsody": [
+      {
+        "type": "kyobo",
+        "query": "폴라리스 랩소디 이영도",
+        "match": "폴라리스 랩소디",
+        "pages": 3
+      }
+    ],
+    "shadow-marks": [
+      {
+        "type": "kyobo",
+        "query": "그림자 자국 이영도",
+        "match": "그림자 자국",
+        "pages": 3
+      }
+    ],
+    "shadel-kreuz": [
+      {
+        "type": "kyobo",
+        "query": "섀델 크로이츠 이경영",
+        "match": "섀델",
+        "pages": 3
+      }
+    ],
+    "eight-dragons": [
+      {
+        "type": "kyobo",
+        "query": "8용신전설 박성우",
+        "match": "8용신",
+        "pages": 3
+      }
+    ],
+    "cheonrang": [
+      {
+        "type": "kyobo",
+        "query": "천랑열전 박성우",
+        "match": "천랑열전",
+        "pages": 3
+      }
+    ],
+    "zero-coffin": [
+      {
+        "type": "kyobo",
+        "query": "제로 시작의 관 박성우",
+        "match": "제로",
+        "pages": 3
+      }
+    ],
+    "maruhan": [
+      {
+        "type": "kyobo",
+        "query": "마루한 박성우",
+        "match": "마루한",
+        "pages": 3
+      }
+    ],
+    "trinity-wonder": [
+      {
+        "type": "kyobo",
+        "query": "트리니티 원더 박진환",
+        "match": "트리니티 원더",
+        "pages": 3
+      }
+    ],
+    "nanyak": [
+      {
+        "type": "kyobo",
+        "query": "난약 박진환",
+        "match": "난약",
+        "pages": 3
+      }
+    ],
+    "absolute-regression": [
+      {
+        "type": "kyobo",
+        "query": "절대회귀 박진환",
+        "match": "절대회귀",
+        "pages": 3
+      }
+    ]
+  },
+  "artists": {
+    "park-sung-woo": [
+      {
+        "type": "yandere",
+        "tags": "park_sung-woo"
+      },
+      {
+        "type": "safebooru",
+        "tags": "park_sung_woo"
+      },
+      {
+        "type": "kyobo",
+        "query": "나우 박성우",
+        "match": "^나우",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "흑신 박성우",
+        "match": "흑신",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "8용신전설 박성우",
+        "match": "8용신",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "천랑열전 박성우",
+        "match": "천랑열전",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "제로 시작의 관 박성우",
+        "match": "제로",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "마루한 박성우",
+        "match": "마루한",
+        "pages": 3
+      }
+    ],
+    "kim-hyung-tae": [
+      {
+        "type": "yandere",
+        "tags": "kim_hyung-tae"
+      },
+      {
+        "type": "safebooru",
+        "tags": "kim_hyung_tae"
+      },
+      {
+        "type": "safebooru",
+        "tags": "hyung-tae_kim"
+      },
+      {
+        "type": "steam",
+        "appids": [3489700]
+      }
+    ],
+    "misaki-kurehito": [
+      {
+        "type": "yandere",
+        "tags": "misaki_kurehito"
+      },
+      {
+        "type": "safebooru",
+        "tags": "misaki_kurehito"
+      },
+      {
+        "type": "kyobo",
+        "query": "시원찮은 그녀를 위한 육성방법 화집",
+        "match": "화집",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "시원찮은 그녀를 위한 육성방법",
+        "match": "시원찮은 그녀",
+        "pages": 4
+      },
+      {
+        "type": "kyobo",
+        "query": "놀이의 관계",
+        "match": "놀이의 관계",
+        "pages": 3
+      }
+    ],
+    "kuroya-shinobu": [
+      {
+        "type": "yandere",
+        "tags": "kuroya_shinobu"
+      },
+      {
+        "type": "safebooru",
+        "tags": "kuroya_shinobu"
+      }
+    ],
+    "shirabi": [
+      {
+        "type": "yandere",
+        "tags": "shirabi"
+      },
+      {
+        "type": "safebooru",
+        "tags": "shirabi"
+      },
+      {
+        "type": "kyobo",
+        "query": "86 에이티식스",
+        "match": "에이티식스",
+        "pages": 4
+      },
+      {
+        "type": "kyobo",
+        "query": "용왕이 하는 일",
+        "match": "용왕이 하는 일",
+        "pages": 4
+      },
+      {
+        "type": "kyobo",
+        "query": "무채한의 팬텀 월드",
+        "match": "팬텀 월드",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "거짓말쟁이 천사는 죽었습니다",
+        "match": "거짓말쟁이 천사",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "이세계 수학여행",
+        "match": "이세계 수학여행",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "라노벨 프로",
+        "match": "라노벨 프로",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "부유학원의 앨리스",
+        "match": "부유학원",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "재앙 전선의 오버로드",
+        "match": "재앙 전선",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "1학년 10반의 분투",
+        "match": "1학년 10반",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "방과 후엔 무적입니다만",
+        "match": "방과 후엔 무적",
+        "pages": 3
+      },
+      {
+        "type": "steam",
+        "appids": [1902690]
+      }
+    ]
+  }
+}
