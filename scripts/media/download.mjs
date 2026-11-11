@@ -310,30 +310,28 @@ const adapters = {
   async bgg(source, page) {
     const headers = { 'User-Agent': BROWSER_UA };
     const api = 'https://api.geekdo.com/api';
-    const list = await (
-      await politeFetch(
-        `${api}/images?ajax=1&gallery=all&nosession=1&objectid=${source.id}&objecttype=thing&pageid=${page}&showcount=50&size=original&sort=hot`,
-        { headers },
-      )
-    ).json();
+    const url = `${api}/images?ajax=1&gallery=all&nosession=1&objectid=${source.id}&objecttype=thing&pageid=${page}&showcount=50&size=original&sort=hot`;
+    const res = await politeFetch(url, { headers });
+    // 실패 응답(HTML 오류 페이지 등)을 JSON으로 읽지 않고, 다음 차례에 다시 시도합니다.
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+    const list = await res.json();
     const images = list.images ?? [];
     if (!images.length) return null;
     const items = [];
     for (const image of images) {
-      let url = image.imageurl_lg;
+      let imageUrl = image.imageurl_lg;
       try {
-        const detail = await (
-          await politeFetch(`${api}/images/${image.imageid}`, { headers })
-        ).json();
-        url = detail.images?.original?.url ?? url;
+        const detailRes = await politeFetch(`${api}/images/${image.imageid}`, { headers });
+        if (detailRes.ok) imageUrl = (await detailRes.json()).images?.original?.url ?? imageUrl;
+        else await detailRes.body?.cancel();
       } catch {
         // 원본 주소를 못 얻으면 큰 크기(1024px)로 받습니다.
       }
-      if (!url) continue;
+      if (!imageUrl) continue;
       items.push({
         key: `bgg-${image.imageid}`,
-        fileUrl: url,
-        ext: extensionOf(url),
+        fileUrl: imageUrl,
+        ext: extensionOf(imageUrl),
         size: null,
         width: 0,
         height: 0,
