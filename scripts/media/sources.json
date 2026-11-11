@@ -109,6 +109,24 @@
       {
         "type": "steam",
         "appids": [5099430]
+      },
+      {
+        "type": "kyobo",
+        "query": "창세기전",
+        "match": "창세기전",
+        "pages": 3
+      },
+      {
+        "type": "yandere",
+        "tags": "the_war_of_genesis"
+      },
+      {
+        "type": "yandere",
+        "tags": "the_war_of_genesis_iii"
+      },
+      {
+        "type": "safebooru",
+        "tags": "the_war_of_genesis"
       }
     ],
     "wing-gundam-custom": [
@@ -401,6 +419,22 @@
       {
         "type": "steam",
         "appids": [3489700]
+      },
+      {
+        "type": "yandere",
+        "tags": "magna_carta"
+      },
+      {
+        "type": "yandere",
+        "tags": "magna_carta_2"
+      },
+      {
+        "type": "konachan",
+        "tags": "magna_carta"
+      },
+      {
+        "type": "safebooru",
+        "tags": "magna_carta"
       }
     ],
     "misaki-kurehito": [
@@ -3091,6 +3125,90 @@
         "type": "bgg",
         "id": 366439,
         "name": "Dorasure Mincas: Another World Trio De Undeads"
+      }
+    ],
+    "berserk-of-gluttony": [
+      {
+        "type": "yandere",
+        "tags": "boushoku_no_berserk"
+      },
+      {
+        "type": "safebooru",
+        "tags": "boushoku_no_berserk"
+      },
+      {
+        "type": "kyobo",
+        "query": "폭식의 베르세르크",
+        "match": "폭식의 베르세르크",
+        "pages": 3
+      }
+    ],
+    "fate-grand-order": [
+      {
+        "type": "yandere",
+        "tags": "fate/grand_order"
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/grand_order"
+      },
+      {
+        "type": "safebooru",
+        "tags": "fate/grand_order"
+      },
+      {
+        "type": "kyobo",
+        "query": "Fate Grand Order",
+        "match": "Grand ?[Oo]rder",
+        "pages": 3
+      }
+    ],
+    "lamune-40-alphabet-series": [
+      {
+        "type": "safebooru",
+        "tags": "ng_knight_lamune_&_40"
+      },
+      {
+        "type": "safebooru",
+        "tags": "vs_knight_lamune_&_40_fire"
+      },
+      {
+        "type": "safebooru",
+        "tags": "vs_knight_lamune_&_40_fresh"
+      },
+      {
+        "type": "safebooru",
+        "tags": "ko_seiki_beast_sanjuushi"
+      },
+      {
+        "type": "safebooru",
+        "tags": "saber_marionette_r"
+      },
+      {
+        "type": "yandere",
+        "tags": "ng_knight_lamune_&_40"
+      },
+      {
+        "type": "yandere",
+        "tags": "vs_knight_lamune_&_40_fire"
+      },
+      {
+        "type": "yandere",
+        "tags": "saber_marionette_r"
+      }
+    ],
+    "destiny-child": [
+      {
+        "type": "yandere",
+        "tags": "destiny_child"
+      },
+      {
+        "type": "konachan",
+        "tags": "destiny_child"
+      },
+      {
+        "type": "safebooru",
+        "tags": "destiny_child"
       }
     ]
   }
