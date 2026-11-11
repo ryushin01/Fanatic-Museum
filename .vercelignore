@@ -1,6 +1,6 @@
 # Vercel CLI는 .gitignore를 따르지 않습니다. 저작권 이미지와 로컬 파일을 올리지 않습니다.
-media/
-public/media/
+/media/
+/public/media/
 build/
 storybook-static/
 node_modules/
