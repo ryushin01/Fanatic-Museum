@@ -28,9 +28,7 @@ export function HomePage() {
       <section className={`container ${styles.hero}`} aria-labelledby="home-title">
         <div className={`label ${styles.eyebrow}`}>
           <span>{site.koreanName}</span>
-          <span className="num">
-            {since} — Now
-          </span>
+          <span className="num">{since} — Now</span>
         </div>
         <h1 id="home-title" className={styles.title}>
           <span className={styles.titleLine}>Fanatic</span>

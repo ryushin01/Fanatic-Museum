@@ -29,7 +29,8 @@ export function WorkPage() {
       <PageHeader
         eyebrow={
           <span className="num">
-            No. {padNumber(work.number)} · {work.categories.map((c) => findCategory(c)?.name).join(' / ')}
+            No. {padNumber(work.number)} ·{' '}
+            {work.categories.map((c) => findCategory(c)?.name).join(' / ')}
           </span>
         }
         title={work.title}

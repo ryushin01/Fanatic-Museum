@@ -3,7 +3,8 @@
 :root {
   color-scheme: light dark;
 
-  --font-sans: 'Noto Sans KR Variable', 'Noto Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo',
+  --font-sans:
+    'Noto Sans KR Variable', 'Noto Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo',
     sans-serif;
 
   --color-bg: #f1efe9;

@@ -42,6 +42,7 @@
     "globals": "^17.14.0",
     "jsdom": "^31.0.0",
     "openapi-typescript": "^7.13.0",
+    "prettier": "^3.9.10",
     "sharp": "^0.35.5",
     "sirv-cli": "^3.0.1",
     "size-limit": "^14.3.0",
@@ -54,10 +55,10 @@
   },
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build",
+    "build": "react-router build && node scripts/prune-assets.mjs",
     "preview": "sirv build/client --port 4173 --single __spa-fallback.html",
     "typecheck": "react-router typegen && tsc",
-    "lint": "eslint . && steiger src",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "api:types": "openapi-typescript openapi/archive.yaml -o src/shared/api/schema.d.ts",
@@ -66,6 +67,11 @@
     "size": "size-limit",
     "lhci": "lhci autorun",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o build/client/storybook"
+    "build-storybook": "storybook build -o build/client/storybook",
+    "build:all": "pnpm build && pnpm build-storybook",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "api:check": "pnpm api:types && git diff --exit-code src/shared/api/schema.d.ts",
+    "lint:fsd": "steiger src"
   }
 }

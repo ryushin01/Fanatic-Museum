@@ -55,7 +55,9 @@ export function WorkFilter({ value, onChange, categories, resultCount, total }: 
           onSelectionChange={(keys) =>
             onChange({
               ...value,
-              categories: categories.map((c) => c.slug).filter((slug) => keys.has(slug)) as CategorySlug[],
+              categories: categories
+                .map((c) => c.slug)
+                .filter((slug) => keys.has(slug)) as CategorySlug[],
             })
           }
         >

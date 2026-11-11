@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Format · Lint · FSD · API · Typecheck · Test · Build · Size · E2E · Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm 버전은 package.json의 packageManager를 따릅니다.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm lint:fsd
+      # OpenAPI 문서와 생성된 타입이 어긋나면 실패합니다.
+      - run: pnpm api:check
+      - run: pnpm typecheck
+      - run: pnpm test
+      # 앱(사전 렌더링)과 Storybook(build/client/storybook)을 함께 빌드합니다.
+      - run: pnpm build:all
+      - run: pnpm size
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm lhci
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: reports
+          path: |
+            test-results/
+            playwright-report/
+            .lighthouseci/
+          retention-days: 7

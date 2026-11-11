@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      react-router:
+        patterns: ['react-router', '@react-router/*']
+      storybook:
+        patterns: ['storybook', '@storybook/*']
+      lint:
+        patterns:
+          [
+            'eslint',
+            '@eslint/*',
+            'typescript-eslint',
+            'eslint-plugin-*',
+            'steiger',
+            '@feature-sliced/*',
+          ]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -21,8 +21,12 @@ export function CategoryPage() {
 
   return (
     <>
-      <PageHeader eyebrow={category.englishName} title={category.name} description={category.description}>
-        <nav aria-label="카테고리">
+      <PageHeader
+        eyebrow={category.englishName}
+        title={category.name}
+        description={category.description}
+      >
+        <nav aria-label="카테고리 바꾸기">
           <ul className={styles.tabs}>
             {categories.map((c) => (
               <li key={c.slug}>

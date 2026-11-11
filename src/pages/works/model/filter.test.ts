@@ -37,7 +37,11 @@ const slugs = (list: Work[]) => list.map((w) => w.slug);
 
 describe('filterWorks', () => {
   it('조건이 없으면 모두 돌려준다', () => {
-    expect(slugs(filterWorks(works, { query: '', categories: [] }))).toEqual(['sao', 'breaker', 'ff']);
+    expect(slugs(filterWorks(works, { query: '', categories: [] }))).toEqual([
+      'sao',
+      'breaker',
+      'ff',
+    ]);
   });
 
   it('공백과 대소문자를 무시하고 제목·줄임말·작가로 찾는다', () => {

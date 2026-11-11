@@ -6,7 +6,16 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['build', '.react-router', 'storybook-static', 'coverage', 'playwright-report', 'test-results', 'public/media', 'src/shared/api/schema.d.ts'],
+    ignores: [
+      'build',
+      '.react-router',
+      'storybook-static',
+      'coverage',
+      'playwright-report',
+      'test-results',
+      'public/media',
+      'src/shared/api/schema.d.ts',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

@@ -1,0 +1,10 @@
+build
+storybook-static
+.react-router
+pnpm-lock.yaml
+src/shared/api/schema.d.ts
+public/media
+coverage
+playwright-report
+test-results
+.lighthouseci

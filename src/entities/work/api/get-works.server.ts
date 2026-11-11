@@ -4,7 +4,8 @@ import { loadMediaIndex, type MediaEntry } from '@/shared/api/index.server';
 import { works, type WorkRecord } from '../model/works';
 
 function toImage(record: WorkRecord, entry: MediaEntry, index: number): WorkImage {
-  const kind = entry.kind === 'screenshot' ? `${entry.origin ?? record.title} 게임 화면` : '일러스트';
+  const kind =
+    entry.kind === 'screenshot' ? `${entry.origin ?? record.title} 게임 화면` : '일러스트';
   return {
     src: entry.src,
     srcSet: entry.srcSet,

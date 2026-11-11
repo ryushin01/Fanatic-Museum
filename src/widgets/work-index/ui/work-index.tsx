@@ -15,7 +15,11 @@ export interface WorkIndexProps {
 }
 
 /** 전시 번호순 소장품 목록. 행 전체가 상세 페이지 링크입니다. */
-export function WorkIndex({ works, headingLevel = 3, emptyMessage = '소장품이 없습니다.' }: WorkIndexProps) {
+export function WorkIndex({
+  works,
+  headingLevel = 3,
+  emptyMessage = '소장품이 없습니다.',
+}: WorkIndexProps) {
   const Heading = `h${headingLevel}` as const;
 
   if (works.length === 0) return <p className={styles.empty}>{emptyMessage}</p>;

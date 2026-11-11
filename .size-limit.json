@@ -1,0 +1,24 @@
+[
+  {
+    "name": "첫 화면 JS(엔트리와 공통 조각)",
+    "path": [
+      "build/client/assets/entry.client-*.js",
+      "build/client/assets/components-*.js",
+      "build/client/assets/jsx-runtime-*.js"
+    ],
+    "gzip": true,
+    "limit": "125 kB"
+  },
+  {
+    "name": "전체 JS",
+    "path": "build/client/assets/*.js",
+    "gzip": true,
+    "limit": "260 kB"
+  },
+  {
+    "name": "CSS",
+    "path": "build/client/assets/style-*.css",
+    "gzip": true,
+    "limit": "40 kB"
+  }
+]

@@ -12,7 +12,10 @@ import type { loader } from '../api/loader.server';
 export function meta() {
   return [
     { title: `소장품 — ${site.name}` },
-    { name: 'description', content: '파나틱 뮤지엄의 소장품 전체를 제목, 작가, 분류로 찾아봅니다.' },
+    {
+      name: 'description',
+      content: '파나틱 뮤지엄의 소장품 전체를 제목, 작가, 분류로 찾아봅니다.',
+    },
   ];
 }
 
@@ -37,7 +40,10 @@ export function WorksPage() {
         />
         <h2 className="visually-hidden">검색 결과</h2>
         <div style={{ marginTop: 32 }}>
-          <WorkIndex works={results} emptyMessage="조건에 맞는 소장품이 없습니다. 검색어나 분류를 바꿔 보세요." />
+          <WorkIndex
+            works={results}
+            emptyMessage="조건에 맞는 소장품이 없습니다. 검색어나 분류를 바꿔 보세요."
+          />
         </div>
       </div>
     </>

@@ -53,7 +53,11 @@ export default function App() {
 }
 
 export function HydrateFallback() {
-  return <p className="container" style={{ paddingBlock: 80 }}>불러오는 중…</p>;
+  return (
+    <p className="container" style={{ paddingBlock: 80 }}>
+      불러오는 중…
+    </p>
+  );
 }
 
 export function ErrorBoundary({ error }: { error: unknown }) {
