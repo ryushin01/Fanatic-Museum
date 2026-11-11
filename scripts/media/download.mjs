@@ -18,7 +18,7 @@ import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from '
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Readable } from 'node:stream';
+import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -109,14 +109,17 @@ async function politeFetch(url, init = {}) {
 /** 이미지 파일 요청. 목록 요청 간격과 별개로 재시도만 합니다. */
 async function fetchFile(url) {
   for (let attempt = 1; attempt <= 4; attempt++) {
+    // 응답 머리가 2분 안에 오지 않으면 다시 시도합니다. 머리를 받으면 시간 제한을 풀고,
+    // 본문은 download()에서 멈춤(60초 무응답)만 검사합니다.
+    const headers = new AbortController();
+    const timer = setTimeout(() => headers.abort(new Error('2분 동안 응답 없음')), 2 * 60 * 1000);
     try {
-      const res = await fetch(url, {
-        headers: { 'User-Agent': UA },
-        signal: AbortSignal.timeout(10 * 60 * 1000),
-      });
+      const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: headers.signal });
+      clearTimeout(timer);
       if (res.status === 429 || res.status >= 500) throw new Error(`HTTP ${res.status}`);
       return res;
     } catch (error) {
+      clearTimeout(timer);
       if (attempt === 4) throw error;
       await sleep(5000 * attempt);
     }
@@ -296,7 +299,24 @@ async function download(item, slug) {
     await res.body.cancel();
     throw new Error(`이미지가 아님(${type})`);
   }
-  await pipeline(Readable.fromWeb(res.body), createWriteStream(partial));
+  // 큰 스캔(100MB 넘음)도 끝까지 받도록 전체 시간 제한은 두지 않고,
+  // 60초 동안 데이터가 하나도 오지 않을 때만 멈춘 연결로 보고 중단합니다.
+  const stall = new AbortController();
+  let timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
+  const watchdog = new Transform({
+    transform(chunk, _encoding, callback) {
+      clearTimeout(timer);
+      timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
+      callback(null, chunk);
+    },
+  });
+  try {
+    await pipeline(Readable.fromWeb(res.body), watchdog, createWriteStream(partial), {
+      signal: stall.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   await rename(partial, target);
   const { size } = await stat(target);
   return { file, size };
