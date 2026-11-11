@@ -101,7 +101,12 @@ async function politeFetch(url, init = {}) {
   lastRequest = Date.now();
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
-      const res = await fetch(url, { ...init, headers: { 'User-Agent': UA, ...init.headers } });
+      // 목록·상품 페이지는 작으므로 본문까지 60초 안에 받지 못하면 다시 시도합니다.
+      const res = await fetch(url, {
+        ...init,
+        headers: { 'User-Agent': UA, ...init.headers },
+        signal: AbortSignal.timeout(60_000),
+      });
       if (res.status === 429 || res.status >= 500) {
         await res.body?.cancel();
         throw new Error(`HTTP ${res.status}`);
@@ -263,14 +268,16 @@ const adapters = {
     if (!res.ok) throw new Error(`HTTP ${res.status} ${search}`);
     const html = await res.text();
     const slugs = [
-      ...new Set([...html.matchAll(/href="\/([a-z0-9-]+-[a-z]+[0-9]+)"/g)].map((m) => m[1])),
+      ...new Set([...html.matchAll(/href="\/([a-z0-9]+(?:-[a-z0-9]+)+)"/g)].map((m) => m[1])),
     ];
     if (!slugs.length) return null;
     const match = new RegExp(source.match);
     const items = [];
     for (const slug of slugs.filter((s) => match.test(s))) {
       const product = await politeFetch(`https://www.hlj.com/${slug}`, { headers });
-      if (!product.ok) continue;
+      // 없는 상품은 건너뛰고, 일시적인 실패는 이 쪽을 다음에 다시 보도록 실패로 돌려줍니다.
+      if (product.status === 404 || product.status === 410) continue;
+      if (!product.ok) throw new Error(`HTTP ${product.status} ${slug}`);
       const body = await product.text();
       const name = body.match(/<title>([^<]*)<\/title>/)?.[1]?.trim() ?? slug;
       const images = [
@@ -414,7 +421,8 @@ async function readManifest(slug) {
     .map((l) => JSON.parse(l));
 }
 
-async function download(item, slug) {
+/** onBytes(n)이 false를 돌려주면(용량 한도) 받기를 멈춥니다. */
+async function download(item, slug, onBytes = () => true) {
   const dir = join(MEDIA, slug);
   const file = `${item.key}.${item.ext}`;
   const target = join(dir, file);
@@ -436,6 +444,10 @@ async function download(item, slug) {
   let timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
   const watchdog = new Transform({
     transform(chunk, _encoding, callback) {
+      if (!onBytes(chunk.length)) {
+        callback(new Error('용량 한도에 도달해 멈춤'));
+        return;
+      }
       clearTimeout(timer);
       timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
       callback(null, chunk);
@@ -526,6 +538,8 @@ async function main() {
     .filter((s) => !state.done[s.id]);
 
   let reserved = 0;
+  let inflight = 0;
+  let stoppedByLimit = false;
   // 작품마다 한 번씩 돌아가며 한 페이지씩 받습니다.
   while (queue.length && used < LIMIT_BYTES) {
     const task = queue.shift();
@@ -604,7 +618,18 @@ async function main() {
         reserved += reservation;
         let released = false;
         try {
-          const { file, size } = await download(item, task.slug);
+          // 크기를 모르는 파일은 받는 동안 쌓이는 바이트를 함께 세어 한도를 넘지 않게 합니다.
+          let streamed = 0;
+          const { file, size } = await download(item, task.slug, (n) => {
+            if (item.size) return true;
+            streamed += n;
+            inflight += n;
+            if (used + reserved + inflight <= LIMIT_BYTES) return true;
+            leftover = true;
+            return false;
+          }).finally(() => {
+            inflight -= streamed;
+          });
           reserved -= reservation;
           released = true;
           used += size;
@@ -639,6 +664,7 @@ async function main() {
     await Promise.all(Array.from({ length: FILE_CONCURRENCY }, worker));
     if (leftover || pending.length) {
       await log(`${task.id} ${page}쪽: 용량 한도로 남은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`);
+      stoppedByLimit = true;
       break;
     }
     state.cursors[task.id] = page;
@@ -647,7 +673,11 @@ async function main() {
     queue.push(task);
   }
 
-  await log(used >= LIMIT_BYTES ? '용량 한도에 도달해 멈췄습니다.' : '모든 출처를 받았습니다.');
+  await log(
+    stoppedByLimit || used >= LIMIT_BYTES
+      ? '용량 한도에 도달해 멈췄습니다.'
+      : '모든 출처를 받았습니다.',
+  );
 }
 
 main().catch(async (error) => {
