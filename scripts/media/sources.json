@@ -3210,6 +3210,36 @@
         "type": "safebooru",
         "tags": "destiny_child"
       }
+    ],
+    "lord-of-series": [
+      {
+        "type": "yandere",
+        "tags": "lord_of_vermilion"
+      },
+      {
+        "type": "konachan",
+        "tags": "lord_of_vermilion"
+      },
+      {
+        "type": "safebooru",
+        "tags": "lord_of_vermilion"
+      },
+      {
+        "type": "safebooru",
+        "tags": "lord_of_vermilion_iii"
+      },
+      {
+        "type": "safebooru",
+        "tags": "lord_of_vermilion_iv"
+      },
+      {
+        "type": "yandere",
+        "tags": "lord_of_arcana"
+      },
+      {
+        "type": "safebooru",
+        "tags": "lord_of_apocalypse"
+      }
     ]
   }
 }
