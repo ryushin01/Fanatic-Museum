@@ -319,13 +319,17 @@ const adapters = {
     if (!images.length) return null;
     const items = [];
     for (const image of images) {
+      // 원본 주소를 묻습니다. 일시적 실패(429·5xx·네트워크)는 politeFetch가 다시 시도하고,
+      // 그래도 실패하면 이 쪽 전체를 다음 차례에 다시 봅니다(1024px로 저장해 원본을 놓치지 않도록).
+      // 원본 정보가 아예 없을 때(404 등)만 큰 크기(1024px)로 받습니다.
       let imageUrl = image.imageurl_lg;
-      try {
-        const detailRes = await politeFetch(`${api}/images/${image.imageid}`, { headers });
-        if (detailRes.ok) imageUrl = (await detailRes.json()).images?.original?.url ?? imageUrl;
-        else await detailRes.body?.cancel();
-      } catch {
-        // 원본 주소를 못 얻으면 큰 크기(1024px)로 받습니다.
+      const detailRes = await politeFetch(`${api}/images/${image.imageid}`, { headers });
+      if (detailRes.ok) {
+        imageUrl = (await detailRes.json()).images?.original?.url ?? imageUrl;
+      } else {
+        await detailRes.body?.cancel();
+        if (detailRes.status !== 404 && detailRes.status !== 410)
+          throw new Error(`HTTP ${detailRes.status} 이미지 ${image.imageid}`);
       }
       if (!imageUrl) continue;
       items.push({
