@@ -1,5 +1,5 @@
 {
-  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/, collections(회사·시리즈·상품 모음, merch-*는 HobbyLink Japan 상품 사진)는 collections/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
+  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/, collections(회사·시리즈·상품 모음, merch-*는 HobbyLink Japan 상품 사진, boardgame-*는 BoardGameGeek 갤러리)는 collections/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
   "works": {
     "cyber-formula": [
       {
@@ -903,6 +903,2092 @@
       {
         "type": "safebooru",
         "tags": "itsuwari_no_rondo"
+      }
+    ],
+    "boardgame-mythic-battles": [
+      {
+        "type": "bgg",
+        "id": 186751,
+        "name": "Mythic Battles: Pantheon"
+      },
+      {
+        "type": "bgg",
+        "id": 331398,
+        "name": "Mythic Battles: Ragnarök"
+      },
+      {
+        "type": "bgg",
+        "id": 415112,
+        "name": "Mythic Battles: Isfet"
+      },
+      {
+        "type": "bgg",
+        "id": 242993,
+        "name": "Mythic Battles: Pantheon – Atlas"
+      },
+      {
+        "type": "bgg",
+        "id": 422597,
+        "name": "Mythic Battles: Pantheon – Chthonian Wrath"
+      },
+      {
+        "type": "bgg",
+        "id": 219999,
+        "name": "Mythic Battles: Pantheon – Compendium"
+      },
+      {
+        "type": "bgg",
+        "id": 255505,
+        "name": "Mythic Battles: Pantheon – Dionysus"
+      },
+      {
+        "type": "bgg",
+        "id": 218877,
+        "name": "Mythic Battles: Pantheon – Echidna's Children"
+      },
+      {
+        "type": "bgg",
+        "id": 245785,
+        "name": "Mythic Battles: Pantheon – Extension Kit"
+      },
+      {
+        "type": "bgg",
+        "id": 218880,
+        "name": "Mythic Battles: Pantheon – Hephaistos"
+      },
+      {
+        "type": "bgg",
+        "id": 218879,
+        "name": "Mythic Battles: Pantheon – Hera Expansion"
+      },
+      {
+        "type": "bgg",
+        "id": 218884,
+        "name": "Mythic Battles: Pantheon – Heroes of the Trojan Wars"
+      },
+      {
+        "type": "bgg",
+        "id": 218883,
+        "name": "Mythic Battles: Pantheon – Judges of the Underworld"
+      },
+      {
+        "type": "bgg",
+        "id": 422598,
+        "name": "Mythic Battles: Pantheon – Keepers of the Soul"
+      },
+      {
+        "type": "bgg",
+        "id": 218886,
+        "name": "Mythic Battles: Pantheon – Ketos"
+      },
+      {
+        "type": "bgg",
+        "id": 218882,
+        "name": "Mythic Battles: Pantheon – Manticore"
+      },
+      {
+        "type": "bgg",
+        "id": 218881,
+        "name": "Mythic Battles: Pantheon – Oedipus vs The Sphinx"
+      },
+      {
+        "type": "bgg",
+        "id": 220000,
+        "name": "Mythic Battles: Pantheon – Pandora's Box"
+      },
+      {
+        "type": "bgg",
+        "id": 218885,
+        "name": "Mythic Battles: Pantheon – Paolo Parente's Guest Box"
+      },
+      {
+        "type": "bgg",
+        "id": 412692,
+        "name": "Mythic Battles: Pantheon – Polemarchs"
+      },
+      {
+        "type": "bgg",
+        "id": 213527,
+        "name": "Mythic Battles: Pantheon – Poseidon Expansion"
+      },
+      {
+        "type": "bgg",
+        "id": 218876,
+        "name": "Mythic Battles: Pantheon – Rise of the Titans"
+      },
+      {
+        "type": "bgg",
+        "id": 220158,
+        "name": "Mythic Battles: Pantheon – Terrain Set"
+      },
+      {
+        "type": "bgg",
+        "id": 242274,
+        "name": "Mythic Battles: Pantheon – Thermopylae Battlefield"
+      },
+      {
+        "type": "bgg",
+        "id": 255504,
+        "name": "Mythic Battles: Ragnarök – Ymir"
+      },
+      {
+        "type": "bgg",
+        "id": 335747,
+        "name": "Mythic Battles: Ragnarök – Asgard"
+      },
+      {
+        "type": "bgg",
+        "id": 416415,
+        "name": "Mythic Battles: Ragnarök – Destroyer's Box"
+      },
+      {
+        "type": "bgg",
+        "id": 336624,
+        "name": "Mythic Battles: Ragnarök – Jörmungand"
+      },
+      {
+        "type": "bgg",
+        "id": 422602,
+        "name": "Mythic Battles: Ragnarok – Kraken"
+      },
+      {
+        "type": "bgg",
+        "id": 336626,
+        "name": "Mythic Battles: Ragnarök – Nidhogg"
+      },
+      {
+        "type": "bgg",
+        "id": 336623,
+        "name": "Mythic Battles: Ragnarök – Ragnar Saga"
+      },
+      {
+        "type": "bgg",
+        "id": 416416,
+        "name": "Mythic Battles: Ragnarök – Storage Box"
+      },
+      {
+        "type": "bgg",
+        "id": 336625,
+        "name": "Mythic Battles: Ragnarök – Surt"
+      },
+      {
+        "type": "bgg",
+        "id": 422600,
+        "name": "Mythic Battles: Isfet – Duat"
+      },
+      {
+        "type": "bgg",
+        "id": 422601,
+        "name": "Mythic Battles: Isfet – Eternal Cycle"
+      }
+    ],
+    "boardgame-eclipse-second-dawn": [
+      {
+        "type": "bgg",
+        "id": 246900,
+        "name": "Eclipse: Second Dawn for the Galaxy"
+      },
+      {
+        "type": "bgg",
+        "id": 356743,
+        "name": "Eclipse: Das zweite galaktische Zeitalter – Neue Gefahren"
+      },
+      {
+        "type": "bgg",
+        "id": 381603,
+        "name": "Eclipse: Second Dawn for the Galaxy – Expanded Galaxy"
+      },
+      {
+        "type": "bgg",
+        "id": 305954,
+        "name": "Eclipse: Second Dawn for the Galaxy – Galactic Events"
+      },
+      {
+        "type": "bgg",
+        "id": 375216,
+        "name": "Eclipse: Second Dawn for the Galaxy – Gamemat"
+      },
+      {
+        "type": "bgg",
+        "id": 305950,
+        "name": "Eclipse: Second Dawn for the Galaxy – Minor Species"
+      },
+      {
+        "type": "bgg",
+        "id": 368378,
+        "name": "Eclipse: Second Dawn for the Galaxy – Outcasts"
+      },
+      {
+        "type": "bgg",
+        "id": 366202,
+        "name": "Eclipse: Second Dawn for the Galaxy – Remnants of Worlds Afar"
+      },
+      {
+        "type": "bgg",
+        "id": 305955,
+        "name": "Eclipse: Second Dawn for the Galaxy – Rift Cannon"
+      },
+      {
+        "type": "bgg",
+        "id": 368377,
+        "name": "Eclipse: Second Dawn for the Galaxy – Seekers"
+      },
+      {
+        "type": "bgg",
+        "id": 294546,
+        "name": "Eclipse: Second Dawn for the Galaxy – Supernova"
+      },
+      {
+        "type": "bgg",
+        "id": 350921,
+        "name": "Eclipse: Second Dawn for the Galaxy – Turn Order Variant"
+      },
+      {
+        "type": "bgg",
+        "id": 381605,
+        "name": "Eclipse: Second Dawn for the Galaxy – Warped Universe"
+      },
+      {
+        "type": "bgg",
+        "id": 303298,
+        "name": "Eclipse: Second Dawn for the Galaxy – Worlds Afar Collection"
+      }
+    ],
+    "boardgame-aeons-end": [
+      {
+        "type": "bgg",
+        "id": 191189,
+        "name": "Aeon's End"
+      },
+      {
+        "type": "bgg",
+        "id": 325157,
+        "name": "Aeon's End Outcasts: Promos"
+      },
+      {
+        "type": "bgg",
+        "id": 443927,
+        "name": "Aeon's End: Beyond the Breach"
+      },
+      {
+        "type": "bgg",
+        "id": 246805,
+        "name": "Aeon's End: Buried Secrets"
+      },
+      {
+        "type": "bgg",
+        "id": 272755,
+        "name": "Aeon's End: Echo Stone and Splinter Missile Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 365950,
+        "name": "Aeon's End: Evolution"
+      },
+      {
+        "type": "bgg",
+        "id": 264007,
+        "name": "Aeon's End: Fleeting Vision Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 274927,
+        "name": "Aeon's End: Into the Wild"
+      },
+      {
+        "type": "bgg",
+        "id": 241451,
+        "name": "Aeon's End: Legacy"
+      },
+      {
+        "type": "bgg",
+        "id": 331212,
+        "name": "Aeon's End: Legacy of Gravehold"
+      },
+      {
+        "type": "bgg",
+        "id": 406679,
+        "name": "Aeon's End: Legacy of Gravehold – Reset Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 334594,
+        "name": "Aeon's End: Legacy of Gravehold – The Ruins"
+      },
+      {
+        "type": "bgg",
+        "id": 271345,
+        "name": "Aeon's End: Legacy Reset Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 364530,
+        "name": "Aeon's End: Origins"
+      },
+      {
+        "type": "bgg",
+        "id": 299317,
+        "name": "Aeon's End: Outcasts"
+      },
+      {
+        "type": "bgg",
+        "id": 364426,
+        "name": "Aeon's End: Past and Future"
+      },
+      {
+        "type": "bgg",
+        "id": 365951,
+        "name": "Aeon's End: Past and Future Promo Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 343786,
+        "name": "Aeon's End: Promo Pack 1"
+      },
+      {
+        "type": "bgg",
+        "id": 318951,
+        "name": "Aeon's End: Return to Gravehold"
+      },
+      {
+        "type": "bgg",
+        "id": 274930,
+        "name": "Aeon's End: Shattered Dreams"
+      },
+      {
+        "type": "bgg",
+        "id": 318952,
+        "name": "Aeon's End: Southern Village"
+      },
+      {
+        "type": "bgg",
+        "id": 353210,
+        "name": "Aeon's End: Splitter-Geschoss Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 472332,
+        "name": "Aeon's End: System Overload"
+      },
+      {
+        "type": "bgg",
+        "id": 222126,
+        "name": "Aeon's End: Tabletop Day 2017 Promos – Drown in Flames / Glyph Enigma"
+      },
+      {
+        "type": "bgg",
+        "id": 420143,
+        "name": "Aeon's End: Tales of Old Gravehold"
+      },
+      {
+        "type": "bgg",
+        "id": 420158,
+        "name": "Aeon's End: The Abyss"
+      },
+      {
+        "type": "bgg",
+        "id": 274922,
+        "name": "Aeon's End: The Ancients"
+      },
+      {
+        "type": "bgg",
+        "id": 420141,
+        "name": "Aeon's End: The Caverns"
+      },
+      {
+        "type": "bgg",
+        "id": 472343,
+        "name": "Aeon's End: The Cinderkeep"
+      },
+      {
+        "type": "bgg",
+        "id": 196421,
+        "name": "Aeon's End: The Depths"
+      },
+      {
+        "type": "bgg",
+        "id": 412268,
+        "name": "Aeon's End: The Descent"
+      },
+      {
+        "type": "bgg",
+        "id": 212139,
+        "name": "Aeon's End: The Nameless"
+      },
+      {
+        "type": "bgg",
+        "id": 270633,
+        "name": "Aeon's End: The New Age"
+      },
+      {
+        "type": "bgg",
+        "id": 287915,
+        "name": "Aeon's End: The New Age – Promo Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 228552,
+        "name": "Aeon's End: The Outer Dark"
+      },
+      {
+        "type": "bgg",
+        "id": 469508,
+        "name": "Aeon's End: The Surface"
+      },
+      {
+        "type": "bgg",
+        "id": 223914,
+        "name": "Aeon's End: The Void"
+      },
+      {
+        "type": "bgg",
+        "id": 472342,
+        "name": "Aeon's End: The Wastes"
+      },
+      {
+        "type": "bgg",
+        "id": 244236,
+        "name": "Aeon's End: Thieving Spirit Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 218417,
+        "name": "Aeon's End: War Eternal"
+      },
+      {
+        "type": "bgg",
+        "id": 278956,
+        "name": "Aeon's End: War Eternal – Promo Pack"
+      }
+    ],
+    "boardgame-time-stories": [
+      {
+        "type": "bgg",
+        "id": 146508,
+        "name": "T.I.M.E Stories"
+      },
+      {
+        "type": "bgg",
+        "id": 189035,
+        "name": "T.I.M.E Stories: A Prophecy of Dragons"
+      },
+      {
+        "type": "bgg",
+        "id": 195752,
+        "name": "T.I.M.E Stories: Beacon Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 220839,
+        "name": "T.I.M.E Stories: Brotherhood of the Coast"
+      },
+      {
+        "type": "bgg",
+        "id": 220836,
+        "name": "T.I.M.E Stories: Estrella Drive"
+      },
+      {
+        "type": "bgg",
+        "id": 193527,
+        "name": "T.I.M.E Stories: Expedition – Endurance"
+      },
+      {
+        "type": "bgg",
+        "id": 213099,
+        "name": "T.I.M.E Stories: Lumen Fidei"
+      },
+      {
+        "type": "bgg",
+        "id": 266217,
+        "name": "T.I.M.E Stories: Madame"
+      },
+      {
+        "type": "bgg",
+        "id": 233253,
+        "name": "T.I.M.E Stories: Santo Tomás de Aquino"
+      },
+      {
+        "type": "bgg",
+        "id": 213295,
+        "name": "T.I.M.E Stories: Special Reward promo"
+      },
+      {
+        "type": "bgg",
+        "id": 180585,
+        "name": "T.I.M.E Stories: The Marcy Case"
+      },
+      {
+        "type": "bgg",
+        "id": 189686,
+        "name": "T.I.M.E Stories: Under the Mask"
+      },
+      {
+        "type": "bgg",
+        "id": 271524,
+        "name": "TIME Stories Revolution: A Midsummer Night"
+      },
+      {
+        "type": "bgg",
+        "id": 295480,
+        "name": "TIME Stories Revolution: Cavendish"
+      },
+      {
+        "type": "bgg",
+        "id": 286154,
+        "name": "TIME Stories Revolution: Damien 1958 NT"
+      },
+      {
+        "type": "bgg",
+        "id": 284819,
+        "name": "TIME Stories Revolution: Experience"
+      }
+    ],
+    "boardgame-hero-realms": [
+      {
+        "type": "bgg",
+        "id": 198994,
+        "name": "Hero Realms"
+      },
+      {
+        "type": "bgg",
+        "id": 378136,
+        "name": "Hero Realms Dungeons"
+      },
+      {
+        "type": "bgg",
+        "id": 203982,
+        "name": "Hero Realms: 5 Magic Item Treasure Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 318691,
+        "name": "Hero Realms: 5 Personaggi – Chierico, Guerriero, Ladro, Mago, Ranger"
+      },
+      {
+        "type": "bgg",
+        "id": 379129,
+        "name": "Hero Realms: Adventure Deck – Bard"
+      },
+      {
+        "type": "bgg",
+        "id": 379116,
+        "name": "Hero Realms: Adventure Deck – Cleric"
+      },
+      {
+        "type": "bgg",
+        "id": 379128,
+        "name": "Hero Realms: Adventure Deck – Druid"
+      },
+      {
+        "type": "bgg",
+        "id": 379120,
+        "name": "Hero Realms: Adventure Deck – Fighter"
+      },
+      {
+        "type": "bgg",
+        "id": 379126,
+        "name": "Hero Realms: Adventure Deck – Monk"
+      },
+      {
+        "type": "bgg",
+        "id": 379127,
+        "name": "Hero Realms: Adventure Deck – Necromancer"
+      },
+      {
+        "type": "bgg",
+        "id": 379125,
+        "name": "Hero Realms: Adventure Deck – Ranger"
+      },
+      {
+        "type": "bgg",
+        "id": 379124,
+        "name": "Hero Realms: Adventure Deck – Thief"
+      },
+      {
+        "type": "bgg",
+        "id": 379118,
+        "name": "Hero Realms: Adventure Deck – Wizard"
+      },
+      {
+        "type": "bgg",
+        "id": 308184,
+        "name": "Hero Realms: Adventure Storage Box"
+      },
+      {
+        "type": "bgg",
+        "id": 265272,
+        "name": "Hero Realms: Ancestry"
+      },
+      {
+        "type": "bgg",
+        "id": 202865,
+        "name": "Hero Realms: Bloodfang Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 202102,
+        "name": "Hero Realms: Boss Deck – Lich"
+      },
+      {
+        "type": "bgg",
+        "id": 202101,
+        "name": "Hero Realms: Boss Deck – The Dragon"
+      },
+      {
+        "type": "bgg",
+        "id": 203075,
+        "name": "Hero Realms: Centurion Promo & 4 Legionnaire Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 379058,
+        "name": "Hero Realms: Character Pack – Bard"
+      },
+      {
+        "type": "bgg",
+        "id": 202103,
+        "name": "Hero Realms: Character Pack – Cleric"
+      },
+      {
+        "type": "bgg",
+        "id": 379059,
+        "name": "Hero Realms: Character Pack – Druid"
+      },
+      {
+        "type": "bgg",
+        "id": 202104,
+        "name": "Hero Realms: Character Pack – Fighter"
+      },
+      {
+        "type": "bgg",
+        "id": 379060,
+        "name": "Hero Realms: Character Pack – Monk"
+      },
+      {
+        "type": "bgg",
+        "id": 379061,
+        "name": "Hero Realms: Character Pack – Necromancer"
+      },
+      {
+        "type": "bgg",
+        "id": 202105,
+        "name": "Hero Realms: Character Pack – Ranger"
+      },
+      {
+        "type": "bgg",
+        "id": 202106,
+        "name": "Hero Realms: Character Pack – Thief"
+      },
+      {
+        "type": "bgg",
+        "id": 202107,
+        "name": "Hero Realms: Character Pack – Wizard"
+      },
+      {
+        "type": "bgg",
+        "id": 219505,
+        "name": "Hero Realms: Contract Negotiation Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 204140,
+        "name": "Hero Realms: Droga, Guild Enforcer Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 204114,
+        "name": "Hero Realms: Galok, the Vile Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 202868,
+        "name": "Hero Realms: Gorg, Orc Shaman Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 309919,
+        "name": "Hero Realms: Hydra Boss Challenge"
+      },
+      {
+        "type": "bgg",
+        "id": 337388,
+        "name": "Hero Realms: Imperial Justice Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 265274,
+        "name": "Hero Realms: Journeys – Conquest"
+      },
+      {
+        "type": "bgg",
+        "id": 265275,
+        "name": "Hero Realms: Journeys – Discovery"
+      },
+      {
+        "type": "bgg",
+        "id": 265271,
+        "name": "Hero Realms: Journeys – Hunters"
+      },
+      {
+        "type": "bgg",
+        "id": 308183,
+        "name": "Hero Realms: Journeys – Kickstarter Promo Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 265273,
+        "name": "Hero Realms: Journeys – Travelers"
+      },
+      {
+        "type": "bgg",
+        "id": 331233,
+        "name": "Hero Realms: Kickstarter Promo Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 221254,
+        "name": "Hero Realms: Legion Cardbox"
+      },
+      {
+        "type": "bgg",
+        "id": 202867,
+        "name": "Hero Realms: Necromancer Promo & 4 Zombie Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 398161,
+        "name": "Hero Realms: Parsons the Insider Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 372689,
+        "name": "Hero Realms: Pay Off Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 202866,
+        "name": "Hero Realms: Ren, Bounty Hunter Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 372690,
+        "name": "Hero Realms: Tanat the Outcast Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 341290,
+        "name": "Hero Realms: Tarnos, the Betrayer Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 265270,
+        "name": "Hero Realms: The Lost Village Campaign Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 202100,
+        "name": "Hero Realms: The Ruin of Thandar Campaign Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 203499,
+        "name": "Hero Realms: Tibus, Guild Lord Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 203887,
+        "name": "Hero Realms: Valius, Fire Dragon Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 379113,
+        "name": "Hero Realms: Watery Grave Campaign Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 202099,
+        "name": "Hero Realms: Year One Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 400622,
+        "name": "Битвы героев: Странствия (Hero Realms: Journeys)"
+      }
+    ],
+    "boardgame-tainted-grail": [
+      {
+        "type": "bgg",
+        "id": 264220,
+        "name": "Tainted Grail: The Fall of Avalon"
+      },
+      {
+        "type": "bgg",
+        "id": 274795,
+        "name": "Tainted Grail: Age of Legends & Last Knight Campaigns"
+      },
+      {
+        "type": "bgg",
+        "id": 297996,
+        "name": "Tainted Grail: Forever Autumn Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 355872,
+        "name": "Tainted Grail: Item Sets Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 360366,
+        "name": "Tainted Grail: Kings of Ruin"
+      },
+      {
+        "type": "bgg",
+        "id": 420045,
+        "name": "Tainted Grail: Kings of Ruin – Into the Mists"
+      },
+      {
+        "type": "bgg",
+        "id": 405800,
+        "name": "Tainted Grail: Kings of Ruin – Treasure Seeker Promo Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 371486,
+        "name": "Tainted Grail: Kings of Ruin (Gamefound Edition)"
+      },
+      {
+        "type": "bgg",
+        "id": 308105,
+        "name": "Tainted Grail: Past And Future Alternative Encounters Card Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 386803,
+        "name": "Tainted Grail: Story Dice Expansion"
+      },
+      {
+        "type": "bgg",
+        "id": 267325,
+        "name": "Tainted Grail: The Fall of Avalon – Echoes of the Past"
+      },
+      {
+        "type": "bgg",
+        "id": 266659,
+        "name": "Tainted Grail: The Fall of Avalon – Niamh"
+      },
+      {
+        "type": "bgg",
+        "id": 267408,
+        "name": "Tainted Grail: The Fall of Avalon – Red Death Expansion"
+      },
+      {
+        "type": "bgg",
+        "id": 321718,
+        "name": "Tainted Grail: The Fall of Avalon – War Runes"
+      }
+    ],
+    "boardgame-pathfinder-acg": [
+      {
+        "type": "bgg",
+        "id": 133038,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Base Set"
+      },
+      {
+        "type": "bgg",
+        "id": 237632,
+        "name": "Pathfinder Adventure Card Game: \"Edér\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 206316,
+        "name": "Pathfinder Adventure Card Game: \"Goblin Golem of Obsidian\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 260486,
+        "name": "Pathfinder Adventure Card Game: \"Nok-Nok\" Promo Character Card Set"
+      },
+      {
+        "type": "bgg",
+        "id": 237649,
+        "name": "Pathfinder Adventure Card Game: \"Pallegina\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 151010,
+        "name": "Pathfinder Adventure Card Game: Character Mats"
+      },
+      {
+        "type": "bgg",
+        "id": 181609,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Alchemist"
+      },
+      {
+        "type": "bgg",
+        "id": 178670,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Barbarian"
+      },
+      {
+        "type": "bgg",
+        "id": 161435,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Bard"
+      },
+      {
+        "type": "bgg",
+        "id": 161437,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Cleric"
+      },
+      {
+        "type": "bgg",
+        "id": 178207,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Druid"
+      },
+      {
+        "type": "bgg",
+        "id": 161438,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Fighter"
+      },
+      {
+        "type": "bgg",
+        "id": 196544,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Goblins Burn!"
+      },
+      {
+        "type": "bgg",
+        "id": 193387,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Goblins Fight!"
+      },
+      {
+        "type": "bgg",
+        "id": 193386,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Gunslinger"
+      },
+      {
+        "type": "bgg",
+        "id": 230989,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Hunter"
+      },
+      {
+        "type": "bgg",
+        "id": 184172,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Inquisitor"
+      },
+      {
+        "type": "bgg",
+        "id": 230986,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Magus"
+      },
+      {
+        "type": "bgg",
+        "id": 176155,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Monk"
+      },
+      {
+        "type": "bgg",
+        "id": 180729,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Oracle"
+      },
+      {
+        "type": "bgg",
+        "id": 174667,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Paladin"
+      },
+      {
+        "type": "bgg",
+        "id": 161439,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Ranger"
+      },
+      {
+        "type": "bgg",
+        "id": 161440,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Rogue"
+      },
+      {
+        "type": "bgg",
+        "id": 161441,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Sorcerer"
+      },
+      {
+        "type": "bgg",
+        "id": 217385,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Summoner"
+      },
+      {
+        "type": "bgg",
+        "id": 197483,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Warpriest"
+      },
+      {
+        "type": "bgg",
+        "id": 193385,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Witch"
+      },
+      {
+        "type": "bgg",
+        "id": 161442,
+        "name": "Pathfinder Adventure Card Game: Class Deck – Wizard"
+      },
+      {
+        "type": "bgg",
+        "id": 271060,
+        "name": "Pathfinder Adventure Card Game: Core Set"
+      },
+      {
+        "type": "bgg",
+        "id": 286212,
+        "name": "Pathfinder Adventure Card Game: Core Set – Corpse Plate promo card"
+      },
+      {
+        "type": "bgg",
+        "id": 271061,
+        "name": "Pathfinder Adventure Card Game: Curse of the Crimson Throne Adventure Path"
+      },
+      {
+        "type": "bgg",
+        "id": 283557,
+        "name": "Pathfinder Adventure Card Game: Embiggen"
+      },
+      {
+        "type": "bgg",
+        "id": 230987,
+        "name": "Pathfinder Adventure Card Game: Hell's Vengeance Character Deck 1"
+      },
+      {
+        "type": "bgg",
+        "id": 230988,
+        "name": "Pathfinder Adventure Card Game: Hell's Vengeance Character Deck 2"
+      },
+      {
+        "type": "bgg",
+        "id": 216965,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Blessing of Khepri\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 220286,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Dance of the Dead\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 213313,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Hypogeum\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 210675,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Miau Pakhet\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 218276,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Mummify Self\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 215127,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Portable Sarcophagus\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 231312,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Reepazo\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 206314,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Reta Bigbad\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 224394,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Ring of Rejection\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 224395,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – \"Sistrum of Bastet\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 202141,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Adventure Deck 2: Empty Graves"
+      },
+      {
+        "type": "bgg",
+        "id": 203340,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Adventure Deck 3: Shifting Sands"
+      },
+      {
+        "type": "bgg",
+        "id": 203343,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Adventure Deck 4: Secrets of the Sphinx"
+      },
+      {
+        "type": "bgg",
+        "id": 209110,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Adventure Deck 5: The Slave Trenches of Hakotep"
+      },
+      {
+        "type": "bgg",
+        "id": 209111,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Adventure Deck 6: Pyramid of the Sky Pharaoh"
+      },
+      {
+        "type": "bgg",
+        "id": 187687,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Base Set"
+      },
+      {
+        "type": "bgg",
+        "id": 202140,
+        "name": "Pathfinder Adventure Card Game: Mummy's Mask – Character Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 230990,
+        "name": "Pathfinder Adventure Card Game: Occult Adventures Character Deck 1"
+      },
+      {
+        "type": "bgg",
+        "id": 230991,
+        "name": "Pathfinder Adventure Card Game: Occult Adventures Character Deck 2"
+      },
+      {
+        "type": "bgg",
+        "id": 230985,
+        "name": "Pathfinder Adventure Card Game: Pathfinder Tales Character Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 150070,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Birdcruncher Crown\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149758,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Blessing of Zarongel\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149926,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Dance With Squealy Nord\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 146631,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Fire Sneeze\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 150072,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Goblin Plate +1\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149924,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Grindylow\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149925,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Horsechopper +1\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 146632,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Poog of Zarongel\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 202139,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – \"Tup\" Promo Character Card Set"
+      },
+      {
+        "type": "bgg",
+        "id": 142423,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Adventure Deck 2: The Skinsaw Murders"
+      },
+      {
+        "type": "bgg",
+        "id": 144873,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Adventure Deck 3: The Hook Mountain Massacre"
+      },
+      {
+        "type": "bgg",
+        "id": 149261,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Adventure Deck 4: Fortress of the Stone Giants"
+      },
+      {
+        "type": "bgg",
+        "id": 150074,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Adventure Deck 5: Sins of the Saviors"
+      },
+      {
+        "type": "bgg",
+        "id": 150798,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Adventure Deck 6: Spires of Xin-Shalast"
+      },
+      {
+        "type": "bgg",
+        "id": 139037,
+        "name": "Pathfinder Adventure Card Game: Rise of the Runelords – Character Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 166570,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Blessing of Zogmugot\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163017,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Goblin Buckler Gun\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163012,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Goblin Keelhaulin' \" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 173076,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Goblin Lockpick\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163014,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Goblin Pegleg\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163010,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Goblin Weidling\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163015,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Magpie Princess\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163016,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Mistmourn\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163011,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Mogmurch\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 163013,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Owlbeartross\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 157992,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Ranzak\" Promo Character Card Set"
+      },
+      {
+        "type": "bgg",
+        "id": 173682,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"The Land of the Blind\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 173077,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – \"Vomit Twin\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 151007,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – Base Set"
+      },
+      {
+        "type": "bgg",
+        "id": 151008,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles – Character Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 157991,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles Adventure Deck 2 – Raiders of the Fever Sea"
+      },
+      {
+        "type": "bgg",
+        "id": 159038,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles Adventure Deck 3 – Tempest Rising"
+      },
+      {
+        "type": "bgg",
+        "id": 160589,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles Adventure Deck 4 –  Island of Empty Eyes"
+      },
+      {
+        "type": "bgg",
+        "id": 161434,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles Adventure Deck 5 – The Price of Infamy"
+      },
+      {
+        "type": "bgg",
+        "id": 162870,
+        "name": "Pathfinder Adventure Card Game: Skull & Shackles Adventure Deck 6 – From Hell's Heart"
+      },
+      {
+        "type": "bgg",
+        "id": 238458,
+        "name": "Pathfinder Adventure Card Game: Ultimate  Equipment Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 236381,
+        "name": "Pathfinder Adventure Card Game: Ultimate Combat Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 236382,
+        "name": "Pathfinder Adventure Card Game: Ultimate Intrigue Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 236383,
+        "name": "Pathfinder Adventure Card Game: Ultimate Magic Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 241493,
+        "name": "Pathfinder Adventure Card Game: Ultimate Wilderness Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 186146,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Blast Vortex\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 186147,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Blessing of Terendelev\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 178412,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Chuffy Lickwound\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 173795,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Ekkie\" Promo Character Card Set"
+      },
+      {
+        "type": "bgg",
+        "id": 180998,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Goblin Skull Bomb\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 185986,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Improvised Dinosaur\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 182774,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Pig From Hell\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 179360,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Sweet Dragon Costume\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 178413,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Temptation of Big Die\" Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 183039,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – \"Valais Durant\" Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 169416,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – Base Set"
+      },
+      {
+        "type": "bgg",
+        "id": 170960,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous – Character Add-On Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 171818,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous Adventure Deck 2 – Sword of Valor"
+      },
+      {
+        "type": "bgg",
+        "id": 172649,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous Adventure Deck 3 – Demon's Heresy"
+      },
+      {
+        "type": "bgg",
+        "id": 174782,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous Adventure Deck 4 – The Midnight Isles"
+      },
+      {
+        "type": "bgg",
+        "id": 176188,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous Adventure Deck 5 – Herald of the Ivory Labyrinth"
+      },
+      {
+        "type": "bgg",
+        "id": 177508,
+        "name": "Pathfinder Adventure Card Game: Wrath of the Righteous Adventure Deck 6 – City of Locusts"
+      }
+    ],
+    "boardgame-ascension": [
+      {
+        "type": "bgg",
+        "id": 69789,
+        "name": "Ascension: Deckbuilding Game"
+      },
+      {
+        "type": "bgg",
+        "id": 423691,
+        "name": "Ascension Legends"
+      },
+      {
+        "type": "bgg",
+        "id": 378574,
+        "name": "Ascension Tactics: Inferno"
+      },
+      {
+        "type": "bgg",
+        "id": 304531,
+        "name": "Ascension Tactics: Miniatures Deckbuilding Game"
+      },
+      {
+        "type": "bgg",
+        "id": 405836,
+        "name": "Ascension Tactics: Miniatures Deckbuilding Game – Voidkin T'valemos Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 200456,
+        "name": "Ascension X: War of Shadows"
+      },
+      {
+        "type": "bgg",
+        "id": 203110,
+        "name": "Ascension X: War of Shadows – Chaos Rider"
+      },
+      {
+        "type": "bgg",
+        "id": 474938,
+        "name": "Ascension X: War of Shadows Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 341554,
+        "name": "Ascension Year Six Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 452493,
+        "name": "Ascension: 15th Anniversary Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 452723,
+        "name": "Ascension: 15th Anniversary Promo Pack"
+      },
+      {
+        "type": "bgg",
+        "id": 480732,
+        "name": "Ascension: 4th Edition Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 227645,
+        "name": "Ascension: Alliances"
+      },
+      {
+        "type": "bgg",
+        "id": 145633,
+        "name": "Ascension: Apprentice Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 179427,
+        "name": "Ascension: Archival Expert Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 183644,
+        "name": "Ascension: Cetra, Benefactor of All Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 307491,
+        "name": "Ascension: Chamber of Drunken Monks Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 141254,
+        "name": "Ascension: Chronicle of the Godslayer – Big Bad Bunny Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149559,
+        "name": "Ascension: Chronicle of the Godslayer – Constricting Horror Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 109064,
+        "name": "Ascension: Chronicle of the Godslayer – Control Room Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 96361,
+        "name": "Ascension: Chronicle of the Godslayer – Deep Drone Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 156393,
+        "name": "Ascension: Chronicle of the Godslayer – Defender of Vigil Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 151851,
+        "name": "Ascension: Chronicle of the Godslayer – Disciple of Sadranis Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 161215,
+        "name": "Ascension: Chronicle of the Godslayer – Eye of Potential Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 148347,
+        "name": "Ascension: Chronicle of the Godslayer – Eye of the Serpent Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 156394,
+        "name": "Ascension: Chronicle of the Godslayer – Foul Replicant Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 103260,
+        "name": "Ascension: Chronicle of the Godslayer – Journeyman Sage Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 158263,
+        "name": "Ascension: Chronicle of the Godslayer – N.I.N.E. Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 103574,
+        "name": "Ascension: Chronicle of the Godslayer – Nethersnare Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 148345,
+        "name": "Ascension: Chronicle of the Godslayer – Ogo Tracker Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 92090,
+        "name": "Ascension: Chronicle of the Godslayer – Pathwarden Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 141256,
+        "name": "Ascension: Chronicle of the Godslayer – Shuffletron 2K13 Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 148346,
+        "name": "Ascension: Chronicle of the Godslayer – The Looking Glass Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 158262,
+        "name": "Ascension: Chronicle of the Godslayer – Vault of the Askara Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 88487,
+        "name": "Ascension: Chronicle of the Godslayer – Vedah, Sage of Swords Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 104410,
+        "name": "Ascension: Chronicle of the Godslayer – Void Mesmer Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 113387,
+        "name": "Ascension: Chronicle of the Godslayer – Vortex Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 312958,
+        "name": "Ascension: Curse of the Golden Isles"
+      },
+      {
+        "type": "bgg",
+        "id": 474944,
+        "name": "Ascension: Curse of the Golden Isles Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 144864,
+        "name": "Ascension: Darkness Unleashed"
+      },
+      {
+        "type": "bgg",
+        "id": 147173,
+        "name": "Ascension: Darkness Unleashed – Covetous Kraken Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 150428,
+        "name": "Ascension: Darkness Unleashed – Tower of Ascendancy"
+      },
+      {
+        "type": "bgg",
+        "id": 474934,
+        "name": "Ascension: Darkness Unleashed Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 149633,
+        "name": "Ascension: David, Prophetic Guide Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 172155,
+        "name": "Ascension: Dawn of Champions"
+      },
+      {
+        "type": "bgg",
+        "id": 180815,
+        "name": "Ascension: Dawn of Champions – Rys, Dark Muse Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 474936,
+        "name": "Ascension: Dawn of Champions Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 360257,
+        "name": "Ascension: Deckbuilding Game – Collector's Case Champion Cards"
+      },
+      {
+        "type": "bgg",
+        "id": 451640,
+        "name": "Ascension: Deckbuilding Game – Stone Blade Templar Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 249552,
+        "name": "Ascension: Delirium"
+      },
+      {
+        "type": "bgg",
+        "id": 278221,
+        "name": "Ascension: Delirium – Askara Templar Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 469366,
+        "name": "Ascension: Delirium Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 261321,
+        "name": "Ascension: Deliverance"
+      },
+      {
+        "type": "bgg",
+        "id": 278008,
+        "name": "Ascension: Deliverance – Vezra'Tull, The Voidwyrm Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 474940,
+        "name": "Ascension: Deliverance Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 185123,
+        "name": "Ascension: Dreamscape"
+      },
+      {
+        "type": "bgg",
+        "id": 207462,
+        "name": "Ascension: Dreamscape – Nova, Born of Chaos Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 469545,
+        "name": "Ascension: Dreamscape Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 308755,
+        "name": "Ascension: Eternal"
+      },
+      {
+        "type": "bgg",
+        "id": 164090,
+        "name": "Ascension: Eternal Tormentor Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 165511,
+        "name": "Ascension: Explosive Swarm Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 161002,
+        "name": "Ascension: Forrest, Beastwarden Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 325810,
+        "name": "Ascension: Fourth Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 307490,
+        "name": "Ascension: Gian, Lord of Fall Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 215616,
+        "name": "Ascension: Gift of the Elements"
+      },
+      {
+        "type": "bgg",
+        "id": 254375,
+        "name": "Ascension: Gift of the Elements – Lirys, Skirmish Seer Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 474930,
+        "name": "Ascension: Gift of the Elements Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 169758,
+        "name": "Ascension: Hedron Dreidel"
+      },
+      {
+        "type": "bgg",
+        "id": 122294,
+        "name": "Ascension: Immortal Heroes"
+      },
+      {
+        "type": "bgg",
+        "id": 129389,
+        "name": "Ascension: Immortal Heroes – Arha Sanctuary Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 474933,
+        "name": "Ascension: Immortal Heroes Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 474945,
+        "name": "Ascension: Legends Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 179428,
+        "name": "Ascension: Lunar Matriarch Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 151875,
+        "name": "Ascension: Michelle, Star Oracle Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 143991,
+        "name": "Ascension: Miles, Golden Prodigy Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 183645,
+        "name": "Ascension: Nyxian Corruptor Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 157026,
+        "name": "Ascension: Realms Unraveled"
+      },
+      {
+        "type": "bgg",
+        "id": 359610,
+        "name": "Ascension: Realms Unraveled – Oziah's Familiar Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 474929,
+        "name": "Ascension: Realms Unraveled Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 95064,
+        "name": "Ascension: Return of the Fallen"
+      },
+      {
+        "type": "bgg",
+        "id": 101513,
+        "name": "Ascension: Return of the Fallen – Kythis, the Gatekeeper Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 474928,
+        "name": "Ascension: Return of the Fallen Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 138233,
+        "name": "Ascension: Rise of Vigil"
+      },
+      {
+        "type": "bgg",
+        "id": 146607,
+        "name": "Ascension: Rise of Vigil – Ethereal Huntress Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 141045,
+        "name": "Ascension: Rise of Vigil – Lotus Siren Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 149080,
+        "name": "Ascension: Rise of Vigil – Mistress of Blades Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 142625,
+        "name": "Ascension: Rise of Vigil – Mudfin Angler Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 142624,
+        "name": "Ascension: Rise of Vigil – Raving Prophet Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 143812,
+        "name": "Ascension: Rise of Vigil – Tinkering Monk Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 474935,
+        "name": "Ascension: Rise of Vigil Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 183646,
+        "name": "Ascension: Sadistic Laboratory Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 207457,
+        "name": "Ascension: Shadow Piercer Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 271064,
+        "name": "Ascension: Skulls & Sails"
+      },
+      {
+        "type": "bgg",
+        "id": 469547,
+        "name": "Ascension: Skulls & Sails Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 278273,
+        "name": "Ascension: Skulls and Sails – Honorless Thief Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 108784,
+        "name": "Ascension: Storm of Souls"
+      },
+      {
+        "type": "bgg",
+        "id": 117836,
+        "name": "Ascension: Storm of Souls – Askara of Fortune Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 125923,
+        "name": "Ascension: Storm of Souls – Assimilation Plant Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 123077,
+        "name": "Ascension: Storm of Souls – Cetra, Guide of Ogo Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 128913,
+        "name": "Ascension: Storm of Souls – Cobra, the Sordid Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 123502,
+        "name": "Ascension: Storm of Souls – Ender of Days Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 122874,
+        "name": "Ascension: Storm of Souls – Hedron Flare Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 128912,
+        "name": "Ascension: Storm of Souls – Moon Staff Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 119437,
+        "name": "Ascension: Storm of Souls – Ring of Life Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 114448,
+        "name": "Ascension: Storm of Souls – Soul Collector Promo"
+      },
+      {
+        "type": "bgg",
+        "id": 474931,
+        "name": "Ascension: Storm of Souls Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 207460,
+        "name": "Ascension: Storm's Eye Monk Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 307489,
+        "name": "Ascension: Talya, The Decider Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 164089,
+        "name": "Ascension: Temporal Excavator Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 180805,
+        "name": "Ascension: Theme Pack – Cupid Cultist"
+      },
+      {
+        "type": "bgg",
+        "id": 103262,
+        "name": "Ascension: Theme Pack – Leprechaun"
+      },
+      {
+        "type": "bgg",
+        "id": 235547,
+        "name": "Ascension: Theme Pack – Portals"
+      },
+      {
+        "type": "bgg",
+        "id": 86663,
+        "name": "Ascension: Theme Pack – Rat King"
+      },
+      {
+        "type": "bgg",
+        "id": 125922,
+        "name": "Ascension: Theme Pack – Rat Queen"
+      },
+      {
+        "type": "bgg",
+        "id": 135160,
+        "name": "Ascension: Theme Pack – Samael Claus"
+      },
+      {
+        "type": "bgg",
+        "id": 314544,
+        "name": "Ascension: Turzan, Lion of Uzkara"
+      },
+      {
+        "type": "bgg",
+        "id": 245050,
+        "name": "Ascension: Ultimate Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 224717,
+        "name": "Ascension: Valley Guardian Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 230273,
+        "name": "Ascension: Valley of the Ancients"
+      },
+      {
+        "type": "bgg",
+        "id": 240739,
+        "name": "Ascension: Valley of the Ancients – Project Beta Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 474937,
+        "name": "Ascension: Valley of the Ancients Center Deck"
+      },
+      {
+        "type": "bgg",
+        "id": 307488,
+        "name": "Ascension: Wave Tyrant Promo Card"
+      },
+      {
+        "type": "bgg",
+        "id": 261588,
+        "name": "Ascension: Year Five Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 241203,
+        "name": "Ascension: Year Four Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 158976,
+        "name": "Ascension: Year One Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 452492,
+        "name": "Ascension: Year Seven Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 213788,
+        "name": "Ascension: Year Three Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 180616,
+        "name": "Ascension: Year Two Collector's Edition"
+      },
+      {
+        "type": "bgg",
+        "id": 469458,
+        "name": "The Lord of the Rings: The Two Towers – Ascension"
       }
     ]
   }

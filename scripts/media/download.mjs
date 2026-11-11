@@ -304,6 +304,51 @@ const adapters = {
     return items;
   },
   /**
+   * BoardGameGeek 이미지 갤러리(보드게임 상자·구성물·플레이 사진). 갤러리 한 쪽(50장)씩 받고,
+   * 이미지마다 원본 해상도 주소를 다시 물어 받습니다.
+   */
+  async bgg(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA };
+    const api = 'https://api.geekdo.com/api';
+    const list = await (
+      await politeFetch(
+        `${api}/images?ajax=1&gallery=all&nosession=1&objectid=${source.id}&objecttype=thing&pageid=${page}&showcount=50&size=original&sort=hot`,
+        { headers },
+      )
+    ).json();
+    const images = list.images ?? [];
+    if (!images.length) return null;
+    const items = [];
+    for (const image of images) {
+      let url = image.imageurl_lg;
+      try {
+        const detail = await (
+          await politeFetch(`${api}/images/${image.imageid}`, { headers })
+        ).json();
+        url = detail.images?.original?.url ?? url;
+      } catch {
+        // 원본 주소를 못 얻으면 큰 크기(1024px)로 받습니다.
+      }
+      if (!url) continue;
+      items.push({
+        key: `bgg-${image.imageid}`,
+        fileUrl: url,
+        ext: extensionOf(url),
+        size: null,
+        width: 0,
+        height: 0,
+        rating: null,
+        official: true,
+        tags: [],
+        page: `https://boardgamegeek.com/image/${image.imageid}`,
+        origin: `${source.name ?? source.id}${image.caption ? ` — ${image.caption}` : ''}`,
+        author: image.user?.username ?? null,
+        headers,
+      });
+    }
+    return items;
+  },
+  /**
    * 네이버 웹툰: 1쪽에서 작품 포스터, 그 뒤로 회차 목록 쪽마다 회차 대표 이미지(썸네일)를 받습니다.
    * 회차 본문 원고는 받지 않습니다.
    */
