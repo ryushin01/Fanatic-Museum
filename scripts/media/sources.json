@@ -2990,6 +2990,108 @@
         "id": 469458,
         "name": "The Lord of the Rings: The Two Towers – Ascension"
       }
+    ],
+    "boardgame-dorasure": [
+      {
+        "type": "bgg",
+        "id": 169513,
+        "name": "Dorasure"
+      },
+      {
+        "type": "bgg",
+        "id": 219567,
+        "name": "Dorasure: Guardian of Magic Dragon"
+      },
+      {
+        "type": "bgg",
+        "id": 254092,
+        "name": "Dorasure: Yggdrasil"
+      },
+      {
+        "type": "bgg",
+        "id": 366440,
+        "name": "Dorasure: Another World Dream Knights"
+      },
+      {
+        "type": "bgg",
+        "id": 204983,
+        "name": "Dorasure Blades of the Empire"
+      },
+      {
+        "type": "bgg",
+        "id": 177532,
+        "name": "Dorasure Fang"
+      },
+      {
+        "type": "bgg",
+        "id": 177530,
+        "name": "Dorasure Grand Master"
+      },
+      {
+        "type": "bgg",
+        "id": 177529,
+        "name": "Dorasure Mincas"
+      },
+      {
+        "type": "bgg",
+        "id": 177531,
+        "name": "Dorasure SS"
+      },
+      {
+        "type": "bgg",
+        "id": 425669,
+        "name": "Dorasure: Battle in the Imperial Capital Octavia"
+      },
+      {
+        "type": "bgg",
+        "id": 425707,
+        "name": "Dorasure: EXTeRA"
+      },
+      {
+        "type": "bgg",
+        "id": 199178,
+        "name": "Dorasure: Gemeos Imperial Travelogue"
+      },
+      {
+        "type": "bgg",
+        "id": 425705,
+        "name": "Dorasure: Heritage"
+      },
+      {
+        "type": "bgg",
+        "id": 425706,
+        "name": "Dorasure: Little Great Adventure"
+      },
+      {
+        "type": "bgg",
+        "id": 301316,
+        "name": "Dorasure: Map Expansion Sky Archipelago Tormente"
+      },
+      {
+        "type": "bgg",
+        "id": 425668,
+        "name": "Dorasure: Memories of the Automata"
+      },
+      {
+        "type": "bgg",
+        "id": 425583,
+        "name": "Dorasure: Strangers"
+      },
+      {
+        "type": "bgg",
+        "id": 461826,
+        "name": "Dorasure: Tenryu Kitan Amenomiya"
+      },
+      {
+        "type": "bgg",
+        "id": 461827,
+        "name": "Dorasure: Witches of Futuresight"
+      },
+      {
+        "type": "bgg",
+        "id": 366439,
+        "name": "Dorasure Mincas: Another World Trio De Undeads"
+      }
     ]
   }
 }
