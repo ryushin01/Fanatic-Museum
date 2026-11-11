@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import { works } from '../src/entities/work/model/works';
+
+const byLeeYoungDo = works.filter((w) => w.creators.some((c) => c.name === '이영도')).length;
+const plasticModels = works.filter((w) =>
+  (w.categories as readonly string[]).includes('plastic-model'),
+).length;
+
 test('본문 바로가기 링크가 첫 초점을 받고 본문으로 이동한다', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium');
   await page.goto('/');
@@ -24,11 +31,11 @@ test('홈에서 소장품을 눌러 상세로 가고, 이전·다음으로 오�
 test('소장품 찾기: 검색과 분류를 주소에 남기고, 새로 고쳐도 유지된다', async ({ page }) => {
   await page.goto('/works');
   await page.getByRole('searchbox', { name: '소장품 찾기' }).fill('이영도');
-  await expect(page.getByRole('status')).toHaveText(/가운데 2점/);
+  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${byLeeYoungDo}점`));
   await expect(page).toHaveURL(/q=/);
   await page.reload();
   await expect(page.getByRole('searchbox', { name: '소장품 찾기' })).toHaveValue('이영도');
-  await expect(page.getByRole('status')).toHaveText(/가운데 2점/);
+  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${byLeeYoungDo}점`));
 
   await page.getByRole('button', { name: '조건 모두 지우기' }).click();
   await page.getByRole('button', { name: '프라모델' }).click();
@@ -36,7 +43,7 @@ test('소장품 찾기: 검색과 분류를 주소에 남기고, 새로 고쳐�
     'aria-pressed',
     'true',
   );
-  await expect(page.getByRole('status')).toHaveText(/가운데 2점/);
+  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${plasticModels}점`));
 });
 
 test('홈 전시 띠를 버튼으로 넘긴다', async ({ page }) => {
@@ -62,4 +69,11 @@ test('카테고리 탭은 지금 카테고리를 aria-current로 알린다', asy
 test('없는 주소는 404 안내를 보여 준다', async ({ page }) => {
   await page.goto('/works/does-not-exist');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('전시실을 찾을 수 없습니다');
+});
+
+test('작품 상세의 작가 이름에서 작가 페이지로 가고, 작가의 소장품을 본다', async ({ page }) => {
+  await page.goto('/works/tears-drinker');
+  await page.getByRole('link', { name: '이영도' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('이영도');
+  await expect(page.getByRole('link', { name: /드래곤 라자/ })).toBeVisible();
 });

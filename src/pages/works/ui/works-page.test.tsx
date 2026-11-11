@@ -41,7 +41,7 @@ describe('WorksPage', () => {
   it('소장품 전체를 번호순 목록으로 보여 준다', async () => {
     renderPage();
     expect(await screen.findByRole('heading', { level: 1, name: '소장품' })).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: /^\d+번/ })).toHaveLength(3);
+    expect(screen.getAllByRole('link', { name: /^\d+번 / })).toHaveLength(3);
     expect(screen.getByRole('status')).toHaveTextContent('소장품 3점');
   });
 

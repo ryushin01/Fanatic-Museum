@@ -39,6 +39,19 @@ paths:
                 $ref: '#/components/schemas/Work'
         '404':
           description: 없는 소장품
+  /api/authors.json:
+    get:
+      operationId: listAuthors
+      summary: 작가 목록
+      responses:
+        '200':
+          description: 작가 전체
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
   /api/categories.json:
     get:
       operationId: listCategories
@@ -89,6 +102,33 @@ components:
           examples: [글, 그림, 제작, 기획]
         name:
           type: string
+        author:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          description: 작가 페이지가 있으면 그 slug
+    Author:
+      type: object
+      required: [slug, name, occupation, summary, reference]
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        name:
+          type: string
+        occupation:
+          type: string
+          examples: [만화가, 판타지 소설가]
+        born:
+          type: integer
+          description: 태어난 해
+        debut:
+          type: string
+          description: 데뷔(해와 작품)
+        summary:
+          type: string
+        reference:
+          type: string
+          description: 참고 문서 주소
     Origin:
       type: string
       description: 작품이 처음 나온 나라

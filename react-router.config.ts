@@ -1,5 +1,6 @@
 import type { Config } from '@react-router/dev/config';
 
+import { AUTHOR_SLUGS } from './src/entities/author/model/authors';
 import { CATEGORY_SLUGS } from './src/entities/category/model/categories';
 import { WORK_SLUGS } from './src/entities/work/model/works';
 
@@ -10,11 +11,15 @@ export default {
   prerender: [
     '/',
     '/works',
+    '/authors',
+    ...AUTHOR_SLUGS.map((slug) => `/authors/${slug}`),
+    '/timeline',
     '/about',
     ...CATEGORY_SLUGS.map((slug) => `/categories/${slug}`),
     ...WORK_SLUGS.map((slug) => `/works/${slug}`),
     '/api/works.json',
     '/api/categories.json',
+    '/api/authors.json',
     ...WORK_SLUGS.map((slug) => `/api/works/${slug}.json`),
   ],
 } satisfies Config;

@@ -35,3 +35,21 @@ describe('SiteHeader', () => {
     );
   });
 });
+
+describe('ThemeToggle', () => {
+  it('시스템 → 밝게 → 어둡게 → 시스템 순서로 바꾸고 html에 적용·저장한다', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    renderAt('/');
+    const button = await screen.findByRole('button', { name: '화면 테마: 시스템' });
+    await user.click(button);
+    expect(button).toHaveAccessibleName('화면 테마: 밝게');
+    expect(document.documentElement.dataset.theme).toBe('light');
+    await user.click(button);
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(localStorage.getItem('fm-theme')).toBe('dark');
+    await user.click(button);
+    expect(document.documentElement.dataset.theme).toBeUndefined();
+    expect(localStorage.getItem('fm-theme')).toBeNull();
+  });
+});

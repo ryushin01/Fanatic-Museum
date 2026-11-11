@@ -51,7 +51,12 @@ export function ExhibitStrip({ title, description, works }: ExhibitStripProps) {
       <ol id={listId} ref={trackRef} className={styles.track}>
         {works.map((work, i) => (
           <li key={work.slug} className={styles.item}>
-            <Link to={`/works/${work.slug}`} className={styles.link} viewTransition>
+            <Link
+              to={`/works/${work.slug}`}
+              className={styles.link}
+              viewTransition
+              prefetch="intent"
+            >
               <div className={styles.coverWrap}>
                 <WorkCover
                   number={work.number}

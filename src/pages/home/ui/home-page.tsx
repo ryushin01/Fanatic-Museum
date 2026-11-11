@@ -83,7 +83,7 @@ export function HomePage() {
         <ul className={styles.categories}>
           {categories.map((category, i) => (
             <li key={category.slug} className={styles.category}>
-              <Link to={`/categories/${category.slug}`} viewTransition>
+              <Link to={`/categories/${category.slug}`} viewTransition prefetch="intent">
                 <span className={styles.categoryIndex} aria-hidden="true">
                   {padNumber(i + 1, 2)}
                 </span>

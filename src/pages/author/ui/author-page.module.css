@@ -1,0 +1,29 @@
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin-top: 24px;
+}
+
+.facts dt {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.facts dd {
+  font-weight: 700;
+}
+
+.reference {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 16px;
+  font-size: var(--text-sm);
+}
+
+.worksTitle {
+  margin-bottom: 16px;
+  font-size: var(--text-xl);
+  font-weight: 800;
+}

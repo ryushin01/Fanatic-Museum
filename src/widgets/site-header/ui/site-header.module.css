@@ -44,12 +44,41 @@
   }
 }
 
+.nav {
+  margin-left: auto;
+}
+
+/* 좁은 화면: 로고와 테마 버튼 아래 둘째 줄에 메뉴를 한 줄로 둡니다. */
+@media (max-width: 719px) {
+  .inner {
+    flex-wrap: wrap;
+    gap: 0 12px;
+  }
+
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav ul {
+    justify-content: space-between;
+  }
+
+  .theme {
+    margin-left: auto;
+  }
+}
+
 .nav ul {
   display: flex;
   gap: clamp(12px, 3vw, 40px);
 }
 
 .link {
+  white-space: nowrap;
   display: inline-flex;
   align-items: flex-start;
   gap: 4px;
@@ -74,4 +103,43 @@
 
 .link:hover {
   color: var(--color-accent);
+}
+
+.theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.theme[data-hovered] {
+  border-color: var(--color-text);
+}
+
+.theme[data-focus-visible] {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 479px) {
+  .themeLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .nav ul {
+    gap: 8px;
+  }
 }

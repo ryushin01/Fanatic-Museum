@@ -55,7 +55,7 @@
   },
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build && node scripts/prune-assets.mjs",
+    "build": "react-router build && node scripts/prune-assets.mjs && node scripts/sitemap.mjs",
     "preview": "sirv build/client --port 4173 --single __spa-fallback.html",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint .",

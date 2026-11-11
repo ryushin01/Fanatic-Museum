@@ -32,9 +32,8 @@ export function WorkIndex({
             {padNumber(work.number)}
           </span>
           <Heading className={styles.title}>
-            <Link to={`/works/${work.slug}`} viewTransition>
-              <span className="visually-hidden">{work.number}번 </span>
-              {work.title}
+            <Link to={`/works/${work.slug}`} viewTransition prefetch="intent">
+              <span className="visually-hidden">{work.number}번</span> {work.title}
             </Link>
             {(work.originalTitle || work.nickname) && (
               <span className={styles.original}>

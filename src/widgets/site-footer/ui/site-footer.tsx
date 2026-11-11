@@ -30,6 +30,12 @@ export function SiteFooter() {
                 <Link to="/works">소장품 전체</Link>
               </li>
               <li>
+                <Link to="/authors">작가</Link>
+              </li>
+              <li>
+                <Link to="/timeline">대장정 연표</Link>
+              </li>
+              <li>
                 <Link to="/about">박물관 소개</Link>
               </li>
               <li>

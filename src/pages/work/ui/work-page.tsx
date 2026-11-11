@@ -58,7 +58,15 @@ export function WorkPage() {
             {work.creators.map((creator) => (
               <div key={`${creator.role}-${creator.name}`} className={styles.fact}>
                 <dt>{creator.role}</dt>
-                <dd>{creator.name}</dd>
+                <dd>
+                  {creator.author ? (
+                    <Link to={`/authors/${creator.author}`} prefetch="intent">
+                      {creator.name}
+                    </Link>
+                  ) : (
+                    creator.name
+                  )}
+                </dd>
               </div>
             ))}
             <div className={styles.fact}>
@@ -100,7 +108,7 @@ export function WorkPage() {
         <nav className={styles.pager} aria-label="이전·다음 소장품">
           <div>
             {previous && (
-              <Link to={`/works/${previous.slug}`} viewTransition>
+              <Link to={`/works/${previous.slug}`} viewTransition prefetch="intent">
                 <span className="label">이전 소장품 {padNumber(previous.number)}</span>
                 <strong>{previous.title}</strong>
               </Link>
@@ -108,7 +116,7 @@ export function WorkPage() {
           </div>
           <div className={styles.next}>
             {next && (
-              <Link to={`/works/${next.slug}`} viewTransition>
+              <Link to={`/works/${next.slug}`} viewTransition prefetch="intent">
                 <span className="label">다음 소장품 {padNumber(next.number)}</span>
                 <strong>{next.title}</strong>
               </Link>

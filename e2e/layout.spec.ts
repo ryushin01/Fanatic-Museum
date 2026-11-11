@@ -23,3 +23,16 @@ test('글자를 200%로 키워도 본문이 잘리지 않는다', async ({ page 
   );
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+for (const width of [320, 390]) {
+  test(`가로 ${width}px에서 헤더 메뉴가 한 줄로 보인다`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/');
+    const links = page.getByRole('navigation', { name: '주 메뉴' }).getByRole('link');
+    for (const link of await links.all()) {
+      const box = await link.boundingBox();
+      expect(box!.height, await link.innerText()).toBeLessThanOrEqual(48);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+    }
+  });
+}

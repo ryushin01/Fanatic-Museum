@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { authors } from '@/entities/author';
 import { categories } from '@/entities/category';
 
 import { works } from './works';
@@ -44,5 +45,14 @@ describe('소장품 데이터', () => {
       '브레이커',
     ])
       expect(titles, name).toContain(name);
+  });
+
+  it('작가 연결(author)은 있는 작가만 가리키고, 작가마다 소장품이 있다', () => {
+    const slugs = new Set(authors.map((a) => a.slug));
+    const linked = works.flatMap((w) =>
+      w.creators.flatMap((c) => ('author' in c ? [c.author as string] : [])),
+    );
+    for (const slug of linked) expect(slugs.has(slug), slug).toBe(true);
+    for (const author of authors) expect(linked, author.slug).toContain(author.slug);
   });
 });

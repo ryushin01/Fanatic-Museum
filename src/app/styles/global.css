@@ -57,6 +57,12 @@
   --color-focus: #8ab4f8;
 }
 
+@media (max-width: 719px) {
+  :root {
+    --header-height: 108px;
+  }
+}
+
 @media (min-width: 768px) {
   :root {
     --gutter: 32px;

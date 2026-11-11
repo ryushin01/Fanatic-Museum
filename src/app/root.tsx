@@ -9,6 +9,7 @@ import {
 } from 'react-router';
 
 import { site } from '@/shared/config';
+import { themeInitScript } from '@/shared/lib';
 import { PageHeader } from '@/shared/ui';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
@@ -22,9 +23,11 @@ export const links: LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    // 저장된 테마를 그리기 전에 data-theme으로 적용하므로 html 속성 차이는 허용합니다.
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f1efe9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />

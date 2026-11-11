@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/authors.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 작가 목록 */
+        get: operations["listAuthors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories.json": {
         parameters: {
             query?: never;
@@ -81,6 +98,24 @@ export interface components {
              */
             role: string;
             name: string;
+            /** @description 작가 페이지가 있으면 그 slug */
+            author?: string;
+        };
+        Author: {
+            slug: string;
+            name: string;
+            /**
+             * @example 만화가
+             * @example 판타지 소설가
+             */
+            occupation: string;
+            /** @description 태어난 해 */
+            born?: number;
+            /** @description 데뷔(해와 작품) */
+            debut?: string;
+            summary: string;
+            /** @description 참고 문서 주소 */
+            reference: string;
         };
         /**
          * @description 작품이 처음 나온 나라
@@ -180,6 +215,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listAuthors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 작가 전체 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Author"][];
+                };
             };
         };
     };

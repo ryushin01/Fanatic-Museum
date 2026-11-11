@@ -4,14 +4,19 @@ import { loadMediaIndex, type MediaEntry } from '@/shared/api/index.server';
 import { works, type WorkRecord } from '../model/works';
 
 function toImage(record: WorkRecord, entry: MediaEntry, index: number): WorkImage {
-  const kind =
-    entry.kind === 'screenshot' ? `${entry.origin ?? record.title} 게임 화면` : '일러스트';
+  const origin = entry.origin ?? record.title;
+  const alt =
+    entry.kind === 'screenshot'
+      ? `${origin} 게임 화면 ${index + 1}`
+      : entry.kind === 'cover'
+        ? `${origin} 표지`
+        : `${record.title} 일러스트 ${index + 1}`;
   return {
     src: entry.src,
     srcSet: entry.srcSet,
     width: entry.width,
     height: entry.height,
-    alt: `${record.title} ${kind} ${index + 1}`,
+    alt,
     sourcePage: entry.sourcePage,
   };
 }

@@ -3,10 +3,13 @@ import { Link, useLocation } from 'react-router';
 import { site } from '@/shared/config';
 
 import styles from './site-header.module.css';
+import { ThemeToggle } from './theme-toggle';
 
 const items = [
   { to: '/works', label: '소장품', match: '/works' },
   { to: '/categories/game', label: '카테고리', match: '/categories' },
+  { to: '/authors', label: '작가', match: '/authors' },
+  { to: '/timeline', label: '연표', match: '/timeline' },
   { to: '/about', label: '소개', match: '/about' },
 ] as const;
 
@@ -16,7 +19,7 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        <Link to="/" className={styles.logo} viewTransition>
+        <Link to="/" className={styles.logo} viewTransition prefetch="intent">
           <span aria-hidden="true">
             FM<span className={styles.logoDot}>.</span>A
           </span>
@@ -36,6 +39,7 @@ export function SiteHeader() {
                     to={item.to}
                     className={styles.link}
                     viewTransition
+                    prefetch="intent"
                     aria-current={exact ? 'page' : inSection ? 'true' : undefined}
                   >
                     {item.label}
@@ -46,6 +50,7 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
+        <ThemeToggle />
       </div>
     </header>
   );

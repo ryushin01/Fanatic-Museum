@@ -9,3 +9,4 @@ export type Category = Schemas['Category'];
 export type CategorySlug = Schemas['CategorySlug'];
 export type CategorySummary = Schemas['CategorySummary'];
 export type Creator = Schemas['Creator'];
+export type Author = Schemas['Author'];

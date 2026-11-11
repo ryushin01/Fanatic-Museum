@@ -4,7 +4,7 @@ import { join } from 'node:path';
 /** scripts/media/build-variants.mjs가 만드는 public/media/index.json의 항목 */
 export interface MediaEntry {
   key: string;
-  kind: 'illustration' | 'screenshot';
+  kind: 'illustration' | 'screenshot' | 'cover';
   src: string;
   srcSet: string;
   width: number;

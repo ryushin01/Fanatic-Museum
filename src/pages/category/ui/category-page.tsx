@@ -36,6 +36,7 @@ export function CategoryPage() {
                   aria-current={c.slug === category.slug ? 'page' : undefined}
                   preventScrollReset
                   viewTransition
+                  prefetch="intent"
                 >
                   {c.name}
                 </Link>

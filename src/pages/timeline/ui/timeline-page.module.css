@@ -1,0 +1,90 @@
+.decades {
+  display: grid;
+  gap: clamp(48px, 7vw, 96px);
+}
+
+.decade {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .decade {
+    grid-template-columns: 1fr 3fr;
+    gap: var(--gutter);
+  }
+}
+
+.decadeTitle {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+  .decadeTitle {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+    align-self: start;
+  }
+}
+
+.entries {
+  border-top: 1px solid var(--color-text);
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 4px 16px;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.entry:hover,
+.entry:focus-within {
+  background: var(--color-surface);
+}
+
+.year {
+  font-weight: 800;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.title a {
+  text-decoration: none;
+}
+
+.title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.title a:focus-visible {
+  outline: none;
+}
+
+.entry:has(.title a:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+}
+
+.meta {
+  grid-column: 2;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.undated {
+  margin-top: clamp(48px, 7vw, 96px);
+}
