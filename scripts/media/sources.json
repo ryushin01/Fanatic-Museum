@@ -903,12 +903,6 @@
       {
         "type": "safebooru",
         "tags": "itsuwari_no_rondo"
-      },
-      {
-        "type": "hlj",
-        "query": "rondo of swords",
-        "match": "rondo",
-        "pages": 2
       }
     ]
   }
