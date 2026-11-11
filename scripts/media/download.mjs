@@ -13,7 +13,8 @@
  *
  * 사용: node scripts/media/download.mjs [--limit-gb 100] [--only fate,saekano] [--dry-run]
  */
-import { createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -148,29 +149,35 @@ function isAcceptable({ width, height, tags, rating, score, official }, source =
   return !tags.some((t) => BLOCKED_TAGS.has(t));
 }
 
-/** 출처별로 한 페이지를 받아 공통 형식의 후보 목록으로 바꿉니다. 더 없으면 null. */
-const adapters = {
-  async yandere(source, page) {
+/** Moebooru 게시판(yande.re, Konachan) 한 페이지. 점수 높은 순서, 일반 등급만. */
+function moebooru(base, prefix) {
+  return async (source, page) => {
     const q = encodeURIComponent(`${source.tags} rating:s order:score`);
-    const posts = await getJson(
-      `https://yande.re/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`,
-    );
+    const posts = await getJson(`${base}/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`);
     if (!posts.length) return null;
     return posts.map((p) => ({
-      key: `yandere-${p.id}`,
-      fileUrl: p.file_url,
-      ext: p.file_ext,
+      key: `${prefix}-${p.id}`,
+      fileUrl: p.file_url?.startsWith('//') ? `https:${p.file_url}` : p.file_url,
+      ext: p.file_ext ?? p.file_url?.split('.').pop(),
       size: p.file_size,
+      md5: p.md5,
       width: p.width,
       height: p.height,
       rating: p.rating,
       score: p.score,
       tags: p.tags.split(' '),
-      page: `https://yande.re/post/show/${p.id}`,
+      page: `${base}/post/show/${p.id}`,
       origin: p.source || null,
       author: p.author || null,
     }));
-  },
+  };
+}
+
+/** 출처별로 한 페이지를 받아 공통 형식의 후보 목록으로 바꿉니다. 더 없으면 null. */
+const adapters = {
+  yandere: moebooru('https://yande.re', 'yandere'),
+  // Konachan의 전체 이용가 판. yande.re와 같은 Moebooru 방식이며 배경화면용 고해상도가 많습니다.
+  konachan: moebooru('https://konachan.net', 'konachan'),
   async safebooru(source, page) {
     const q = encodeURIComponent(source.tags);
     const posts = await getJson(
@@ -179,6 +186,7 @@ const adapters = {
     if (!posts.length) return null;
     return posts.map((p) => ({
       key: `safebooru-${p.id}`,
+      md5: p.hash,
       fileUrl: p.file_url,
       ext: p.image.split('.').pop(),
       size: null,
@@ -328,6 +336,36 @@ async function download(item, slug) {
   return { file, size };
 }
 
+/** 받은 파일의 MD5 목록. 기록에 없으면 계산해 .md5-cache.json에 저장합니다(처음 한 번만 오래 걸립니다). */
+async function buildMd5Index(everywhere) {
+  const cacheFile = join(MEDIA, '.md5-cache.json');
+  const cache = await loadJson(cacheFile, {});
+  const index = new Map();
+  let computed = 0;
+  for (const entry of everywhere.values()) {
+    const path = join(MEDIA, entry.dir, entry.file);
+    const cacheKey = `${entry.dir}/${entry.file}:${entry.bytes}`;
+    let md5 = entry.md5 ?? cache[cacheKey];
+    if (!md5) {
+      try {
+        const hash = createHash('md5');
+        await pipeline(createReadStream(path), hash);
+        md5 = hash.digest('hex');
+        cache[cacheKey] = md5;
+        computed++;
+      } catch {
+        continue;
+      }
+    }
+    if (!index.has(md5)) index.set(md5, entry);
+  }
+  if (computed) {
+    await writeFile(cacheFile, JSON.stringify(cache));
+    await log(`기존 파일 ${computed}개의 MD5를 계산했습니다.`);
+  }
+  return index;
+}
+
 async function main() {
   const { works, artists = {} } = await loadJson(join(ROOT, 'scripts', 'media', 'sources.json'), {
     works: {},
@@ -352,6 +390,8 @@ async function main() {
     for (const e of entries) if (!e.linked) everywhere.set(e.key, { ...e, dir: slug });
     used += entries.reduce((sum, e) => sum + (e.linked ? 0 : e.bytes), 0);
   }
+  // 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)도 하드 링크로 연결합니다.
+  const md5Index = await buildMd5Index(everywhere);
   await log(`시작: 사용 ${(used / 1e9).toFixed(2)}GB / 한도 ${(LIMIT_BYTES / 1e9).toFixed(0)}GB`);
 
   const queue = Object.entries(groups)
@@ -406,7 +446,8 @@ async function main() {
           added++;
           continue;
         }
-        const existing = everywhere.get(item.key);
+        const existing =
+          everywhere.get(item.key) ?? (item.md5 ? md5Index.get(item.md5) : undefined);
         if (existing) {
           try {
             await link(
@@ -414,21 +455,32 @@ async function main() {
               join(MEDIA, task.slug, existing.file),
             );
             added++;
-            const entry = { ...existing, dir: undefined, linked: true, linkedFrom: existing.dir };
+            const entry = {
+              ...existing,
+              key: item.key,
+              page: item.page,
+              dir: undefined,
+              linked: true,
+              linkedFrom: existing.dir,
+            };
             await appendFile(
               join(MEDIA, task.slug, 'manifest.jsonl'),
               JSON.stringify(entry) + '\n',
             );
             continue;
           } catch (error) {
-            if (error.code !== 'EEXIST')
-              await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
+            // 같은 폴더에 이미 같은 파일이 있으면 중복이므로 건너뜁니다.
+            if (error.code === 'EEXIST') continue;
+            await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
           }
         }
         const reservation = item.size ?? 0;
         reserved += reservation;
+        let released = false;
         try {
           const { file, size } = await download(item, task.slug);
+          reserved -= reservation;
+          released = true;
           used += size;
           added++;
           const entry = {
@@ -440,17 +492,20 @@ async function main() {
             page: item.page,
             origin: item.origin,
             author: item.author,
+            md5: item.md5,
             tags: item.tags.slice(0, 40),
             downloadedAt: now(),
           };
           await appendFile(join(MEDIA, task.slug, 'manifest.jsonl'), JSON.stringify(entry) + '\n');
           everywhere.set(item.key, { ...entry, dir: task.slug });
+          if (item.md5 && !md5Index.has(item.md5))
+            md5Index.set(item.md5, { ...entry, dir: task.slug });
         } catch (error) {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
           await log(`${task.slug} ${item.key} 실패: ${error.message}`);
         } finally {
-          reserved -= reservation;
+          if (!released) reserved -= reservation;
         }
       }
     };

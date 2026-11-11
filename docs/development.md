@@ -50,9 +50,9 @@ pnpm media:build      # 작품별로 골라 public/media/에 WebP 변환본과 i
 pnpm build && pnpm preview
 ```
 
-- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다.
+- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다. 출처 종류는 yande.re·Konachan(전체 이용가 판)·Safebooru·Steam 공식 스크린샷·교보문고 표지입니다.
 - 다운로드는 일반 등급만 받고 선정적 태그를 거릅니다. 해상도·점수 하한은 없고, 이미지 게시판은 점수 높은 순서로 받다가 전체 한도(100GB)에서 멈춥니다. 출처에 `minLongEdge`·`minScore`를 주면 그 출처만 기준을 둘 수 있습니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
-- 작가 모음(`sources.json`의 `artists`)은 `~/Downloads/Fanatic-Museum/artists/<작가>/`에 받습니다. 박성우, 김형태, 미사키 쿠레히토, 쿠로야 시노부, 시라비의 작가 태그와 참여작 표지·스크린샷입니다. 다른 폴더에 이미 있는 이미지는 하드 링크로 연결해 용량을 쓰지 않습니다(`pnpm media:download --only artists`로 작가 모음만 받을 수 있습니다).
+- 작가 모음(`sources.json`의 `artists`)은 `~/Downloads/Fanatic-Museum/artists/<작가>/`에 받습니다. 박성우, 김형태, 미사키 쿠레히토, 쿠로야 시노부, 시라비의 작가 태그와 참여작 표지·스크린샷입니다. 다른 폴더에 이미 있는 이미지와 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)은 하드 링크로 연결해 용량을 쓰지 않습니다(`pnpm media:download --only artists`로 작가 모음만 받을 수 있습니다).
 - 중간에 멈춰도 다시 실행하면 이어서 받습니다. 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
 - `public/media/`가 없으면(CI, 배포) 로더가 빈 목록을 받고, 화면은 번호와 대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
 - Vercel CLI는 `.gitignore`를 따르지 않으므로 `.vercelignore`에서 `media/`·`public/media/`를 뺍니다. 그래도 들어가는 일이 없도록 `VERCEL`·`CI` 환경의 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).

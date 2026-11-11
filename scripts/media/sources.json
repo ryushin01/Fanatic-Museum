@@ -31,6 +31,10 @@
         "query": "시원찮은 그녀를 위한 육성방법",
         "match": "시원찮은 그녀",
         "pages": 3
+      },
+      {
+        "type": "konachan",
+        "tags": "saenai_heroine_no_sodatekata"
       }
     ],
     "fate": [
@@ -49,6 +53,14 @@
       {
         "type": "steam",
         "appids": [2396980, 2396990, 1902690, 622220]
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/stay_night"
+      },
+      {
+        "type": "konachan",
+        "tags": "fate/zero"
       }
     ],
     "sword-art-online": [
@@ -65,6 +77,10 @@
         "query": "소드 아트 온라인 카와하라 레키",
         "match": "소드 아트 온라인",
         "pages": 4
+      },
+      {
+        "type": "konachan",
+        "tags": "sword_art_online"
       }
     ],
     "final-fantasy": [
@@ -83,6 +99,10 @@
       {
         "type": "steam",
         "appids": [1173770, 1462040, 2909400, 2515020, 1004640, 1608070, 637650, 1173820]
+      },
+      {
+        "type": "konachan",
+        "tags": "final_fantasy"
       }
     ],
     "genesis-war": [
@@ -102,6 +122,10 @@
       },
       {
         "type": "yandere",
+        "tags": "gundam_wing"
+      },
+      {
+        "type": "konachan",
         "tags": "gundam_wing"
       }
     ],
@@ -369,6 +393,10 @@
         "query": "놀이의 관계",
         "match": "놀이의 관계",
         "pages": 3
+      },
+      {
+        "type": "konachan",
+        "tags": "misaki_kurehito"
       }
     ],
     "kuroya-shinobu": [
@@ -378,6 +406,10 @@
       },
       {
         "type": "safebooru",
+        "tags": "kuroya_shinobu"
+      },
+      {
+        "type": "konachan",
         "tags": "kuroya_shinobu"
       }
     ],
