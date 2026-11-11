@@ -48,7 +48,7 @@ describe('소장품 데이터', () => {
   });
 
   it('작가 연결(author)은 있는 작가만 가리키고, 작가마다 소장품이 있다', () => {
-    const slugs = new Set(authors.map((a) => a.slug));
+    const slugs = new Set<string>(authors.map((a) => a.slug));
     const linked = works.flatMap((w) =>
       w.creators.flatMap((c) => ('author' in c ? [c.author as string] : [])),
     );
