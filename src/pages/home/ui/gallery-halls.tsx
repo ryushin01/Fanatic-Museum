@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { Link } from 'react-router';
 
 import { WorkCover } from '@/entities/work';
@@ -16,13 +15,11 @@ export interface GalleryHallsProps {
 const PIECES = 3;
 
 /**
- * 카테고리를 전시관처럼 한 칸씩 보여 줍니다. 더 현대 서울처럼 큰 공간이 화면을 채우며 펼쳐지고,
- * 다음 전시관이 앞 전시관을 덮으며 넘어갑니다. 움직임은 CSS 스크롤 타임라인으로만 만들고,
- * 지원하지 않거나 동작 줄이기를 켜면 차례로 쌓인 정지 화면입니다.
+ * 카테고리를 전시관처럼 한 칸씩 보여 줍니다. 더 현대 서울처럼 큰 공간이 들어오며 화면을 채우듯 펼쳐지고,
+ * 지나갈 때 작아지며 어두워집니다. 화면에 붙이지 않으므로 화면이 낮거나 글자를 키워도 내용이 가려지지 않습니다.
+ * 움직임은 CSS 스크롤 타임라인으로만 만들고, 지원하지 않거나 동작 줄이기를 켜면 정지 화면입니다.
  */
 export function GalleryHalls({ categories, works }: GalleryHallsProps) {
-  // 앞 전시관은 다음 전시관이 들어오는 만큼 물러나므로, 전시관마다 이름 붙인 타임라인을 목록 전체에 엽니다.
-  const timelines = categories.map((_, i) => `--hall-${i}`);
   return (
     <section className={styles.halls} aria-labelledby="home-categories">
       <div className={`container ${styles.head}`}>
@@ -31,21 +28,11 @@ export function GalleryHalls({ categories, works }: GalleryHallsProps) {
         </h2>
         <p className="label">카테고리별로 걸어 보기</p>
       </div>
-      <ol className={styles.list} style={{ timelineScope: timelines.join(', ') } as CSSProperties}>
+      <ol className={styles.list}>
         {categories.map((category, i) => {
           const pieces = works.filter((w) => w.categories.includes(category.slug)).slice(0, PIECES);
           return (
-            <li
-              key={category.slug}
-              className={styles.hall}
-              data-last={i === categories.length - 1 || undefined}
-              style={
-                {
-                  '--self': timelines[i],
-                  '--next': timelines[i + 1] ?? 'none',
-                } as CSSProperties
-              }
-            >
+            <li key={category.slug} className={styles.hall}>
               <Link
                 to={`/categories/${category.slug}`}
                 className={styles.room}

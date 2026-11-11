@@ -155,7 +155,7 @@
 @keyframes hall-recede {
   to {
     scale: 0.92;
-    filter: brightness(0.55);
+    filter: brightness(0.6);
   }
 }
 
@@ -181,51 +181,32 @@
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .list {
-      gap: 0;
-    }
-
-    /* 전시관마다 화면에 붙어 있다가 다음 전시관이 위를 덮습니다 */
     .hall {
-      position: sticky;
-      top: calc(var(--header-height) + 12px);
-      padding-bottom: 4dvh;
-      view-timeline-name: var(--self);
-      view-timeline-axis: block;
+      view-timeline: --hall block;
     }
 
-    /* 화면에 붙은 동안은 자기 타임라인이 멈추므로, 들어오는 동안 펼치고 다음 전시관이 들어올 때 물러납니다 */
-    /* 붙은 위치에서 패널 전체가 화면 안에 들어와야 들어오기 단계가 끝까지 진행됩니다 */
+    /* 들어오는 동안 펼치고, 나가는 동안 물러납니다. 화면에 붙이지 않아 진행이 멈추지 않습니다 */
     .room {
-      min-height: 0;
-      height: calc(100dvh - var(--header-height) - 12px - 4dvh - 24px);
-      max-height: 760px;
       animation:
         hall-open linear both,
         hall-recede linear both;
-      animation-timeline: var(--self), var(--next);
+      animation-timeline: --hall, --hall;
       animation-range:
-        entry 0% entry 100%,
-        entry 0% entry 100%;
+        entry 0% cover 40%,
+        exit 20% exit 100%;
       transform-origin: 50% 0;
-    }
-
-    .hall[data-last] .room {
-      animation: hall-open linear both;
-      animation-timeline: var(--self);
-      animation-range: entry 0% entry 100%;
     }
 
     .caption {
       animation: caption-rise linear both;
-      animation-timeline: var(--self);
-      animation-range: entry 35% entry 100%;
+      animation-timeline: --hall;
+      animation-range: entry 30% cover 35%;
     }
 
     .piece {
       animation: piece-drift linear both;
-      animation-timeline: var(--self);
-      animation-range: entry 0% entry 100%;
+      animation-timeline: --hall;
+      animation-range: cover 0% cover 100%;
     }
 
     .piece[data-depth='0'] {
