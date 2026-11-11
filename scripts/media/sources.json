@@ -836,6 +836,64 @@
         "match": "megumi-kato|kato-megumi",
         "pages": 5
       }
+    ],
+    "bireido": [
+      {
+        "type": "kyobo",
+        "query": "비뢰도 검류혼",
+        "match": "비뢰도",
+        "pages": 4
+      }
+    ],
+    "mukhyang": [
+      {
+        "type": "kyobo",
+        "query": "묵향 전동조",
+        "match": "묵향",
+        "pages": 5
+      }
+    ],
+    "tower-of-god": [
+      {
+        "type": "naver",
+        "titleId": 183559
+      },
+      {
+        "type": "kyobo",
+        "query": "신의 탑 SIU",
+        "match": "신의 ?탑",
+        "pages": 4
+      },
+      {
+        "type": "yandere",
+        "tags": "tower_of_god"
+      },
+      {
+        "type": "safebooru",
+        "tags": "tower_of_god"
+      }
+    ],
+    "fire-emblem-three-houses": [
+      {
+        "type": "yandere",
+        "tags": "fire_emblem_three_houses"
+      },
+      {
+        "type": "safebooru",
+        "tags": "fire_emblem:_three_houses"
+      },
+      {
+        "type": "hlj",
+        "query": "fire emblem three houses",
+        "match": "three-houses",
+        "pages": 8
+      },
+      {
+        "type": "kyobo",
+        "query": "Fire Emblem Three Houses",
+        "match": "Three Houses",
+        "pages": 2
+      }
     ]
   }
 }
