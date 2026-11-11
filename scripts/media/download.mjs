@@ -13,7 +13,8 @@
  *
  * 사용: node scripts/media/download.mjs [--limit-gb 100] [--only fate,saekano] [--dry-run]
  */
-import { createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -26,6 +27,9 @@ const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Downloads', 'Fan
 const STATE_FILE = join(MEDIA, '.download-state.json');
 const LOG_FILE = join(MEDIA, 'download.log');
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
+// 일부 쇼핑몰은 일반 브라우저 이름으로만 응답합니다.
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36';
 
 const args = process.argv.slice(2);
 const argValue = (name) => {
@@ -97,7 +101,12 @@ async function politeFetch(url, init = {}) {
   lastRequest = Date.now();
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
-      const res = await fetch(url, { ...init, headers: { 'User-Agent': UA, ...init.headers } });
+      // 목록·상품 페이지는 작으므로 본문까지 60초 안에 받지 못하면 다시 시도합니다.
+      const res = await fetch(url, {
+        ...init,
+        headers: { 'User-Agent': UA, ...init.headers },
+        signal: AbortSignal.timeout(60_000),
+      });
       if (res.status === 429 || res.status >= 500) {
         await res.body?.cancel();
         throw new Error(`HTTP ${res.status}`);
@@ -110,14 +119,17 @@ async function politeFetch(url, init = {}) {
   }
 }
 /** 이미지 파일 요청. 목록 요청 간격과 별개로 재시도만 합니다. */
-async function fetchFile(url) {
+async function fetchFile(url, extraHeaders = {}) {
   for (let attempt = 1; attempt <= 4; attempt++) {
     // 응답 머리가 2분 안에 오지 않으면 다시 시도합니다. 머리를 받으면 시간 제한을 풀고,
     // 본문은 download()에서 멈춤(60초 무응답)만 검사합니다.
     const headers = new AbortController();
     const timer = setTimeout(() => headers.abort(new Error('2분 동안 응답 없음')), 2 * 60 * 1000);
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: headers.signal });
+      const res = await fetch(url, {
+        headers: { 'User-Agent': UA, ...extraHeaders },
+        signal: headers.signal,
+      });
       clearTimeout(timer);
       if (res.status === 429 || res.status >= 500) {
         await res.body?.cancel();
@@ -148,29 +160,41 @@ function isAcceptable({ width, height, tags, rating, score, official }, source =
   return !tags.some((t) => BLOCKED_TAGS.has(t));
 }
 
-/** 출처별로 한 페이지를 받아 공통 형식의 후보 목록으로 바꿉니다. 더 없으면 null. */
-const adapters = {
-  async yandere(source, page) {
+/** Moebooru 게시판(yande.re, Konachan) 한 페이지. 점수 높은 순서, 일반 등급만. */
+function moebooru(base, prefix) {
+  return async (source, page) => {
     const q = encodeURIComponent(`${source.tags} rating:s order:score`);
-    const posts = await getJson(
-      `https://yande.re/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`,
-    );
+    const posts = await getJson(`${base}/post.json?tags=${q}&limit=${PAGE_SIZE}&page=${page}`);
     if (!posts.length) return null;
     return posts.map((p) => ({
-      key: `yandere-${p.id}`,
-      fileUrl: p.file_url,
-      ext: p.file_ext,
+      key: `${prefix}-${p.id}`,
+      fileUrl: p.file_url?.startsWith('//') ? `https:${p.file_url}` : p.file_url,
+      ext: p.file_ext ?? p.file_url?.split('.').pop(),
       size: p.file_size,
+      md5: p.md5,
       width: p.width,
       height: p.height,
       rating: p.rating,
       score: p.score,
       tags: p.tags.split(' '),
-      page: `https://yande.re/post/show/${p.id}`,
+      page: `${base}/post/show/${p.id}`,
       origin: p.source || null,
       author: p.author || null,
     }));
-  },
+  };
+}
+
+/** 주소의 파일 확장자(jpg, png, gif 등). 알 수 없으면 jpg */
+function extensionOf(url) {
+  const match = new URL(url).pathname.match(/\.([a-z0-9]{3,4})$/i);
+  return match ? match[1].toLowerCase() : 'jpg';
+}
+
+/** 출처별로 한 페이지를 받아 공통 형식의 후보 목록으로 바꿉니다. 더 없으면 null. */
+const adapters = {
+  yandere: moebooru('https://yande.re', 'yandere'),
+  // Konachan의 전체 이용가 판. yande.re와 같은 Moebooru 방식이며 배경화면용 고해상도가 많습니다.
+  konachan: moebooru('https://konachan.net', 'konachan'),
   async safebooru(source, page) {
     const q = encodeURIComponent(source.tags);
     const posts = await getJson(
@@ -179,6 +203,7 @@ const adapters = {
     if (!posts.length) return null;
     return posts.map((p) => ({
       key: `safebooru-${p.id}`,
+      md5: p.hash,
       fileUrl: p.file_url,
       ext: p.image.split('.').pop(),
       size: null,
@@ -229,6 +254,113 @@ const adapters = {
       });
     }
     return items.length ? items : page === 1 ? [] : null;
+  },
+  /**
+   * HobbyLink Japan 상품 사진(피규어·프라모델 등 상품화된 이미지).
+   * 검색 결과에서 상품 주소가 source.match(정규식)에 맞는 상품만 골라, 상품 페이지의 사진(정면·상세)을 모두 받습니다.
+   * 성인 상품은 검색에서 뺍니다(AdultItem=0).
+   */
+  async hlj(source, page) {
+    if (page > (source.pages ?? 10)) return null;
+    const headers = { 'User-Agent': BROWSER_UA };
+    const search = `https://www.hlj.com/search/?Word=${encodeURIComponent(source.query)}&AdultItem=0&Page=${page}`;
+    const res = await politeFetch(search, { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${search}`);
+    const html = await res.text();
+    const slugs = [
+      ...new Set([...html.matchAll(/href="\/([a-z0-9]+(?:-[a-z0-9]+)+)"/g)].map((m) => m[1])),
+    ];
+    if (!slugs.length) return null;
+    const match = new RegExp(source.match);
+    const items = [];
+    for (const slug of slugs.filter((s) => match.test(s))) {
+      const product = await politeFetch(`https://www.hlj.com/${slug}`, { headers });
+      // 없는 상품은 건너뛰고, 일시적인 실패는 이 쪽을 다음에 다시 보도록 실패로 돌려줍니다.
+      if (product.status === 404 || product.status === 410) continue;
+      if (!product.ok) throw new Error(`HTTP ${product.status} ${slug}`);
+      const body = await product.text();
+      const name = body.match(/<title>([^<]*)<\/title>/)?.[1]?.trim() ?? slug;
+      const images = [
+        ...new Set(body.match(/productimages\/[a-z0-9]+\/[a-z0-9]+_\d+\.jpg/g) ?? []),
+      ];
+      for (const path of images) {
+        items.push({
+          key: `hlj-${path.split('/').pop().replace('.jpg', '')}`,
+          fileUrl: `https://www.hlj.com/${path}`,
+          ext: 'jpg',
+          size: null,
+          width: 0,
+          height: 0,
+          rating: null,
+          official: true,
+          tags: [],
+          page: `https://www.hlj.com/${slug}`,
+          origin: name,
+          author: null,
+          headers: { 'User-Agent': BROWSER_UA },
+        });
+      }
+    }
+    return items;
+  },
+  /**
+   * 네이버 웹툰: 1쪽에서 작품 포스터, 그 뒤로 회차 목록 쪽마다 회차 대표 이미지(썸네일)를 받습니다.
+   * 회차 본문 원고는 받지 않습니다.
+   */
+  async naver(source, page) {
+    const base = 'https://comic.naver.com/api/article';
+    const headers = { 'User-Agent': 'Mozilla/5.0' };
+    const items = [];
+    const common = {
+      ext: 'jpg',
+      size: null,
+      width: 0,
+      height: 0,
+      rating: null,
+      official: true,
+      tags: [],
+      author: null,
+      // 네이버 이미지 서버는 웹툰 페이지에서 온 요청만 허용합니다.
+      headers: { Referer: 'https://comic.naver.com/' },
+    };
+    if (page === 1) {
+      const res = await politeFetch(`${base}/list/info?titleId=${source.titleId}`, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const info = await res.json();
+      const urls = new Set(
+        [info.sharedThumbnailUrl, info.posterThumbnailUrl, info.thumbnailUrl].filter(Boolean),
+      );
+      [...urls].forEach((url, i) =>
+        items.push({
+          ...common,
+          key: `naver-${source.titleId}-title-${i}`,
+          fileUrl: url,
+          ext: extensionOf(url),
+          page: `https://comic.naver.com/webtoon/list?titleId=${source.titleId}`,
+          origin: info.titleName,
+        }),
+      );
+    }
+    // 오름차순으로 받아야 받는 도중 새 회차가 올라와도 쪽이 밀리지 않습니다.
+    const res = await politeFetch(`${base}/list?titleId=${source.titleId}&page=${page}&sort=ASC`, {
+      headers,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    if (page > (list.pageInfo?.totalPages ?? 0) && !items.length) return null;
+    for (const article of list.articleList ?? []) {
+      if (!article.thumbnailUrl) continue;
+      items.push({
+        ...common,
+        key: `naver-${source.titleId}-ep${article.no}`,
+        fileUrl: article.thumbnailUrl,
+        ext: extensionOf(article.thumbnailUrl),
+        page: `https://comic.naver.com/webtoon/detail?titleId=${source.titleId}&no=${article.no}`,
+        origin: article.subtitle ?? null,
+      });
+    }
+    // 썸네일이 없는 쪽이 있어도 마지막 쪽까지는 계속 봅니다.
+    return items;
   },
   /** Steam은 게임 하나를 한 페이지로 봅니다. 공식 스크린샷과 배경 이미지입니다. */
   async steam(source, page) {
@@ -289,15 +421,16 @@ async function readManifest(slug) {
     .map((l) => JSON.parse(l));
 }
 
-async function download(item, slug) {
+/** onBytes(n)이 false를 돌려주면(용량 한도) 받기를 멈춥니다. */
+async function download(item, slug, onBytes = () => true) {
   const dir = join(MEDIA, slug);
   const file = `${item.key}.${item.ext}`;
   const target = join(dir, file);
   const partial = `${target}.part`;
-  let res = await fetchFile(item.fileUrl);
+  let res = await fetchFile(item.fileUrl, item.headers);
   if (!res.ok && item.fallbackUrl) {
     await res.body?.cancel();
-    res = await fetchFile(item.fallbackUrl);
+    res = await fetchFile(item.fallbackUrl, item.headers);
   }
   if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
   const type = res.headers.get('content-type') ?? '';
@@ -311,6 +444,10 @@ async function download(item, slug) {
   let timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
   const watchdog = new Transform({
     transform(chunk, _encoding, callback) {
+      if (!onBytes(chunk.length)) {
+        callback(new Error('용량 한도에 도달해 멈춤'));
+        return;
+      }
       clearTimeout(timer);
       timer = setTimeout(() => stall.abort(new Error('60초 동안 응답 없음')), 60_000);
       callback(null, chunk);
@@ -328,14 +465,51 @@ async function download(item, slug) {
   return { file, size };
 }
 
+async function fileMd5(path) {
+  const hash = createHash('md5');
+  await pipeline(createReadStream(path), hash);
+  return hash.digest('hex');
+}
+
+/** 받은 파일의 MD5 목록. 기록에 없으면 계산해 .md5-cache.json에 저장합니다(처음 한 번만 오래 걸립니다). */
+async function buildMd5Index(everywhere) {
+  const cacheFile = join(MEDIA, '.md5-cache.json');
+  const cache = await loadJson(cacheFile, {});
+  const index = new Map();
+  let computed = 0;
+  for (const entry of everywhere.values()) {
+    const path = join(MEDIA, entry.dir, entry.file);
+    const cacheKey = `${entry.dir}/${entry.file}:${entry.bytes}`;
+    let md5 = entry.md5 ?? cache[cacheKey];
+    if (!md5) {
+      try {
+        md5 = await fileMd5(path);
+        cache[cacheKey] = md5;
+        computed++;
+      } catch {
+        continue;
+      }
+    }
+    if (!index.has(md5)) index.set(md5, entry);
+  }
+  if (computed) {
+    await writeFile(cacheFile, JSON.stringify(cache));
+    await log(`기존 파일 ${computed}개의 MD5를 계산했습니다.`);
+  }
+  return index;
+}
+
 async function main() {
-  const { works, artists = {} } = await loadJson(join(ROOT, 'scripts', 'media', 'sources.json'), {
-    works: {},
-  });
-  // 작품은 <slug>/, 작가 모음은 artists/<slug>/ 폴더에 받습니다.
+  const {
+    works,
+    artists = {},
+    collections = {},
+  } = await loadJson(join(ROOT, 'scripts', 'media', 'sources.json'), { works: {} });
+  // 작품은 <slug>/, 작가 모음은 artists/<slug>/, 회사·시리즈 모음은 collections/<slug>/ 폴더에 받습니다.
   const groups = Object.fromEntries([
     ...Object.entries(works),
     ...Object.entries(artists).map(([slug, sources]) => [`artists/${slug}`, sources]),
+    ...Object.entries(collections).map(([slug, sources]) => [`collections/${slug}`, sources]),
   ]);
   await mkdir(MEDIA, { recursive: true });
   const state = await loadJson(STATE_FILE, { cursors: {}, done: {} });
@@ -352,6 +526,8 @@ async function main() {
     for (const e of entries) if (!e.linked) everywhere.set(e.key, { ...e, dir: slug });
     used += entries.reduce((sum, e) => sum + (e.linked ? 0 : e.bytes), 0);
   }
+  // 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)도 하드 링크로 연결합니다.
+  const md5Index = await buildMd5Index(everywhere);
   await log(`시작: 사용 ${(used / 1e9).toFixed(2)}GB / 한도 ${(LIMIT_BYTES / 1e9).toFixed(0)}GB`);
 
   const queue = Object.entries(groups)
@@ -362,6 +538,8 @@ async function main() {
     .filter((s) => !state.done[s.id]);
 
   let reserved = 0;
+  let inflight = 0;
+  let stoppedByLimit = false;
   // 작품마다 한 번씩 돌아가며 한 페이지씩 받습니다.
   while (queue.length && used < LIMIT_BYTES) {
     const task = queue.shift();
@@ -397,16 +575,13 @@ async function main() {
           return;
         }
         const item = pending.shift();
-        if (item.size && used + reserved + item.size > LIMIT_BYTES) {
-          leftover = true;
-          continue;
-        }
         keys.add(item.key);
         if (DRY_RUN) {
           added++;
           continue;
         }
-        const existing = everywhere.get(item.key);
+        const existing =
+          everywhere.get(item.key) ?? (item.md5 ? md5Index.get(item.md5) : undefined);
         if (existing) {
           try {
             await link(
@@ -414,21 +589,49 @@ async function main() {
               join(MEDIA, task.slug, existing.file),
             );
             added++;
-            const entry = { ...existing, dir: undefined, linked: true, linkedFrom: existing.dir };
+            const entry = {
+              ...existing,
+              key: item.key,
+              page: item.page,
+              dir: undefined,
+              linked: true,
+              linkedFrom: existing.dir,
+            };
             await appendFile(
               join(MEDIA, task.slug, 'manifest.jsonl'),
               JSON.stringify(entry) + '\n',
             );
             continue;
           } catch (error) {
-            if (error.code !== 'EEXIST')
-              await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
+            // 같은 폴더에 이미 같은 파일이 있으면 중복이므로 건너뜁니다.
+            if (error.code === 'EEXIST') continue;
+            await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
           }
+        }
+        // 하드 링크는 용량을 쓰지 않으므로, 용량 검사는 실제로 받을 때만 합니다.
+        if (item.size && used + reserved + item.size > LIMIT_BYTES) {
+          keys.delete(item.key);
+          leftover = true;
+          continue;
         }
         const reservation = item.size ?? 0;
         reserved += reservation;
+        let released = false;
         try {
-          const { file, size } = await download(item, task.slug);
+          // 크기를 모르는 파일은 받는 동안 쌓이는 바이트를 함께 세어 한도를 넘지 않게 합니다.
+          let streamed = 0;
+          const { file, size } = await download(item, task.slug, (n) => {
+            if (item.size) return true;
+            streamed += n;
+            inflight += n;
+            if (used + reserved + inflight <= LIMIT_BYTES) return true;
+            leftover = true;
+            return false;
+          }).finally(() => {
+            inflight -= streamed;
+          });
+          reserved -= reservation;
+          released = true;
           used += size;
           added++;
           const entry = {
@@ -440,23 +643,28 @@ async function main() {
             page: item.page,
             origin: item.origin,
             author: item.author,
+            // 출처가 MD5를 주지 않으면(Steam·교보문고) 받은 파일로 계산합니다.
+            md5: item.md5 ?? (await fileMd5(join(MEDIA, task.slug, file))),
             tags: item.tags.slice(0, 40),
             downloadedAt: now(),
           };
           await appendFile(join(MEDIA, task.slug, 'manifest.jsonl'), JSON.stringify(entry) + '\n');
           everywhere.set(item.key, { ...entry, dir: task.slug });
+          if (entry.md5 && !md5Index.has(entry.md5))
+            md5Index.set(entry.md5, { ...entry, dir: task.slug });
         } catch (error) {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
           await log(`${task.slug} ${item.key} 실패: ${error.message}`);
         } finally {
-          reserved -= reservation;
+          if (!released) reserved -= reservation;
         }
       }
     };
     await Promise.all(Array.from({ length: FILE_CONCURRENCY }, worker));
     if (leftover || pending.length) {
       await log(`${task.id} ${page}쪽: 용량 한도로 남은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`);
+      stoppedByLimit = true;
       break;
     }
     state.cursors[task.id] = page;
@@ -465,7 +673,11 @@ async function main() {
     queue.push(task);
   }
 
-  await log(used >= LIMIT_BYTES ? '용량 한도에 도달해 멈췄습니다.' : '모든 출처를 받았습니다.');
+  await log(
+    stoppedByLimit || used >= LIMIT_BYTES
+      ? '용량 한도에 도달해 멈췄습니다.'
+      : '모든 출처를 받았습니다.',
+  );
 }
 
 main().catch(async (error) => {

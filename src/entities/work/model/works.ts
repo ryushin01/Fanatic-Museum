@@ -370,7 +370,10 @@ export const works = [
     origin: '한국',
     firstReleased: 2000,
     summary:
-      '임달영·박성우 콤비가 2000년부터 연재한 만화. 잡지가 폐간되면서 연재처를 옮겨 완결했습니다.',
+      '1961년 도쿄, 정부 비밀 연구기관에서 탈주한 초능력자와 그를 막으려는 능력자들의 이야기. 임달영·박성우 콤비가 그렸고, 대원씨아이에서 2001년부터 2004년까지 10권으로 완결했습니다.',
+    notes: [
+      '게임 「제로 흐름의 원」(2000, 아트림미디어)과 같은 제로 세계관입니다. 박성우 작가는 게임과 함께 나온 단권 만화 「제로 흐름의 원」도 그렸습니다.',
+    ],
     accent: '#3a3550',
     related: ['black-god'],
   },
@@ -406,7 +409,10 @@ export const works = [
     number: 28,
     title: '난약',
     categories: ['comic'],
-    creators: [{ role: '만화', name: '박진환', author: 'park-jin-hwan' }],
+    creators: [
+      { role: '글', name: '정현주' },
+      { role: '그림', name: '박진환', author: 'park-jin-hwan' },
+    ],
     origin: '한국',
     firstReleased: 2019,
     summary: '2019년 네이버 웹툰에서 연재를 시작한 박진환 작가의 웹툰.',
@@ -418,7 +424,11 @@ export const works = [
     number: 29,
     title: '절대회귀',
     categories: ['comic'],
-    creators: [{ role: '만화', name: '박진환', author: 'park-jin-hwan' }],
+    creators: [
+      { role: '원작', name: '장영훈' },
+      { role: '각색', name: 'JP' },
+      { role: '그림', name: '박진환', author: 'park-jin-hwan' },
+    ],
     origin: '한국',
     firstReleased: 2024,
     summary: '2024년 네이버 웹툰에서 시작한, 박진환 작가의 첫 노블코믹스(웹소설 원작 웹툰).',
