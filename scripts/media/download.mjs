@@ -27,6 +27,9 @@ const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Downloads', 'Fan
 const STATE_FILE = join(MEDIA, '.download-state.json');
 const LOG_FILE = join(MEDIA, 'download.log');
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
+// 일부 쇼핑몰은 일반 브라우저 이름으로만 응답합니다.
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36';
 
 const args = process.argv.slice(2);
 const argValue = (name) => {
@@ -246,6 +249,52 @@ const adapters = {
       });
     }
     return items.length ? items : page === 1 ? [] : null;
+  },
+  /**
+   * HobbyLink Japan 상품 사진(피규어·프라모델 등 상품화된 이미지).
+   * 검색 결과에서 상품 주소가 source.match(정규식)에 맞는 상품만 골라, 상품 페이지의 사진(정면·상세)을 모두 받습니다.
+   * 성인 상품은 검색에서 뺍니다(AdultItem=0).
+   */
+  async hlj(source, page) {
+    if (page > (source.pages ?? 10)) return null;
+    const headers = { 'User-Agent': BROWSER_UA };
+    const search = `https://www.hlj.com/search/?Word=${encodeURIComponent(source.query)}&AdultItem=0&Page=${page}`;
+    const res = await politeFetch(search, { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${search}`);
+    const html = await res.text();
+    const slugs = [
+      ...new Set([...html.matchAll(/href="\/([a-z0-9-]+-[a-z]+[0-9]+)"/g)].map((m) => m[1])),
+    ];
+    if (!slugs.length) return null;
+    const match = new RegExp(source.match);
+    const items = [];
+    for (const slug of slugs.filter((s) => match.test(s))) {
+      const product = await politeFetch(`https://www.hlj.com/${slug}`, { headers });
+      if (!product.ok) continue;
+      const body = await product.text();
+      const name = body.match(/<title>([^<]*)<\/title>/)?.[1]?.trim() ?? slug;
+      const images = [
+        ...new Set(body.match(/productimages\/[a-z0-9]+\/[a-z0-9]+_\d+\.jpg/g) ?? []),
+      ];
+      for (const path of images) {
+        items.push({
+          key: `hlj-${path.split('/').pop().replace('.jpg', '')}`,
+          fileUrl: `https://www.hlj.com/${path}`,
+          ext: 'jpg',
+          size: null,
+          width: 0,
+          height: 0,
+          rating: null,
+          official: true,
+          tags: [],
+          page: `https://www.hlj.com/${slug}`,
+          origin: name,
+          author: null,
+          headers: { 'User-Agent': BROWSER_UA },
+        });
+      }
+    }
+    return items;
   },
   /**
    * 네이버 웹툰: 1쪽에서 작품 포스터, 그 뒤로 회차 목록 쪽마다 회차 대표 이미지(썸네일)를 받습니다.

@@ -1,5 +1,5 @@
 {
-  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/, collections(회사·시리즈 모음)는 collections/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
+  "$comment": "작품별 이미지 출처(works)와 작가 모음(artists). works의 slug는 src/entities/work의 작품 slug와 같습니다. artists는 ~/Downloads/Fanatic-Museum/artists/<slug>/, collections(회사·시리즈·상품 모음, merch-*는 HobbyLink Japan 상품 사진)는 collections/<slug>/에 받습니다. 출처에 minLongEdge·minScore를 주면 기본 기준(해상도·점수 하한 없음) 대신 씁니다.",
   "works": {
     "cyber-formula": [
       {
@@ -765,6 +765,76 @@
         "query": "파이널판타지 VII",
         "match": "Final Fantasy (VII|7)|파이널 ?판타지 ?(VII|7)",
         "pages": 3
+      }
+    ],
+    "merch-wing-gundam": [
+      {
+        "type": "hlj",
+        "query": "wing gundam",
+        "match": "wing-gundam",
+        "pages": 15
+      },
+      {
+        "type": "safebooru",
+        "tags": "wing_gundam"
+      }
+    ],
+    "merch-cyber-formula": [
+      {
+        "type": "hlj",
+        "query": "cyber formula",
+        "match": "cyber-formula|asurada",
+        "pages": 8
+      },
+      {
+        "type": "hlj",
+        "query": "asurada",
+        "match": "asurada",
+        "pages": 5
+      }
+    ],
+    "merch-gojo-satoru": [
+      {
+        "type": "hlj",
+        "query": "gojo satoru",
+        "match": "gojo",
+        "pages": 10
+      },
+      {
+        "type": "safebooru",
+        "tags": "gojou_satoru photo_(medium)"
+      }
+    ],
+    "merch-final-fantasy-vii": [
+      {
+        "type": "hlj",
+        "query": "final fantasy vii",
+        "match": "final-fantasy-vii|ffvii|ff7",
+        "pages": 15
+      },
+      {
+        "type": "hlj",
+        "query": "play arts kai final fantasy",
+        "match": "final-fantasy-vii|cloud|sephiroth|tifa|aerith|barret|zack|vincent",
+        "pages": 5
+      },
+      {
+        "type": "safebooru",
+        "tags": "final_fantasy_vii figure"
+      }
+    ],
+    "merch-saekano": [
+      {
+        "type": "hlj",
+        "query": "saekano",
+        "match": "saekano|megumi-kato|kato-megumi|eriri|utaha|michiru|izumi",
+        "pages": 8
+      },
+      {
+        "type": "hlj",
+        "query": "megumi kato",
+        "match": "megumi-kato|kato-megumi",
+        "pages": 5
       }
     ]
   }
