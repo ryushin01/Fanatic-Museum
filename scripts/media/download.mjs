@@ -98,7 +98,10 @@ async function politeFetch(url, init = {}) {
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
       const res = await fetch(url, { ...init, headers: { 'User-Agent': UA, ...init.headers } });
-      if (res.status === 429 || res.status >= 500) throw new Error(`HTTP ${res.status}`);
+      if (res.status === 429 || res.status >= 500) {
+        await res.body?.cancel();
+        throw new Error(`HTTP ${res.status}`);
+      }
       return res;
     } catch (error) {
       if (attempt === 4) throw error;
@@ -116,7 +119,10 @@ async function fetchFile(url) {
     try {
       const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: headers.signal });
       clearTimeout(timer);
-      if (res.status === 429 || res.status >= 500) throw new Error(`HTTP ${res.status}`);
+      if (res.status === 429 || res.status >= 500) {
+        await res.body?.cancel();
+        throw new Error(`HTTP ${res.status}`);
+      }
       return res;
     } catch (error) {
       clearTimeout(timer);
@@ -355,6 +361,7 @@ async function main() {
     )
     .filter((s) => !state.done[s.id]);
 
+  let reserved = 0;
   // 작품마다 한 번씩 돌아가며 한 페이지씩 받습니다.
   while (queue.length && used < LIMIT_BYTES) {
     const task = queue.shift();
@@ -369,7 +376,7 @@ async function main() {
     }
     if (items === null) {
       state.done[task.id] = true;
-      await writeFile(STATE_FILE, JSON.stringify(state, null, 2));
+      if (!DRY_RUN) await writeFile(STATE_FILE, JSON.stringify(state, null, 2));
       await log(`${task.id} 출처를 모두 받았습니다.`);
       continue;
     }
@@ -380,10 +387,20 @@ async function main() {
       (item) => !keys.has(item.key) && item.fileUrl && isAcceptable(item, task.source),
     );
     // 파일은 CDN에서 FILE_CONCURRENCY개씩 동시에 받습니다. 목록 요청은 politeFetch 간격을 지킵니다.
+    // 동시에 받는 파일의 크기를 미리 예약해 한도를 넘지 않게 하고,
+    // 한도 때문에 받지 못한 후보가 있으면 다음 페이지로 넘어가지 않습니다.
+    let leftover = false;
     const worker = async () => {
-      while (pending.length && used < LIMIT_BYTES) {
+      while (pending.length) {
+        if (used + reserved >= LIMIT_BYTES) {
+          leftover = true;
+          return;
+        }
         const item = pending.shift();
-        if (item.size && used + item.size > LIMIT_BYTES) continue;
+        if (item.size && used + reserved + item.size > LIMIT_BYTES) {
+          leftover = true;
+          continue;
+        }
         keys.add(item.key);
         if (DRY_RUN) {
           added++;
@@ -408,6 +425,8 @@ async function main() {
               await log(`${task.slug} ${item.key} 링크 실패: ${error.message}`);
           }
         }
+        const reservation = item.size ?? 0;
+        reserved += reservation;
         try {
           const { file, size } = await download(item, task.slug);
           used += size;
@@ -430,12 +449,18 @@ async function main() {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
           await log(`${task.slug} ${item.key} 실패: ${error.message}`);
+        } finally {
+          reserved -= reservation;
         }
       }
     };
     await Promise.all(Array.from({ length: FILE_CONCURRENCY }, worker));
+    if (leftover || pending.length) {
+      await log(`${task.id} ${page}쪽: 용량 한도로 남은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`);
+      break;
+    }
     state.cursors[task.id] = page;
-    await writeFile(STATE_FILE, JSON.stringify(state, null, 2));
+    if (!DRY_RUN) await writeFile(STATE_FILE, JSON.stringify(state, null, 2));
     await log(`${task.id} ${page}쪽: ${added}장 추가, 누적 ${(used / 1e9).toFixed(2)}GB`);
     queue.push(task);
   }
