@@ -152,27 +152,29 @@ function isNetworkError(error) {
   );
 }
 
-/** 인터넷이 다시 연결될 때까지 30초마다 확인하며 기다립니다(잠자기·와이파이 끊김 대비). */
+/** 인터넷이 다시 연결될 때까지 30초마다 확인하며 기다립니다(잠자기·와이파이 끊김 대비).
+ * 한 곳만 막혀도 계속 기다리지 않도록 여러 주소 가운데 하나라도 응답하면 연결된 것으로 봅니다. */
+const PROBES = [
+  'https://www.gstatic.com/generate_204',
+  'https://captive.apple.com/hotspot-detect.html',
+  'https://yande.re/',
+];
+async function isOnline() {
+  const results = await Promise.allSettled(
+    PROBES.map((url) => fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) })),
+  );
+  return results.some((r) => r.status === 'fulfilled' && r.value.status < 500);
+}
 async function waitForNetwork() {
   let announced = false;
-  for (;;) {
-    try {
-      const res = await fetch('https://www.gstatic.com/generate_204', {
-        signal: AbortSignal.timeout(10_000),
-      });
-      if (res.ok || res.status === 204) {
-        if (announced) await log('인터넷 연결이 돌아와 다시 받습니다.');
-        return;
-      }
-    } catch {
-      // 아직 연결되지 않았습니다.
-    }
+  while (!(await isOnline())) {
     if (!announced) {
       await log('인터넷 연결이 끊겨 연결될 때까지 기다립니다.');
       announced = true;
     }
     await sleep(30_000);
   }
+  if (announced) await log('인터넷 연결이 돌아와 다시 받습니다.');
 }
 
 async function getJson(url) {

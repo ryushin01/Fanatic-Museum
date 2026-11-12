@@ -12,12 +12,21 @@ LABEL=com.ryushin0.fanatic-museum-download
 PLIST=~/Library/LaunchAgents/$LABEL.plist
 REPO=${0:A:h:h:h}
 MEDIA=${FANATIC_MEDIA_DIR:-$HOME/Documents/Fanatic-Museum}
-NODE=$(command -v node)
 DOMAIN=gui/$(id -u)
+
+# plist(XML)에 넣는 값의 특수문자를 바꿉니다.
+xml() {
+  local v=${1//&/&amp;}
+  v=${v//</&lt;}
+  v=${v//>/&gt;}
+  print -r -- "$v"
+}
 
 case "$1" in
   install)
     LIMIT=${2:-200}
+    NODE=$(command -v node) || { echo "node를 찾을 수 없습니다."; exit 1; }
+    X_NODE=$(xml "$NODE"); X_REPO=$(xml "$REPO"); X_MEDIA=$(xml "$MEDIA")
     mkdir -p ~/Library/LaunchAgents "$MEDIA"
     cat > "$PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -28,17 +37,17 @@ case "$1" in
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/caffeinate</string><string>-i</string>
-    <string>$NODE</string><string>$REPO/scripts/media/download.mjs</string>
+    <string>$X_NODE</string><string>$X_REPO/scripts/media/download.mjs</string>
     <string>--limit-gb</string><string>$LIMIT</string>
   </array>
   <key>EnvironmentVariables</key>
-  <dict><key>FANATIC_MEDIA_DIR</key><string>$MEDIA</string></dict>
-  <key>WorkingDirectory</key><string>$REPO</string>
+  <dict><key>FANATIC_MEDIA_DIR</key><string>$X_MEDIA</string></dict>
+  <key>WorkingDirectory</key><string>$X_REPO</string>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
   <key>ThrottleInterval</key><integer>60</integer>
-  <key>StandardOutPath</key><string>$MEDIA/launchd.out.log</string>
-  <key>StandardErrorPath</key><string>$MEDIA/launchd.err.log</string>
+  <key>StandardOutPath</key><string>$X_MEDIA/launchd.out.log</string>
+  <key>StandardErrorPath</key><string>$X_MEDIA/launchd.err.log</string>
 </dict>
 </plist>
 PLIST
