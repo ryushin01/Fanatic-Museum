@@ -35,7 +35,11 @@ import { pipeline } from 'node:stream/promises';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
-const LOG_FILE = join(MEDIA, 'download.log');
+// 드라이런 기록은 실제 다운로드 로그(진행 알림이 읽는 파일)와 나눠 씁니다.
+const LOG_FILE = join(
+  MEDIA,
+  process.argv.includes('--dry-run') ? 'download.dry-run.log' : 'download.log',
+);
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
 // 일부 쇼핑몰은 일반 브라우저 이름으로만 응답합니다.
 const BROWSER_UA =
@@ -848,11 +852,12 @@ async function main() {
     queue.push(task);
   }
 
-  await log(
+  // 진행 알림이 최종 용량을 읽을 수 있게 누적 용량을 함께 남깁니다.
+  const result =
     stoppedByLimit || used >= LIMIT_BYTES
       ? '용량 한도에 도달해 멈췄습니다.'
-      : '모든 출처를 받았습니다.',
-  );
+      : '모든 출처를 받았습니다.';
+  await log(`${result} 누적 ${(used / 1e9).toFixed(2)}GB`);
 }
 
 /**
