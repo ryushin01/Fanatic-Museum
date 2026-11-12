@@ -3,7 +3,7 @@
  * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Downloads/Fanatic-Museum/<slug>/)에 내려받습니다.
  * 위치는 FANATIC_MEDIA_DIR 환경 변수로 바꿀 수 있습니다.
  *
- * - 전체 용량 한도(기본 100GB)를 넘기지 않습니다.
+ * - 전체 용량 한도(기본 200GB)를 넘기지 않습니다.
  * - 작품을 돌아가며 한 페이지씩 받아서, 큰 작품이 용량을 독차지하지 않게 합니다.
  * - 일반 등급만 받고, 선정적 태그와 저해상도 이미지는 거릅니다.
  * - 이미지마다 출처를 manifest.jsonl에 남깁니다.
@@ -11,7 +11,7 @@
  *
  * 받은 이미지는 저작권자에게 권리가 있으므로 개인 보관용입니다. 저장소와 배포본에는 넣지 않습니다.
  *
- * 사용: node scripts/media/download.mjs [--limit-gb 100] [--only fate,saekano] [--dry-run]
+ * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -36,7 +36,7 @@ const argValue = (name) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 100) * 1000 ** 3;
+const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 200) * 1000 ** 3;
 const ONLY = argValue('--only')?.split(',');
 const DRY_RUN = args.includes('--dry-run');
 
@@ -300,6 +300,119 @@ const adapters = {
           headers: { 'User-Agent': BROWSER_UA },
         });
       }
+    }
+    return items;
+  },
+  /**
+   * BoardGameGeek 이미지 갤러리(보드게임 상자·구성물·플레이 사진). 갤러리 한 쪽(50장)씩 받고,
+   * 이미지마다 원본 해상도 주소를 다시 물어 받습니다.
+   */
+  async bgg(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA };
+    const api = 'https://api.geekdo.com/api';
+    const url = `${api}/images?ajax=1&gallery=all&nosession=1&objectid=${source.id}&objecttype=thing&pageid=${page}&showcount=50&size=original&sort=hot`;
+    const res = await politeFetch(url, { headers });
+    // 실패 응답(HTML 오류 페이지 등)을 JSON으로 읽지 않고, 다음 차례에 다시 시도합니다.
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+    const list = await res.json();
+    const images = list.images ?? [];
+    if (!images.length) return null;
+    const items = [];
+    for (const image of images) {
+      // 원본 주소를 묻습니다. 일시적 실패(429·5xx·네트워크)는 politeFetch가 다시 시도하고,
+      // 그래도 실패하면 이 쪽 전체를 다음 차례에 다시 봅니다(1024px로 저장해 원본을 놓치지 않도록).
+      // 원본 정보가 아예 없을 때(404 등)만 큰 크기(1024px)로 받습니다.
+      let imageUrl = image.imageurl_lg;
+      const detailRes = await politeFetch(`${api}/images/${image.imageid}`, { headers });
+      if (detailRes.ok) {
+        imageUrl = (await detailRes.json()).images?.original?.url ?? imageUrl;
+      } else {
+        await detailRes.body?.cancel();
+        if (detailRes.status !== 404 && detailRes.status !== 410)
+          throw new Error(`HTTP ${detailRes.status} 이미지 ${image.imageid}`);
+      }
+      if (!imageUrl) continue;
+      items.push({
+        key: `bgg-${image.imageid}`,
+        fileUrl: imageUrl,
+        ext: extensionOf(imageUrl),
+        size: null,
+        width: 0,
+        height: 0,
+        rating: null,
+        official: true,
+        tags: [],
+        page: `https://boardgamegeek.com/image/${image.imageid}`,
+        origin: `${source.name ?? source.id}${image.caption ? ` — ${image.caption}` : ''}`,
+        author: image.user?.username ?? null,
+        headers,
+      });
+    }
+    return items;
+  },
+  /**
+   * pixiv 작가 계정의 공개 작품(로그인 없이 볼 수 있는 전체 연령 작품만). 한 쪽에 20작품씩,
+   * 작품마다 등급(xRestrict)과 AI 생성 여부를 확인하고 원본 이미지를 모두 받습니다.
+   * 원본 서버(i.pximg.net)는 pixiv에서 온 요청(Referer)만 허용합니다.
+   */
+  async pixiv(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA, Referer: 'https://www.pixiv.net/' };
+    const ajax = 'https://www.pixiv.net/ajax';
+    const getBody = async (url) => {
+      const res = await politeFetch(url, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+      const json = await res.json();
+      if (json.error) throw new Error(`pixiv 오류 ${json.message} ${url}`);
+      return json.body;
+    };
+    let slice;
+    if (source.tag) {
+      // 작품·작가 태그 검색: 전체 연령(mode=safe)만, 한 쪽 60작품. 큰 태그는 source.pages까지만 봅니다.
+      if (page > (source.pages ?? 30)) return null;
+      const tag = encodeURIComponent(source.tag);
+      const body = await getBody(
+        `${ajax}/search/artworks/${tag}?word=${tag}&order=date_d&mode=safe&p=${page}&s_mode=s_tag&type=all`,
+      );
+      const data = body.illustManga?.data ?? [];
+      if (!data.length) return null;
+      slice = data.filter((x) => x.id && x.xRestrict === 0 && x.aiType !== 2).map((x) => x.id);
+    } else {
+      const profile = await getBody(`${ajax}/user/${source.userId}/profile/all`);
+      const ids = [...Object.keys(profile.illusts ?? {}), ...Object.keys(profile.manga ?? {})].sort(
+        (a, b) => Number(b) - Number(a),
+      );
+      slice = ids.slice((page - 1) * 20, page * 20);
+      if (!slice.length) return null;
+    }
+    const items = [];
+    for (const id of slice) {
+      let info;
+      try {
+        info = await getBody(`${ajax}/illust/${id}`);
+      } catch {
+        continue; // 로그인해야 보이는 작품(성인 등급 등)은 건너뜁니다.
+      }
+      if (info.xRestrict !== 0 || info.aiType === 2) continue;
+      const pages = await getBody(`${ajax}/illust/${id}/pages`);
+      pages.forEach((p, i) => {
+        const url = p.urls?.original;
+        if (!url) return;
+        items.push({
+          key: `pixiv-${id}-p${i}`,
+          fileUrl: url,
+          ext: extensionOf(url),
+          size: null,
+          width: p.width,
+          height: p.height,
+          rating: null,
+          official: true,
+          tags: (info.tags?.tags ?? []).map((t) => t.tag),
+          page: `https://www.pixiv.net/artworks/${id}`,
+          origin: info.title,
+          author: info.userName,
+          headers,
+        });
+      });
     }
     return items;
   },
