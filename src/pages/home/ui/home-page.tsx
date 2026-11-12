@@ -1,8 +1,8 @@
 import { Link, useLoaderData } from 'react-router';
 
 import { site } from '@/shared/config';
-import { padNumber } from '@/shared/lib';
 import { ExhibitStrip } from './exhibit-strip';
+import { GalleryHalls } from './gallery-halls';
 import { WorkIndex } from '@/widgets/work-index';
 
 import type { loader } from '../api/loader.server';
@@ -74,29 +74,7 @@ export function HomePage() {
         <WorkIndex works={works} />
       </section>
 
-      <section className={`container ${styles.section}`} aria-labelledby="home-categories">
-        <div className={styles.sectionHead}>
-          <h2 id="home-categories" className={styles.sectionTitle}>
-            카테고리
-          </h2>
-        </div>
-        <ul className={styles.categories}>
-          {categories.map((category, i) => (
-            <li key={category.slug} className={styles.category}>
-              <Link to={`/categories/${category.slug}`} viewTransition prefetch="intent">
-                <span className={styles.categoryIndex} aria-hidden="true">
-                  {padNumber(i + 1, 2)}
-                </span>
-                <span className={styles.categoryName}>
-                  {category.name}
-                  <small lang="en">{category.englishName}</small>
-                </span>
-                <span className={styles.categoryCount}>{category.count}점</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <GalleryHalls categories={categories} works={works} />
     </>
   );
 }
