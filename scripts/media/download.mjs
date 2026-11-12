@@ -15,7 +15,17 @@
  */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from 'node:fs/promises';
+import {
+  mkdir,
+  readFile,
+  readdir,
+  writeFile,
+  appendFile,
+  stat,
+  rename,
+  rm,
+  link,
+} from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -667,6 +677,12 @@ async function main() {
   const everywhere = new Map();
   for (const slug of Object.keys(groups)) {
     await mkdir(join(MEDIA, slug), { recursive: true });
+    // 지난번에 중간에 끊긴 미완성 파일(.part)을 지웁니다(다운로더는 한 번에 하나만 돕니다).
+    if (!DRY_RUN) {
+      for (const name of await readdir(join(MEDIA, slug))) {
+        if (name.endsWith('.part')) await rm(join(MEDIA, slug, name), { force: true });
+      }
+    }
     const entries = await readManifest(slug);
     seen.set(slug, new Set(entries.map((e) => e.key)));
     for (const e of entries) if (!e.linked) everywhere.set(e.key, { ...e, dir: slug });
