@@ -797,6 +797,85 @@
         "type": "pixiv",
         "userId": 8142
       }
+    ],
+    "oh-great": [
+      {
+        "type": "yandere",
+        "tags": "oh!_great"
+      },
+      {
+        "type": "konachan",
+        "tags": "oh_great"
+      },
+      {
+        "type": "safebooru",
+        "tags": "oogure_ito"
+      },
+      {
+        "type": "safebooru",
+        "tags": "oh!_great"
+      },
+      {
+        "type": "safebooru",
+        "tags": "oh_great"
+      },
+      {
+        "type": "pixiv",
+        "tag": "大暮維人",
+        "pages": 30
+      },
+      {
+        "type": "yandere",
+        "tags": "tenjou_tenge"
+      },
+      {
+        "type": "konachan",
+        "tags": "tenjou_tenge"
+      },
+      {
+        "type": "safebooru",
+        "tags": "tenjou_tenge"
+      },
+      {
+        "type": "pixiv",
+        "tag": "天上天下",
+        "pages": 30
+      },
+      {
+        "type": "yandere",
+        "tags": "air_gear"
+      },
+      {
+        "type": "konachan",
+        "tags": "air_gear"
+      },
+      {
+        "type": "safebooru",
+        "tags": "air_gear"
+      },
+      {
+        "type": "pixiv",
+        "tag": "エア・ギア",
+        "pages": 30
+      },
+      {
+        "type": "kyobo",
+        "query": "천상천하",
+        "match": "^천상천하( \\d+)?$",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "天上天下",
+        "match": "^天上天下\\s+\\d+$",
+        "pages": 3
+      },
+      {
+        "type": "kyobo",
+        "query": "Air Gear",
+        "match": "^Air Gear",
+        "pages": 3
+      }
     ]
   },
   "collections": {
