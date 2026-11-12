@@ -45,13 +45,13 @@ TypeScript 7에는 JS API가 없어서 `typescript` 패키지는 TypeScript 6 �
 작품 이미지는 저작권자에게 권리가 있어 저장소와 배포본에 넣지 않습니다. 관리자 컴퓨터에만 보관합니다.
 
 ```bash
-pnpm media:download   # 원본을 ~/Downloads/Fanatic-Museum/<작품>/ 에 내려받기 (기본 100GB 한도)
+pnpm media:download   # 원본을 ~/Downloads/Fanatic-Museum/<작품>/ 에 내려받기 (기본 200GB 한도)
 pnpm media:build      # 작품별로 골라 public/media/에 WebP 변환본과 index.json 만들기
 pnpm build && pnpm preview
 ```
 
-- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다. 출처 종류는 yande.re·Konachan(전체 이용가 판)·Safebooru·Steam 공식 스크린샷·교보문고 표지·네이버 웹툰(작품 포스터와 회차 썸네일, 본문 원고는 받지 않음)입니다. 회사·시리즈 모음(`collections`: TYPE-MOON, FF7 컴필레이션)과 상품 모음(`merch-*`: 윙건담, 사이버 포뮬러, 고죠 사토루, FF7, 사에카노 피규어·프라모델 등 HobbyLink Japan 상품 사진, 성인 상품 제외)은 `collections/<slug>/`에 받습니다.
-- 다운로드는 일반 등급만 받고 선정적 태그를 거릅니다. 해상도·점수 하한은 없고, 이미지 게시판은 점수 높은 순서로 받다가 전체 한도(100GB)에서 멈춥니다. 출처에 `minLongEdge`·`minScore`를 주면 그 출처만 기준을 둘 수 있습니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
+- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다. 출처 종류는 yande.re·Konachan(전체 이용가 판)·Safebooru·Steam 공식 스크린샷·교보문고 표지·네이버 웹툰(작품 포스터와 회차 썸네일, 본문 원고는 받지 않음)·pixiv(작가 사용자 ID로 공개 전체 연령 작품만, 성인 등급·AI 생성 작품 제외)입니다. 회사·시리즈 모음(`collections`: TYPE-MOON, FF7 컴필레이션)과 상품 모음(`merch-*`: 윙건담, 사이버 포뮬러, 고죠 사토루, FF7, 사에카노 피규어·프라모델 등 HobbyLink Japan 상품 사진, 성인 상품 제외)과 보드게임 모음(`boardgame-*`: 미식 배틀, 이클립스 2판, 에이언즈 엔드, 타임 스토리즈, 히어로 렐름, 테인티드 그레일, 패스파인더 ACG, 어센션, 도라스레의 기본판·확장, BoardGameGeek 갤러리 원본)은 `collections/<slug>/`에 받습니다.
+- 다운로드는 일반 등급만 받고 선정적 태그를 거릅니다. 해상도·점수 하한은 없고, 이미지 게시판은 점수 높은 순서로 받다가 전체 한도(200GB)에서 멈춥니다. 출처에 `minLongEdge`·`minScore`를 주면 그 출처만 기준을 둘 수 있습니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
 - 작가 모음(`sources.json`의 `artists`)은 `~/Downloads/Fanatic-Museum/artists/<작가>/`에 받습니다. 박성우, 김형태, 미사키 쿠레히토, 쿠로야 시노부, 시라비의 작가 태그와 참여작 표지·스크린샷입니다. 다른 폴더에 이미 있는 이미지와 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)은 하드 링크로 연결해 용량을 쓰지 않습니다(`pnpm media:download --only artists`로 작가 모음만 받을 수 있습니다).
 - 중간에 멈춰도 다시 실행하면 이어서 받습니다. 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
 - `public/media/`가 없으면(CI, 배포) 로더가 빈 목록을 받고, 화면은 번호와 대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
