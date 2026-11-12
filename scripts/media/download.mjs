@@ -351,6 +351,59 @@ const adapters = {
     return items;
   },
   /**
+   * pixiv 작가 계정의 공개 작품(로그인 없이 볼 수 있는 전체 연령 작품만). 한 쪽에 20작품씩,
+   * 작품마다 등급(xRestrict)과 AI 생성 여부를 확인하고 원본 이미지를 모두 받습니다.
+   * 원본 서버(i.pximg.net)는 pixiv에서 온 요청(Referer)만 허용합니다.
+   */
+  async pixiv(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA, Referer: 'https://www.pixiv.net/' };
+    const ajax = 'https://www.pixiv.net/ajax';
+    const getBody = async (url) => {
+      const res = await politeFetch(url, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+      const json = await res.json();
+      if (json.error) throw new Error(`pixiv 오류 ${json.message} ${url}`);
+      return json.body;
+    };
+    const profile = await getBody(`${ajax}/user/${source.userId}/profile/all`);
+    const ids = [...Object.keys(profile.illusts ?? {}), ...Object.keys(profile.manga ?? {})].sort(
+      (a, b) => Number(b) - Number(a),
+    );
+    const slice = ids.slice((page - 1) * 20, page * 20);
+    if (!slice.length) return null;
+    const items = [];
+    for (const id of slice) {
+      let info;
+      try {
+        info = await getBody(`${ajax}/illust/${id}`);
+      } catch {
+        continue; // 로그인해야 보이는 작품(성인 등급 등)은 건너뜁니다.
+      }
+      if (info.xRestrict !== 0 || info.aiType === 2) continue;
+      const pages = await getBody(`${ajax}/illust/${id}/pages`);
+      pages.forEach((p, i) => {
+        const url = p.urls?.original;
+        if (!url) return;
+        items.push({
+          key: `pixiv-${id}-p${i}`,
+          fileUrl: url,
+          ext: extensionOf(url),
+          size: null,
+          width: p.width,
+          height: p.height,
+          rating: null,
+          official: true,
+          tags: (info.tags?.tags ?? []).map((t) => t.tag),
+          page: `https://www.pixiv.net/artworks/${id}`,
+          origin: info.title,
+          author: info.userName,
+          headers,
+        });
+      });
+    }
+    return items;
+  },
+  /**
    * 네이버 웹툰: 1쪽에서 작품 포스터, 그 뒤로 회차 목록 쪽마다 회차 대표 이미지(썸네일)를 받습니다.
    * 회차 본문 원고는 받지 않습니다.
    */
