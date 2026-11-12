@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 로컬 보관함(기본 ~/Downloads/Fanatic-Museum/<slug>/)의 원본에서 작품마다 이미지를 골라
+ * 로컬 보관함(기본 ~/Documents/Fanatic-Museum/<slug>/)의 원본에서 작품마다 이미지를 골라
  * 화면용 WebP 변환본(public/media/<slug>/)과 목록(public/media/index.json)을 만듭니다.
  *
  * - 원본 순서(출처의 점수순)를 따르되, 한 출처에 쏠리지 않게 출처를 번갈아 고릅니다.
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const ORIGINALS = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Downloads', 'Fanatic-Museum');
+const ORIGINALS = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const OUT = join(ROOT, 'public', 'media');
 const WIDTHS = [640, 1280, 2048];
 
