@@ -13,12 +13,32 @@
       {
         "type": "safebooru",
         "tags": "cyber_formula"
+      },
+      {
+        "type": "pixiv",
+        "tag": "サイバーフォーミュラ",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "新世紀GPXサイバーフォーミュラ",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "風見ハヤト",
+        "pages": 30
       }
     ],
     "asurada-figure": [
       {
         "type": "safebooru",
         "tags": "super_asurada_01"
+      },
+      {
+        "type": "pixiv",
+        "tag": "アスラーダ",
+        "pages": 30
       }
     ],
     "saekano": [
@@ -35,6 +55,16 @@
       {
         "type": "konachan",
         "tags": "saenai_heroine_no_sodatekata"
+      },
+      {
+        "type": "pixiv",
+        "tag": "冴えない彼女の育てかた",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "冴えカノ",
+        "pages": 30
       }
     ],
     "fate": [
@@ -61,6 +91,16 @@
       {
         "type": "konachan",
         "tags": "fate/zero"
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/staynight",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/Zero",
+        "pages": 30
       }
     ],
     "sword-art-online": [
@@ -81,6 +121,11 @@
       {
         "type": "konachan",
         "tags": "sword_art_online"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ソードアート・オンライン",
+        "pages": 30
       }
     ],
     "final-fantasy": [
@@ -103,6 +148,11 @@
       {
         "type": "konachan",
         "tags": "final_fantasy"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ファイナルファンタジー",
+        "pages": 30
       }
     ],
     "genesis-war": [
@@ -127,6 +177,11 @@
       {
         "type": "safebooru",
         "tags": "the_war_of_genesis"
+      },
+      {
+        "type": "pixiv",
+        "tag": "창세기전",
+        "pages": 10
       }
     ],
     "wing-gundam-custom": [
@@ -145,12 +200,27 @@
       {
         "type": "konachan",
         "tags": "gundam_wing"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ウイングガンダム",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "ガンダムW",
+        "pages": 30
       }
     ],
     "gunpla": [
       {
         "type": "safebooru",
         "tags": "gunpla"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ガンプラ",
+        "pages": 30
       }
     ],
     "figures": [
@@ -201,6 +271,11 @@
         "query": "가즈 나이트 이경영",
         "match": "가즈\\s?나이트",
         "pages": 4
+      },
+      {
+        "type": "pixiv",
+        "tag": "가즈나이트",
+        "pages": 10
       }
     ],
     "granit": [
@@ -217,6 +292,11 @@
         "query": "눈물을 마시는 새 이영도",
         "match": "눈물을 마시는 새",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "눈물을마시는새",
+        "pages": 10
       }
     ],
     "blood-drinker": [
@@ -225,6 +305,11 @@
         "query": "피를 마시는 새 이영도",
         "match": "피를 마시는 새",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "피를마시는새",
+        "pages": 10
       }
     ],
     "dragon-raja": [
@@ -233,6 +318,11 @@
         "query": "드래곤 라자 이영도",
         "match": "드래곤 라자",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "드래곤라자",
+        "pages": 10
       }
     ],
     "future-walker": [
@@ -435,6 +525,11 @@
       {
         "type": "safebooru",
         "tags": "magna_carta"
+      },
+      {
+        "type": "pixiv",
+        "tag": "김형태",
+        "pages": 10
       }
     ],
     "misaki-kurehito": [
@@ -467,6 +562,11 @@
       {
         "type": "konachan",
         "tags": "misaki_kurehito"
+      },
+      {
+        "type": "pixiv",
+        "tag": "深崎暮人",
+        "pages": 30
       }
     ],
     "kuroya-shinobu": [
@@ -481,6 +581,11 @@
       {
         "type": "konachan",
         "tags": "kuroya_shinobu"
+      },
+      {
+        "type": "pixiv",
+        "tag": "黒谷忍",
+        "pages": 30
       }
     ],
     "shirabi": [
@@ -687,6 +792,10 @@
         "query": "소드 아트 온라인 카와하라 레키",
         "match": "소드 아트 온라인",
         "pages": 4
+      },
+      {
+        "type": "pixiv",
+        "userId": 8142
       }
     ]
   },
@@ -799,6 +908,46 @@
         "query": "프리즈마 이리야",
         "match": "이리야",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "月姫",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "魔法使いの夜",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "空の境界",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "MELTYBLOOD",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/Apocrypha",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/EXTRA",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "プリズマ☆イリヤ",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/strangeFake",
+        "pages": 30
       }
     ],
     "ff7-compilation": [
@@ -831,6 +980,16 @@
         "query": "파이널판타지 VII",
         "match": "Final Fantasy (VII|7)|파이널 ?판타지 ?(VII|7)",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "FF7",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "FINALFANTASYVII",
+        "pages": 30
       }
     ],
     "merch-wing-gundam": [
@@ -937,6 +1096,16 @@
       {
         "type": "safebooru",
         "tags": "tower_of_god"
+      },
+      {
+        "type": "pixiv",
+        "tag": "神之塔",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "신의탑",
+        "pages": 30
       }
     ],
     "fire-emblem-three-houses": [
@@ -959,6 +1128,11 @@
         "query": "Fire Emblem Three Houses",
         "match": "Three Houses",
         "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "風花雪月",
+        "pages": 30
       }
     ],
     "rondo-of-swords": [
@@ -969,6 +1143,11 @@
       {
         "type": "safebooru",
         "tags": "itsuwari_no_rondo"
+      },
+      {
+        "type": "pixiv",
+        "tag": "偽りの輪舞曲",
+        "pages": 30
       }
     ],
     "boardgame-mythic-battles": [
@@ -3173,6 +3352,11 @@
         "query": "폭식의 베르세르크",
         "match": "폭식의 베르세르크",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "暴食のベルセルク",
+        "pages": 30
       }
     ],
     "fate-grand-order": [
@@ -3193,6 +3377,16 @@
         "query": "Fate Grand Order",
         "match": "Grand ?[Oo]rder",
         "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "FGO",
+        "pages": 50
+      },
+      {
+        "type": "pixiv",
+        "tag": "Fate/GrandOrder",
+        "pages": 50
       }
     ],
     "lamune-40-alphabet-series": [
@@ -3227,6 +3421,16 @@
       {
         "type": "yandere",
         "tags": "saber_marionette_r"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ラムネ&40",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "セイバーマリオネットR",
+        "pages": 30
       }
     ],
     "destiny-child": [
@@ -3241,6 +3445,11 @@
       {
         "type": "safebooru",
         "tags": "destiny_child"
+      },
+      {
+        "type": "pixiv",
+        "tag": "デスティニーチャイルド",
+        "pages": 30
       }
     ],
     "lord-of-series": [
@@ -3271,6 +3480,16 @@
       {
         "type": "safebooru",
         "tags": "lord_of_apocalypse"
+      },
+      {
+        "type": "pixiv",
+        "tag": "ロードオブヴァーミリオン",
+        "pages": 30
+      },
+      {
+        "type": "pixiv",
+        "tag": "ロード・オブ・アルカナ",
+        "pages": 30
       }
     ],
     "atelier-rorona": [
@@ -3289,6 +3508,18 @@
       {
         "type": "steam",
         "appids": [936160]
+      },
+      {
+        "type": "pixiv",
+        "tag": "ロロナのアトリエ",
+        "pages": 30
+      }
+    ],
+    "gojo-satoru": [
+      {
+        "type": "pixiv",
+        "tag": "五条悟",
+        "pages": 30
       }
     ]
   }

@@ -365,12 +365,25 @@ const adapters = {
       if (json.error) throw new Error(`pixiv 오류 ${json.message} ${url}`);
       return json.body;
     };
-    const profile = await getBody(`${ajax}/user/${source.userId}/profile/all`);
-    const ids = [...Object.keys(profile.illusts ?? {}), ...Object.keys(profile.manga ?? {})].sort(
-      (a, b) => Number(b) - Number(a),
-    );
-    const slice = ids.slice((page - 1) * 20, page * 20);
-    if (!slice.length) return null;
+    let slice;
+    if (source.tag) {
+      // 작품·작가 태그 검색: 전체 연령(mode=safe)만, 한 쪽 60작품. 큰 태그는 source.pages까지만 봅니다.
+      if (page > (source.pages ?? 30)) return null;
+      const tag = encodeURIComponent(source.tag);
+      const body = await getBody(
+        `${ajax}/search/artworks/${tag}?word=${tag}&order=date_d&mode=safe&p=${page}&s_mode=s_tag&type=all`,
+      );
+      const data = body.illustManga?.data ?? [];
+      if (!data.length) return null;
+      slice = data.filter((x) => x.id && x.xRestrict === 0 && x.aiType !== 2).map((x) => x.id);
+    } else {
+      const profile = await getBody(`${ajax}/user/${source.userId}/profile/all`);
+      const ids = [...Object.keys(profile.illusts ?? {}), ...Object.keys(profile.manga ?? {})].sort(
+        (a, b) => Number(b) - Number(a),
+      );
+      slice = ids.slice((page - 1) * 20, page * 20);
+      if (!slice.length) return null;
+    }
     const items = [];
     for (const id of slice) {
       let info;
