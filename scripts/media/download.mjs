@@ -3,7 +3,7 @@
  * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Downloads/Fanatic-Museum/<slug>/)에 내려받습니다.
  * 위치는 FANATIC_MEDIA_DIR 환경 변수로 바꿀 수 있습니다.
  *
- * - 전체 용량 한도(기본 100GB)를 넘기지 않습니다.
+ * - 전체 용량 한도(기본 200GB)를 넘기지 않습니다.
  * - 작품을 돌아가며 한 페이지씩 받아서, 큰 작품이 용량을 독차지하지 않게 합니다.
  * - 일반 등급만 받고, 선정적 태그와 저해상도 이미지는 거릅니다.
  * - 이미지마다 출처를 manifest.jsonl에 남깁니다.
@@ -11,7 +11,7 @@
  *
  * 받은 이미지는 저작권자에게 권리가 있으므로 개인 보관용입니다. 저장소와 배포본에는 넣지 않습니다.
  *
- * 사용: node scripts/media/download.mjs [--limit-gb 100] [--only fate,saekano] [--dry-run]
+ * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -36,7 +36,7 @@ const argValue = (name) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 100) * 1000 ** 3;
+const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 200) * 1000 ** 3;
 const ONLY = argValue('--only')?.split(',');
 const DRY_RUN = args.includes('--dry-run');
 
