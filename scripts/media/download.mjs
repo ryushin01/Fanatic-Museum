@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Downloads/Fanatic-Museum/<slug>/)에 내려받습니다.
+ * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Documents/Fanatic-Museum/<slug>/)에 내려받습니다.
  * 위치는 FANATIC_MEDIA_DIR 환경 변수로 바꿀 수 있습니다.
  *
  * - 전체 용량 한도(기본 200GB)를 넘기지 않습니다.
@@ -23,7 +23,7 @@ import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Downloads', 'Fanatic-Museum');
+const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
 const LOG_FILE = join(MEDIA, 'download.log');
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
@@ -142,6 +142,39 @@ async function fetchFile(url, extraHeaders = {}) {
       await sleep(5000 * attempt);
     }
   }
+}
+
+/** 인터넷 연결 문제로 보이는 오류(서버가 응답한 HTTP 오류는 제외) */
+function isNetworkError(error) {
+  const text = `${error?.name} ${error?.message} ${error?.cause?.code ?? ''}`;
+  return /fetch failed|aborted|timeout|응답 없음|ENOTFOUND|ECONNRESET|ECONNREFUSED|EAI_AGAIN|ENETUNREACH|ETIMEDOUT|socket/i.test(
+    text,
+  );
+}
+
+/** 인터넷이 다시 연결될 때까지 30초마다 확인하며 기다립니다(잠자기·와이파이 끊김 대비).
+ * 한 곳만 막혀도 계속 기다리지 않도록 여러 주소 가운데 하나라도 응답하면 연결된 것으로 봅니다. */
+const PROBES = [
+  'https://www.gstatic.com/generate_204',
+  'https://captive.apple.com/hotspot-detect.html',
+  'https://yande.re/',
+];
+async function isOnline() {
+  const results = await Promise.allSettled(
+    PROBES.map((url) => fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) })),
+  );
+  return results.some((r) => r.status === 'fulfilled' && r.value.status < 500);
+}
+async function waitForNetwork() {
+  let announced = false;
+  while (!(await isOnline())) {
+    if (!announced) {
+      await log('인터넷 연결이 끊겨 연결될 때까지 기다립니다.');
+      announced = true;
+    }
+    await sleep(30_000);
+  }
+  if (announced) await log('인터넷 연결이 돌아와 다시 받습니다.');
 }
 
 async function getJson(url) {
@@ -662,6 +695,7 @@ async function main() {
       items = await adapters[task.source.type](task.source, page);
     } catch (error) {
       await log(`${task.id} ${page}쪽 목록 실패: ${error.message}. 다음 차례에 다시 시도합니다.`);
+      if (isNetworkError(error)) await waitForNetwork();
       queue.push(task);
       continue;
     }
@@ -681,6 +715,7 @@ async function main() {
     // 동시에 받는 파일의 크기를 미리 예약해 한도를 넘지 않게 하고,
     // 한도 때문에 받지 못한 후보가 있으면 다음 페이지로 넘어가지 않습니다.
     let leftover = false;
+    let retryPage = false;
     const worker = async () => {
       while (pending.length) {
         if (used + reserved >= LIMIT_BYTES) {
@@ -768,6 +803,9 @@ async function main() {
         } catch (error) {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
+          // 인터넷 문제로 실패한 이미지가 있으면 이 쪽을 넘기지 않고 다음 차례에 다시 받습니다.
+          if (isNetworkError(error) && !String(error.message).includes('용량 한도'))
+            retryPage = true;
           await log(`${task.slug} ${item.key} 실패: ${error.message}`);
         } finally {
           if (!released) reserved -= reservation;
@@ -775,6 +813,14 @@ async function main() {
       }
     };
     await Promise.all(Array.from({ length: FILE_CONCURRENCY }, worker));
+    if (retryPage && !leftover) {
+      await log(
+        `${task.id} ${page}쪽: 연결 문제로 못 받은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`,
+      );
+      await waitForNetwork();
+      queue.push(task);
+      continue;
+    }
     if (leftover || pending.length) {
       await log(`${task.id} ${page}쪽: 용량 한도로 남은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`);
       stoppedByLimit = true;

@@ -71,6 +71,7 @@
     "format:check": "prettier --check .",
     "api:check": "pnpm api:types && git diff --exit-code src/shared/api/schema.d.ts",
     "lint:fsd": "steiger src",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "media:agent": "zsh scripts/media/launch-agent.sh"
   }
 }
