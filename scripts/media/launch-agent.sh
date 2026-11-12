@@ -73,11 +73,12 @@ PLIST
   <key>Label</key><string>$NOTIFY_LABEL</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/zsh</string><string>$X_REPO/scripts/media/notify-progress.sh</string><string>$LIMIT</string>
+    <string>$X_NODE</string><string>$X_REPO/scripts/media/notify-progress.mjs</string><string>$LIMIT</string>
   </array>
   <key>EnvironmentVariables</key>
   <dict><key>FANATIC_MEDIA_DIR</key><string>$X_MEDIA</string></dict>
   <key>StartInterval</key><integer>$NOTIFY_INTERVAL</integer>
+  <key>StandardErrorPath</key><string>$X_MEDIA/notify.err.log</string>
 </dict>
 </plist>
 PLIST
