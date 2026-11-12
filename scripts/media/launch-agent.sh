@@ -43,7 +43,12 @@ case "$1" in
 </plist>
 PLIST
     plutil -lint "$PLIST" >/dev/null
+    # 이미 등록되어 있으면 해제가 끝날 때까지 기다린 뒤 다시 등록합니다(바로 등록하면 실패합니다).
     launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    for i in {1..30}; do
+      launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1 || break
+      sleep 1
+    done
     launchctl bootstrap "$DOMAIN" "$PLIST"
     echo "등록했습니다: $PLIST (한도 ${LIMIT}GB, 보관함 $MEDIA)"
     ;;
