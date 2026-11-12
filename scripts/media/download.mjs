@@ -13,7 +13,7 @@
  *
  * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream, readFileSync, unlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import {
   mkdir,
@@ -855,7 +855,44 @@ async function main() {
   );
 }
 
-main().catch(async (error) => {
-  await log(`중단: ${error.stack ?? error}`);
-  process.exit(1);
-});
+/**
+ * 다운로더는 한 번에 하나만 돕니다. 이미 도는 다운로더가 있으면 상태 파일을 덮어쓰거나
+ * 받는 중인 미완성 파일(.part)을 지우지 않도록 바로 끝냅니다(정상 종료라 LaunchAgent가 다시 띄우지 않습니다).
+ */
+async function acquireLock() {
+  if (DRY_RUN) return true;
+  await mkdir(MEDIA, { recursive: true });
+  const lock = join(MEDIA, '.download.lock');
+  try {
+    const pid = Number(await readFile(lock, 'utf8'));
+    if (pid && pid !== process.pid) {
+      try {
+        process.kill(pid, 0);
+        console.log(`이미 다운로더가 돌고 있습니다(PID ${pid}). 끝냅니다.`);
+        return false;
+      } catch {
+        // 남아 있던 잠금 파일입니다(그 프로세스는 끝났습니다).
+      }
+    }
+  } catch {
+    // 잠금 파일이 없습니다.
+  }
+  await writeFile(lock, String(process.pid));
+  const release = () => {
+    try {
+      if (readFileSync(lock, 'utf8') === String(process.pid)) unlinkSync(lock);
+    } catch {
+      // 이미 지워졌습니다.
+    }
+  };
+  process.on('exit', release);
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(143));
+  return true;
+}
+
+if (await acquireLock()) {
+  main().catch(async (error) => {
+    await log(`중단: ${error.stack ?? error}`);
+    process.exit(1);
+  });
+}

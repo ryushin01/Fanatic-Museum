@@ -20,7 +20,10 @@ current=$(tail -1 "$LOG" 2>/dev/null | sed -E 's/^\[[^]]+\] //' | grep -oE '^[a-
 mtime=$(stat -f %m "$LOG" 2>/dev/null || echo 0)
 idle=$(( ($(date +%s) - mtime) / 60 ))
 
-if ! launchctl print "gui/$(id -u)/$LABEL" 2>/dev/null | grep -q 'state = running'; then
+if tail -1 "$LOG" | grep -qE '모든 출처를 받았습니다|용량 한도에 도달해 멈췄습니다'; then
+  title='다운로드를 마쳤습니다'
+  body="${used}GB / ${LIMIT}GB(${percent}%). $(tail -1 "$LOG" | sed -E 's/^\[[^]]+\] //')"
+elif ! launchctl print "gui/$(id -u)/$LABEL" 2>/dev/null | grep -q 'state = running'; then
   title='다운로드가 멈춰 있습니다'
   body="${used}GB / ${LIMIT}GB(${percent}%). 다운로더가 실행 중이 아닙니다. pnpm media:agent install로 다시 시작하세요."
 elif tail -1 "$LOG" | grep -q '인터넷 연결이 끊겨'; then
