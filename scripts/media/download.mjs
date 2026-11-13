@@ -17,6 +17,7 @@ import {
   createReadStream,
   createWriteStream,
   readFileSync,
+  renameSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs';
@@ -132,7 +133,9 @@ let run = null;
 function saveRun() {
   if (!run || DRY_RUN) return;
   try {
-    writeFileSync(RUN_FILE, JSON.stringify(run));
+    // 쓰는 도중 멈춰도 기록이 깨지지 않게 임시 파일에 쓴 뒤 이름을 바꿉니다.
+    writeFileSync(`${RUN_FILE}.tmp`, JSON.stringify(run));
+    renameSync(`${RUN_FILE}.tmp`, RUN_FILE);
   } catch {
     // 보관함에 쓸 수 없으면 다음 저장 때 다시 씁니다.
   }
@@ -149,11 +152,15 @@ function markStopped(ended, alert, detail = '') {
   if (alert && !quiet) notify(MEDIA, alert);
 }
 
+/** 이번 실행을 시작한 이유와 알림 여부(용량을 계산한 뒤 알림에 씁니다). */
+let startInfo = null;
+
 /**
- * 다시 시작했다면 그 이유(재부팅, 오류, 수동, 종료 신호, 강제 종료)와 멈춘 시간을 알리고,
+ * 실행 기록을 가장 먼저 시작합니다. 시작 준비 중에 오류가 나도 '오류로 멈춤'을 기록하고 알릴 수 있게 합니다.
+ * 다시 시작한 이유(재부팅, 오류, 다시 등록, 종료 신호, 강제 종료)를 정하고,
  * 30초마다 생존 시각을 남기면서 타이머가 크게 늦으면 잠자기에서 깬 것으로 알립니다.
  */
-async function announceStart(usedBytes) {
+async function beginRun() {
   if (DRY_RUN) return;
   const now = Date.now();
   const prev = await loadJson(RUN_FILE, null);
@@ -165,7 +172,7 @@ async function announceStart(usedBytes) {
     // 수동 정지 표시가 없습니다.
   }
   const reason = restartReason(prev, { now, bootAt: now - uptime() * 1000, stopRequestedAt });
-  const announce = shouldAnnounceRestart(prev, now);
+  const announce = shouldAnnounceRestart(prev, now, reason.kind);
   run = {
     pid: process.pid,
     startedAt: now,
@@ -176,9 +183,7 @@ async function announceStart(usedBytes) {
     errorNotifiedAt: prev?.errorNotifiedAt ?? 0,
   };
   saveRun();
-  const message = describeRestart(reason, usedBytes / 1e9);
-  await log(`${message.subtitle}(${reason.kind}). ${message.body}`);
-  if (announce) notify(MEDIA, message);
+  startInfo = { reason, announce };
 
   let lastTick = now;
   setInterval(() => {
@@ -193,6 +198,14 @@ async function announceStart(usedBytes) {
       notify(MEDIA, { subtitle: '맥이 잠자기에서 깨어났습니다', body });
     }
   }, 30_000).unref();
+}
+
+/** 받은 용량을 계산한 뒤 시작(다시 시작) 이유를 기록하고 알립니다. */
+async function announceStart(usedBytes) {
+  if (!startInfo) return;
+  const message = describeRestart(startInfo.reason, usedBytes / 1e9);
+  await log(`${message.subtitle}(${startInfo.reason.kind}). ${message.body}`);
+  if (startInfo.announce) notify(MEDIA, message);
 }
 
 let lastRequest = 0;
@@ -764,6 +777,7 @@ async function buildMd5Index(everywhere) {
 }
 
 async function main() {
+  await beginRun();
   const {
     works,
     artists = {},
@@ -1017,7 +1031,7 @@ async function acquireLock() {
 
 if (await acquireLock()) {
   main().catch(async (error) => {
-    await log(`중단: ${error.stack ?? error}`);
+    // 로그를 쓰지 못해도(디스크가 가득 참 등) 멈춘 이유는 먼저 남기고 알립니다.
     const detail = String(error?.message ?? error);
     markStopped(
       'error',
@@ -1027,6 +1041,11 @@ if (await acquireLock()) {
       },
       detail,
     );
+    try {
+      await log(`중단: ${error.stack ?? error}`);
+    } catch {
+      // 로그를 쓸 수 없습니다.
+    }
     process.exit(1);
   });
 }

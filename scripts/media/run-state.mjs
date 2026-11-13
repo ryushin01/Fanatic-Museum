@@ -74,8 +74,15 @@ export function describeRestart(reason, usedGb) {
   }
 }
 
-/** 지난 다시 시작 알림 뒤로 충분히 지났는지(오류로 연달아 다시 시작할 때 알림이 쏟아지지 않게) */
-export function shouldAnnounceRestart(prev, now) {
+/** 같은 문제로 되풀이될 수 있는 재시작(오류, 기록 없는 강제 종료)은 10분에 한 번만 알립니다. */
+const REPEATING = new Set(['error', 'crash']);
+
+/**
+ * 이번 재시작을 알릴지 정합니다. 재부팅·다시 등록·종료 신호는 늘 알리고,
+ * 오류·강제 종료는 지난 알림 뒤로 10분이 지났을 때만 알립니다(1분마다 다시 시작해도 알림이 쏟아지지 않게).
+ */
+export function shouldAnnounceRestart(prev, now, kind) {
+  if (!REPEATING.has(kind)) return true;
   return !prev?.restartNotifiedAt || now - prev.restartNotifiedAt >= RESTART_QUIET_MS;
 }
 

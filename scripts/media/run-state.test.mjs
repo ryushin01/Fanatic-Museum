@@ -78,10 +78,17 @@ describe('formatGap', () => {
 });
 
 describe('shouldAnnounceRestart', () => {
-  it('10분 안의 연속 재시작은 한 번만 알린다', () => {
-    expect(shouldAnnounceRestart(null, NOW)).toBe(true);
-    expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - 3 * MIN }, NOW)).toBe(false);
-    expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - 11 * MIN }, NOW)).toBe(true);
+  it('오류·강제 종료로 10분 안에 다시 시작하면 한 번만 알린다', () => {
+    expect(shouldAnnounceRestart(null, NOW, 'error')).toBe(true);
+    expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - 3 * MIN }, NOW, 'error')).toBe(false);
+    expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - 3 * MIN }, NOW, 'crash')).toBe(false);
+    expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - 11 * MIN }, NOW, 'error')).toBe(true);
+  });
+
+  it('재부팅·다시 등록·종료 신호는 방금 알렸어도 늘 알린다', () => {
+    for (const kind of ['reboot', 'manual', 'signal', 'rerun', 'first']) {
+      expect(shouldAnnounceRestart({ restartNotifiedAt: NOW - MIN }, NOW, kind)).toBe(true);
+    }
   });
 });
 
