@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.1.2-b5121b)
+![version](https://img.shields.io/badge/version-1.1.3-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -105,3 +105,12 @@ src/
 | ---------------------------------- | ----------------------------------------------------------------------- |
 | [개발 가이드](docs/development.md) | FSD 구조, 사전 렌더링, OpenAPI, 이미지 보관함, 모니터링, 접근성, 테스트 |
 | [버전 기록](CHANGELOG.md)          | 버전별 변경 내용                                                        |
+
+## 출처
+
+| 자료                                                               | 저작자                                                | 사용 허락                                                | 원본                                                                                                                          |
+| ------------------------------------------------------------------ | ----------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Noto Sans KR 글꼴(`@fontsource-variable/noto-sans-kr`)             | Google Inc.                                           | [SIL Open Font License 1.1](https://openfontlicense.org) | [Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+KR) · [Fontsource](https://fontsource.org/fonts/noto-sans-kr) |
+| 작품 이미지(관리자 컴퓨터에만 보관, 저장소와 공개 사이트에는 없음) | 각 작품의 저작권자(그림·사진·표지를 만든 작가와 회사) | 따로 허락받지 않음. 개인 보관용으로만 쓰고 배포하지 않음 | yande.re, Konachan, Safebooru, Steam, 교보문고, 네이버 웹툰, pixiv, HobbyLink Japan, BoardGameGeek                            |
+
+작품별로 받는 사이트와 검색 조건은 [`scripts/media/sources.json`](scripts/media/sources.json)에, 이미지마다의 원본 페이지는 보관함의 `manifest.jsonl`에 남깁니다. 공개 사이트의 자리 표시 그래픽과 스토리·테스트용 이미지는 코드로 그린 것이라 따로 출처가 없습니다.

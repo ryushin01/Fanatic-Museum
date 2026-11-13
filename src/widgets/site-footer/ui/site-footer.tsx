@@ -41,6 +41,9 @@ export function SiteFooter() {
               <li>
                 <a href={site.repository}>GitHub 저장소</a>
               </li>
+              <li>
+                <a href={`${site.repository}#출처`}>README의 출처</a>
+              </li>
             </ul>
           </nav>
         </div>

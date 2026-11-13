@@ -42,10 +42,6 @@ describe('WorkGallery', () => {
 
     await user.keyboard('{ArrowRight}');
     expect(within(dialog).getByRole('img', { name: '테스트 작품 일러스트 2' })).toBeInTheDocument();
-    expect(within(dialog).getByRole('link', { name: /원본 출처/ })).toHaveAttribute(
-      'href',
-      'https://example.com/post/2',
-    );
 
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();

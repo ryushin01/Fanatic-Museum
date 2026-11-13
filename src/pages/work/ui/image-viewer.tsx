@@ -85,16 +85,6 @@ export function ImageViewer({ title, images, index, onIndexChange, onClose }: Im
                 >
                   다음 이미지
                 </Button>
-                {image?.sourcePage && (
-                  <a
-                    className={styles.source}
-                    href={image.sourcePage}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    원본 출처<span className="visually-hidden">(새 창)</span>
-                  </a>
-                )}
               </div>
             </>
           )}
