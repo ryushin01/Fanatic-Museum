@@ -43,15 +43,18 @@ try {
   // 로그가 아직 없습니다.
 }
 
-let running = false;
-try {
-  const out = execFileSync('launchctl', ['print', `gui/${userInfo().uid}/${LABEL}`], {
-    encoding: 'utf8',
-  });
-  running = /state = running/.test(out);
-} catch {
-  running = false;
+/** launchd가 다운로더를 실행 중인지 확인합니다. 등록되지 않았으면 false입니다. */
+function isRunning() {
+  try {
+    const out = execFileSync('launchctl', ['print', `gui/${userInfo().uid}/${LABEL}`], {
+      encoding: 'utf8',
+    });
+    return /state = running/.test(out);
+  } catch {
+    return false;
+  }
 }
+const running = isRunning();
 
 const head = `${used}GB / ${LIMIT}GB(${percent}%)`;
 let title;
