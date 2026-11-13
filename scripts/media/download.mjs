@@ -13,7 +13,13 @@
  *
  * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
-import { createReadStream, createWriteStream, readFileSync, unlinkSync } from 'node:fs';
+import {
+  createReadStream,
+  createWriteStream,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { createHash } from 'node:crypto';
 import {
   mkdir,
@@ -26,15 +32,28 @@ import {
   rm,
   link,
 } from 'node:fs/promises';
-import { homedir } from 'node:os';
+import { homedir, uptime } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { notify } from './alert.mjs';
+import {
+  OFFLINE_ALERT_MS,
+  RESTART_QUIET_MS,
+  describeRestart,
+  formatGap,
+  restartReason,
+  shouldAnnounceRestart,
+  sleptFor,
+} from './run-state.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
+// 멈춤·다시 시작 알림용 실행 기록과, 등록 스크립트(install·uninstall)가 남기는 수동 정지 표시
+const RUN_FILE = join(MEDIA, '.download-run.json');
+const STOP_REQUEST_FILE = join(MEDIA, '.download-stop-requested');
 // 드라이런 기록은 실제 다운로드 로그(진행 알림이 읽는 파일)와 나눠 씁니다.
 const LOG_FILE = join(
   MEDIA,
@@ -106,6 +125,74 @@ async function log(message) {
   const line = `[${now()}] ${message}`;
   console.log(line);
   await appendFile(LOG_FILE, line + '\n');
+}
+
+/** 실행 기록(run-state.mjs 참고). 드라이런에서는 쓰지 않습니다. */
+let run = null;
+function saveRun() {
+  if (!run || DRY_RUN) return;
+  try {
+    writeFileSync(RUN_FILE, JSON.stringify(run));
+  } catch {
+    // 보관함에 쓸 수 없으면 다음 저장 때 다시 씁니다.
+  }
+}
+
+/** 다운로드를 멈출 때 이유를 기록하고 알립니다. 오류 알림은 10분에 한 번만 보냅니다(1분마다 다시 시작해도). */
+function markStopped(ended, alert, detail = '') {
+  if (!run || DRY_RUN) return;
+  const now = Date.now();
+  run = { ...run, ended, detail, beatAt: now };
+  const quiet = ended === 'error' && now - (run.errorNotifiedAt ?? 0) < RESTART_QUIET_MS;
+  if (ended === 'error' && !quiet) run.errorNotifiedAt = now;
+  saveRun();
+  if (alert && !quiet) notify(MEDIA, alert);
+}
+
+/**
+ * 다시 시작했다면 그 이유(재부팅, 오류, 수동, 종료 신호, 강제 종료)와 멈춘 시간을 알리고,
+ * 30초마다 생존 시각을 남기면서 타이머가 크게 늦으면 잠자기에서 깬 것으로 알립니다.
+ */
+async function announceStart(usedBytes) {
+  if (DRY_RUN) return;
+  const now = Date.now();
+  const prev = await loadJson(RUN_FILE, null);
+  let stopRequestedAt = 0;
+  try {
+    stopRequestedAt = Number(await readFile(STOP_REQUEST_FILE, 'utf8')) * 1000 || 0;
+    await rm(STOP_REQUEST_FILE, { force: true });
+  } catch {
+    // 수동 정지 표시가 없습니다.
+  }
+  const reason = restartReason(prev, { now, bootAt: now - uptime() * 1000, stopRequestedAt });
+  const announce = shouldAnnounceRestart(prev, now);
+  run = {
+    pid: process.pid,
+    startedAt: now,
+    beatAt: now,
+    ended: null,
+    detail: '',
+    restartNotifiedAt: announce ? now : (prev?.restartNotifiedAt ?? 0),
+    errorNotifiedAt: prev?.errorNotifiedAt ?? 0,
+  };
+  saveRun();
+  const message = describeRestart(reason, usedBytes / 1e9);
+  await log(`${message.subtitle}(${reason.kind}). ${message.body}`);
+  if (announce) notify(MEDIA, message);
+
+  let lastTick = now;
+  setInterval(() => {
+    const tick = Date.now();
+    const slept = sleptFor(lastTick, tick);
+    lastTick = tick;
+    run.beatAt = tick;
+    saveRun();
+    if (slept) {
+      const body = `${formatGap(slept)} 멈췄다가 이어 받습니다.`;
+      log(`잠자기에서 깨어났습니다: ${body}`).catch(() => {});
+      notify(MEDIA, { subtitle: '맥이 잠자기에서 깨어났습니다', body });
+    }
+  }, 30_000).unref();
 }
 
 let lastRequest = 0;
@@ -180,15 +267,32 @@ async function isOnline() {
   return results.some((r) => r.status === 'fulfilled' && r.value.status < 500);
 }
 async function waitForNetwork() {
-  let announced = false;
+  let since = 0;
+  let alerted = false;
   while (!(await isOnline())) {
-    if (!announced) {
+    if (!since) {
+      since = Date.now();
       await log('인터넷 연결이 끊겨 연결될 때까지 기다립니다.');
-      announced = true;
+    }
+    // 잠깐 끊기는 정도는 기록만 남기고, 2분 넘게 끊겼을 때 한 번만 알립니다.
+    if (!alerted && !DRY_RUN && Date.now() - since >= OFFLINE_ALERT_MS) {
+      alerted = true;
+      notify(MEDIA, {
+        subtitle: '인터넷 연결이 끊겼습니다',
+        body: '연결될 때까지 기다렸다가 이어서 받습니다.',
+      });
     }
     await sleep(30_000);
   }
-  if (announced) await log('인터넷 연결이 돌아와 다시 받습니다.');
+  if (since) {
+    await log('인터넷 연결이 돌아와 다시 받습니다.');
+    if (alerted) {
+      notify(MEDIA, {
+        subtitle: '인터넷이 돌아와 다시 받습니다',
+        body: `${formatGap(Date.now() - since)} 멈춰 있었습니다.`,
+      });
+    }
+  }
 }
 
 async function getJson(url) {
@@ -695,6 +799,7 @@ async function main() {
   // 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)도 하드 링크로 연결합니다.
   const md5Index = await buildMd5Index(everywhere);
   await log(`시작: 사용 ${(used / 1e9).toFixed(2)}GB / 한도 ${(LIMIT_BYTES / 1e9).toFixed(0)}GB`);
+  await announceStart(used);
 
   const queue = Object.entries(groups)
     .filter(([slug]) => !ONLY || ONLY.some((o) => slug === o || slug.startsWith(`${o}/`)))
@@ -858,6 +963,13 @@ async function main() {
       ? '용량 한도에 도달해 멈췄습니다.'
       : '모든 출처를 받았습니다.';
   await log(`${result} 누적 ${(used / 1e9).toFixed(2)}GB`);
+  markStopped('done', {
+    subtitle:
+      stoppedByLimit || used >= LIMIT_BYTES
+        ? '용량 한도에 도달해 멈췄습니다'
+        : '다운로드를 마쳤습니다',
+    body: `모두 ${(used / 1e9).toFixed(1)}GB를 받았습니다.`,
+  });
 }
 
 /**
@@ -891,13 +1003,30 @@ async function acquireLock() {
     }
   };
   process.on('exit', release);
-  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(143));
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    process.on(signal, () => {
+      markStopped('signal', {
+        subtitle: '다운로드를 멈췄습니다',
+        body: '종료 신호를 받았습니다. 맥을 다시 켜거나 다시 등록하면 이어서 받습니다.',
+      });
+      process.exit(143);
+    });
+  }
   return true;
 }
 
 if (await acquireLock()) {
   main().catch(async (error) => {
     await log(`중단: ${error.stack ?? error}`);
+    const detail = String(error?.message ?? error);
+    markStopped(
+      'error',
+      {
+        subtitle: '오류로 멈췄습니다',
+        body: `${detail.slice(0, 80)}. 1분 뒤 자동으로 다시 시작합니다.`,
+      },
+      detail,
+    );
     process.exit(1);
   });
 }

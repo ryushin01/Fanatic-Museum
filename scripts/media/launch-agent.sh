@@ -5,6 +5,7 @@
 # - 인터넷이 끊기면 다운로더가 연결될 때까지 기다렸다가 이어서 받습니다.
 #
 # - 2시간마다 진행 상황(받은 용량·비율·멈춤 여부)을 알림 센터로 알립니다.
+# - 다운로더가 멈추거나 다시 시작하면(재부팅·오류·수동·잠자기·인터넷 끊김) 바로 알립니다.
 #
 # 사용: scripts/media/launch-agent.sh install [한도GB]   # 기본 200
 #       scripts/media/launch-agent.sh uninstall
@@ -26,6 +27,14 @@ xml() {
   v=${v//</&lt;}
   v=${v//>/&gt;}
   print -r -- "$v"
+}
+
+# 다운로더가 종료 신호를 받지 못하고 끝나도, 다음에 시작할 때 '직접 멈춘 것'으로 알릴 수 있게 시각을 남깁니다.
+mark_stop_requested() {
+  if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
+    mkdir -p "$MEDIA"
+    print -r -- "$(date +%s)" > "$MEDIA/.download-stop-requested"
+  fi
 }
 
 case "$1" in
@@ -59,6 +68,7 @@ case "$1" in
 PLIST
     plutil -lint "$PLIST" >/dev/null
     # 이미 등록되어 있으면 해제가 끝날 때까지 기다린 뒤 다시 등록합니다(바로 등록하면 실패합니다).
+    mark_stop_requested
     launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
     for i in {1..30}; do
       launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1 || break
@@ -92,6 +102,7 @@ PLIST
     echo "등록했습니다: $PLIST (한도 ${LIMIT}GB, 보관함 $MEDIA), 진행 알림 $((NOTIFY_INTERVAL / 60))분마다"
     ;;
   uninstall)
+    mark_stop_requested
     launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
     launchctl bootout "$DOMAIN/$NOTIFY_LABEL" 2>/dev/null || true
     rm -f "$PLIST" "$NOTIFY_PLIST"
