@@ -64,7 +64,7 @@ describe('monitoring', () => {
     });
     expect(
       beforeSend({
-        extra: { arguments: ['입력'], other: 1 },
+        extra: { arguments: ['입력'], __serialized__: { email: 'a@b.c' }, other: 1 },
         request: { url: 'https://a.b/works#token' },
       }),
     ).toEqual({ extra: { other: 1 }, request: { url: 'https://a.b/works' } });

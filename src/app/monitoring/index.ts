@@ -57,9 +57,14 @@ export function initMonitoring() {
             stackFrameVariables: false,
           },
           integrations: (defaults) => defaults.filter(({ name }) => !OFF_INTEGRATIONS.has(name)),
-          // 감싼 콜백이 던진 오류에는 그 콜백의 인수(입력 이벤트 등)가 extra.arguments로 붙습니다. 오류 내용이 아니므로 지웁니다.
+          // 오류 내용이 아닌 것은 지웁니다.
+          // - extra.arguments: 감싼 콜백이 던진 오류에 붙는 그 콜백의 인수(입력 이벤트 등)
+          // - extra.__serialized__: Error가 아닌 일반 객체로 거부된 Promise의 필드 값(이메일·토큰 등이 들 수 있음)
           beforeSend(event) {
-            if (event.extra) delete event.extra.arguments;
+            if (event.extra) {
+              delete event.extra.arguments;
+              delete event.extra.__serialized__;
+            }
             if (event.request?.url) event.request.url = event.request.url.split('#')[0];
             return event;
           },
