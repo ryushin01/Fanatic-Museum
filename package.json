@@ -1,6 +1,6 @@
 {
   "name": "fanatic-museum",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.16.1",
@@ -57,7 +57,8 @@
     "preview": "sirv build/client --port 4173 --single __spa-fallback.html",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "test:storybook": "vitest run --project storybook",
     "test:e2e": "playwright test",
     "api:types": "openapi-typescript openapi/archive.yaml -o src/shared/api/schema.d.ts",
     "media:download": "node scripts/media/download.mjs",

@@ -1,32 +1,100 @@
-import type * as SentryModule from '@sentry/react-router';
 import type { Metric } from 'web-vitals';
+
+import type * as SentryExports from './sentry';
+
+type SentryModule = typeof SentryExports;
 
 const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 
-let sentry: Promise<typeof SentryModule> | undefined;
+/** Sentry를 받기 전에 모아 둘 오류 수. 오류가 반복돼도 메모리를 계속 쓰지 않게 합니다. */
+const MAX_EARLY_ERRORS = 20;
+
+/** 방문 기록(세션), 이동·클릭 기록(브레드크럼), 콘솔 기록은 모으지 않습니다. */
+const OFF_INTEGRATIONS = new Set(['BrowserSession', 'Breadcrumbs', 'Console']);
+
+let sentry: Promise<SentryModule | null> | undefined;
+let ready: SentryModule | null = null;
+
+/** Sentry를 받는 동안 난 오류. type이 있으면 전역 처리기가 잡은 처리되지 않은 오류입니다. */
+const early: { error: unknown; type?: string }[] = [];
+const keep = (error: unknown, type?: string) => {
+  if (early.length < MAX_EARLY_ERRORS) early.push({ error, type });
+};
 
 /**
- * 오류·성능 모니터링을 켭니다. 첫 화면을 무겁게 하지 않도록 Sentry와 web-vitals는 나중에 불러옵니다.
- * - VITE_SENTRY_DSN이 있으면 Sentry로 오류를 보내고, 나쁜(poor) Web Vitals를 경고로 남깁니다.
- * - 없으면 개발 모드에서만 콘솔에 Web Vitals를 찍습니다.
+ * 오류·성능 모니터링을 켭니다. 첫 화면을 무겁게 하지 않도록 Sentry와 web-vitals는 나중에 따로 받습니다.
+ * - VITE_SENTRY_DSN이 있으면 처리하지 못한 오류와 나쁜(poor) Web Vitals를 Sentry로 보냅니다. 오류 내용만 보냅니다.
+ * - 없으면 Sentry를 받지 않고, 개발 모드에서만 Web Vitals를 콘솔에 찍습니다.
  */
 export function initMonitoring() {
   if (typeof window === 'undefined') return;
 
   if (dsn) {
-    sentry = import('@sentry/react-router').then((Sentry) => {
-      Sentry.init({
-        dsn,
-        environment: import.meta.env.MODE,
-        release: import.meta.env.VITE_RELEASE as string | undefined,
+    const onError = (event: ErrorEvent) => keep(event.error ?? event.message, 'onerror');
+    const onRejection = (event: PromiseRejectionEvent) =>
+      keep(event.reason, 'onunhandledrejection');
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    const stopBuffering = () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
+
+    sentry = afterFirstPaint()
+      .then(() => import('./sentry'))
+      .then((Sentry) => {
+        Sentry.init({
+          dsn,
+          environment: import.meta.env.MODE,
+          release: import.meta.env.VITE_RELEASE as string | undefined,
+          // 오류 내용만 남깁니다. 사용자 정보·쿠키·헤더·쿼리 문자열은 모으지 않습니다.
+          dataCollection: {
+            userInfo: false,
+            cookies: false,
+            httpHeaders: false,
+            httpBodies: [],
+            urlQueryParams: false,
+            stackFrameVariables: false,
+          },
+          integrations: (defaults) => defaults.filter(({ name }) => !OFF_INTEGRATIONS.has(name)),
+          // 오류 내용이 아닌 것은 지웁니다.
+          // - extra.arguments: 감싼 콜백이 던진 오류에 붙는 그 콜백의 인수(입력 이벤트 등)
+          // - extra.__serialized__: Error가 아닌 일반 객체로 거부된 Promise의 필드 값(이메일·토큰 등이 들 수 있음)
+          beforeSend(event) {
+            if (event.extra) {
+              delete event.extra.arguments;
+              delete event.extra.__serialized__;
+            }
+            if (event.request?.url) event.request.url = event.request.url.split('#')[0];
+            return event;
+          },
+        });
+        stopBuffering();
+        ready = Sentry;
+        for (const { error, type } of early.splice(0)) {
+          if (type) captureUnhandled(Sentry, error, type);
+          else Sentry.captureException(error);
+        }
+        return Sentry;
+      })
+      // Sentry를 받지 못해도 사이트는 그대로 돕니다. 모아 둔 오류는 버리고, 원인은 개발자 도구에 남깁니다.
+      .catch((error: unknown) => {
+        console.warn('오류 모니터링(Sentry)을 불러오지 못했습니다.', error);
+        stopBuffering();
+        early.length = 0;
+        return null;
       });
-      return Sentry;
-    });
   }
 
-  void import('web-vitals').then(({ onCLS, onINP, onLCP, onFCP, onTTFB }) => {
-    for (const subscribe of [onCLS, onINP, onLCP, onFCP, onTTFB]) subscribe(reportMetric);
-  });
+  // 보낼 곳도 찍을 곳도 없으면(DSN 없는 배포) 지표 관찰기를 달지 않습니다.
+  if (!dsn && !import.meta.env.DEV) return;
+
+  void import('web-vitals')
+    .then(({ onCLS, onINP, onLCP, onFCP, onTTFB }) => {
+      for (const subscribe of [onCLS, onINP, onLCP, onFCP, onTTFB]) subscribe(reportMetric);
+    })
+    // 지표를 받지 못해도 사이트는 그대로 돕니다.
+    .catch(() => undefined);
 }
 
 function reportMetric(metric: Metric) {
@@ -34,17 +102,47 @@ function reportMetric(metric: Metric) {
     console.debug(`[web-vitals] ${metric.name} ${metric.value.toFixed(1)} (${metric.rating})`);
   }
   if (!sentry || metric.rating !== 'poor') return;
+  // CLS·INP는 다른 화면으로 옮긴 뒤에 알려질 수 있어, 지표가 속한 쪽의 주소를 씁니다.
+  const path = metric.navigationURL
+    ? new URL(metric.navigationURL, location.origin).pathname
+    : location.pathname;
   void sentry.then((Sentry) =>
-    Sentry.captureMessage(`Web Vitals 나쁨: ${metric.name}`, {
+    Sentry?.captureMessage(`Web Vitals 나쁨: ${metric.name}`, {
       level: 'warning',
-      tags: { metric: metric.name, rating: metric.rating, path: location.pathname },
+      tags: { metric: metric.name, rating: metric.rating, path },
       extra: { value: metric.value, id: metric.id, navigationType: metric.navigationType },
     }),
   );
 }
 
-/** 화면 오류 경계에서 잡은 오류를 보냅니다. */
+/** 화면 오류 경계에서 잡은 오류를 보냅니다. Sentry를 받는 중이면 한도 안에서 모아 두었다가 보냅니다. */
 export function reportError(error: unknown) {
-  if (!sentry) return;
-  void sentry.then((Sentry) => Sentry.captureException(error));
+  if (ready) ready.captureException(error);
+  else if (sentry) keep(error);
+}
+
+/** 전역 처리기가 잡은 것처럼 '처리되지 않은 오류'로 표시해 보냅니다. (captureException은 기본으로 handled: true) */
+function captureUnhandled(Sentry: SentryModule, error: unknown, type: string) {
+  Sentry.withScope((scope) => {
+    scope.addEventProcessor((event) => {
+      for (const value of event.exception?.values ?? []) value.mechanism = { type, handled: false };
+      return event;
+    });
+    Sentry.captureException(error);
+  });
+}
+
+/**
+ * 페이지를 다 받은 뒤(load) 브라우저가 한가할 때 풀립니다. 첫 화면을 그리는 동안 Sentry를 받느라 대역폭을 나눠 쓰지 않게 합니다.
+ * requestIdleCallback이 없는 브라우저(Safari 등)는 바로 다음 차례에 풉니다. 그 사이 오류는 위의 버퍼가 모읍니다.
+ */
+function afterFirstPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    const idle = () =>
+      'requestIdleCallback' in window
+        ? window.requestIdleCallback(() => resolve(), { timeout: 3000 })
+        : setTimeout(resolve, 0);
+    if (document.readyState === 'complete') idle();
+    else window.addEventListener('load', idle, { once: true });
+  });
 }
