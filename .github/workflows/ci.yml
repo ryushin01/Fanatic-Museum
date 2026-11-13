@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   check:
-    name: Format · Lint · FSD · API · Typecheck · Test · Build · Size · E2E · Lighthouse
+    name: Format · Lint · FSD · API · Typecheck · Test · Build · Size · Storybook · E2E · Lighthouse
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -36,6 +36,8 @@ jobs:
       - run: pnpm build:all
       - run: pnpm size
       - run: pnpm exec playwright install --with-deps chromium
+      # 모든 스토리를 실제 브라우저에서 그리고 접근성 검사를 돌립니다.
+      - run: pnpm test:storybook
       - run: pnpm test:e2e
       - run: pnpm lhci
       - uses: actions/upload-artifact@v7
