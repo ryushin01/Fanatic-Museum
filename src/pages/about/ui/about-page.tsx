@@ -44,6 +44,13 @@ export function AboutPage() {
               대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
             </p>
             <p>로컬에서 이미지를 볼 때는 원본이 올라온 페이지를 함께 표시합니다.</p>
+            <p>
+              이미지를 받는 곳과 글꼴 같은 외부 자료의 출처는{' '}
+              <a href={`${site.repository}#출처`} rel="noreferrer" target="_blank">
+                README의 출처<span className="visually-hidden">(새 창)</span>
+              </a>
+              에 모았습니다.
+            </p>
           </div>
         </section>
 
