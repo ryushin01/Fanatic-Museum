@@ -56,13 +56,14 @@ pnpm build && pnpm preview
 - 중간에 멈춰도 다시 실행하면 이어서 받습니다. 인터넷이 끊기면 받던 쪽을 넘기지 않고, 연결될 때까지 30초마다 확인하며 기다립니다.
 - `pnpm media:agent install [한도GB]`로 macOS 로그인 항목(LaunchAgent)에 등록하면, 로그인할 때 자동으로 시작하고 비정상 종료되면 1분 뒤 다시 시작합니다. 다 받았거나 한도에 도달해 정상 종료하면 다시 시작하지 않습니다. `status`로 상태를, `uninstall`로 해제합니다. 함께 등록되는 진행 알림이 2시간마다 받은 용량·비율, 지난 알림 이후 늘어난 양, 지금 받는 모음을 알림 센터로 알리고, 다운로더가 멈췄거나 인터넷을 기다리는 중이면 그 사실을 알립니다(간격은 `FANATIC_NOTIFY_INTERVAL` 초, 기록은 `notify.log`). 잠자기 중에는 멈추고 깨어나면 이어 받습니다(`caffeinate -i`로 자동 잠자기는 막지만 덮개를 닫으면 잠듭니다). 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
 - `public/media/`가 없으면(CI, 배포) 로더가 빈 목록을 받고, 화면은 번호와 대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
+- 외부 자료의 출처는 화면이 아니라 README의 `## 출처`에 모읍니다(모든 프로젝트 공통 규칙). 출처 종류를 더하면(`sources.json`) README의 표도 고칩니다. 이미지마다의 원본 페이지는 로컬 목록(`manifest.jsonl`, `public/media/index.json`의 `sourcePage`)에만 있어 README에 두지 않고, 로컬 뷰어의 '원본 출처'로 보여 줍니다.
 - Vercel CLI는 `.gitignore`를 따르지 않으므로 `.vercelignore`에서 `media/`·`public/media/`를 뺍니다. 그래도 들어가는 일이 없도록 `VERCEL`·`CI` 환경의 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).
 
 ## 모니터링
 
 `src/app/monitoring`이 Sentry와 web-vitals를 첫 화면 뒤에 따로 불러옵니다.
 
-- Sentry는 페이지를 다 받은 뒤(load) 브라우저가 한가할 때 받고, 쓰는 함수만 다시 내보내는 `sentry.ts`를 거칩니다. 그 사이 난 오류는 20개까지 모았다가 처리되지 않은 오류로 보냅니다.
+- Sentry는 페이지를 다 받은 뒤(load) 브라우저가 한가할 때 받고(load가 10초 안에 오지 않으면 그때 바로), 쓰는 함수만 다시 내보내는 `sentry.ts`를 거칩니다. 그 사이 난 오류는 20개까지 모았다가 처리되지 않은 오류로 보냅니다.
 - 오류 내용만 보냅니다. 사용자 정보·쿠키·헤더·쿼리 문자열·스택 변수는 모으지 않고(`dataCollection`), 방문 세션·이동 기록·콘솔 기록도 끕니다. 감싼 콜백의 인수와 주소의 `#` 뒤는 지웁니다.
 - DSN이 없는 배포에서는 web-vitals도 받지 않습니다.
 
