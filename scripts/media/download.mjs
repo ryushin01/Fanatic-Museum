@@ -13,9 +13,19 @@
  *
  * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream, readFileSync, unlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from 'node:fs/promises';
+import {
+  mkdir,
+  readFile,
+  readdir,
+  writeFile,
+  appendFile,
+  stat,
+  rename,
+  rm,
+  link,
+} from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +35,11 @@ import { pipeline } from 'node:stream/promises';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
-const LOG_FILE = join(MEDIA, 'download.log');
+// 드라이런 기록은 실제 다운로드 로그(진행 알림이 읽는 파일)와 나눠 씁니다.
+const LOG_FILE = join(
+  MEDIA,
+  process.argv.includes('--dry-run') ? 'download.dry-run.log' : 'download.log',
+);
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
 // 일부 쇼핑몰은 일반 브라우저 이름으로만 응답합니다.
 const BROWSER_UA =
@@ -667,6 +681,12 @@ async function main() {
   const everywhere = new Map();
   for (const slug of Object.keys(groups)) {
     await mkdir(join(MEDIA, slug), { recursive: true });
+    // 지난번에 중간에 끊긴 미완성 파일(.part)을 지웁니다(다운로더는 한 번에 하나만 돕니다).
+    if (!DRY_RUN) {
+      for (const name of await readdir(join(MEDIA, slug))) {
+        if (name.endsWith('.part')) await rm(join(MEDIA, slug, name), { force: true });
+      }
+    }
     const entries = await readManifest(slug);
     seen.set(slug, new Set(entries.map((e) => e.key)));
     for (const e of entries) if (!e.linked) everywhere.set(e.key, { ...e, dir: slug });
@@ -832,14 +852,52 @@ async function main() {
     queue.push(task);
   }
 
-  await log(
+  // 진행 알림이 최종 용량을 읽을 수 있게 누적 용량을 함께 남깁니다.
+  const result =
     stoppedByLimit || used >= LIMIT_BYTES
       ? '용량 한도에 도달해 멈췄습니다.'
-      : '모든 출처를 받았습니다.',
-  );
+      : '모든 출처를 받았습니다.';
+  await log(`${result} 누적 ${(used / 1e9).toFixed(2)}GB`);
 }
 
-main().catch(async (error) => {
-  await log(`중단: ${error.stack ?? error}`);
-  process.exit(1);
-});
+/**
+ * 다운로더는 한 번에 하나만 돕니다. 이미 도는 다운로더가 있으면 상태 파일을 덮어쓰거나
+ * 받는 중인 미완성 파일(.part)을 지우지 않도록 바로 끝냅니다(정상 종료라 LaunchAgent가 다시 띄우지 않습니다).
+ */
+async function acquireLock() {
+  if (DRY_RUN) return true;
+  await mkdir(MEDIA, { recursive: true });
+  const lock = join(MEDIA, '.download.lock');
+  try {
+    const pid = Number(await readFile(lock, 'utf8'));
+    if (pid && pid !== process.pid) {
+      try {
+        process.kill(pid, 0);
+        console.log(`이미 다운로더가 돌고 있습니다(PID ${pid}). 끝냅니다.`);
+        return false;
+      } catch {
+        // 남아 있던 잠금 파일입니다(그 프로세스는 끝났습니다).
+      }
+    }
+  } catch {
+    // 잠금 파일이 없습니다.
+  }
+  await writeFile(lock, String(process.pid));
+  const release = () => {
+    try {
+      if (readFileSync(lock, 'utf8') === String(process.pid)) unlinkSync(lock);
+    } catch {
+      // 이미 지워졌습니다.
+    }
+  };
+  process.on('exit', release);
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(143));
+  return true;
+}
+
+if (await acquireLock()) {
+  main().catch(async (error) => {
+    await log(`중단: ${error.stack ?? error}`);
+    process.exit(1);
+  });
+}
