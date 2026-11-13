@@ -91,3 +91,7 @@ pnpm build && pnpm preview
 | `pnpm format:check` / `lint` / `lint:fsd` / `typecheck` | Prettier / ESLint / Steiger / 타입 검사                                                   |
 
 CI(GitHub Actions)는 위 단계를 모두 돌립니다. Dependabot이 의존성을 매주 확인합니다.
+
+## PR 미리보기 배포
+
+Vercel의 하루 배포 한도를 아끼려고 PR 미리보기 배포를 껐습니다(`vercel.json`의 `git.deploymentEnabled`). `main`에 머지할 때만 운영으로 배포하고, PR에서는 CI 검사만 돕니다. 미리보기가 꼭 필요하면 그 브랜치를 `deploymentEnabled`에 잠시 넣습니다.
