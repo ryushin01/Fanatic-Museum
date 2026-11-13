@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Downloads/Fanatic-Museum/<slug>/)에 내려받습니다.
+ * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Documents/Fanatic-Museum/<slug>/)에 내려받습니다.
  * 위치는 FANATIC_MEDIA_DIR 환경 변수로 바꿀 수 있습니다.
  *
- * - 전체 용량 한도(기본 100GB)를 넘기지 않습니다.
+ * - 전체 용량 한도(기본 200GB)를 넘기지 않습니다.
  * - 작품을 돌아가며 한 페이지씩 받아서, 큰 작품이 용량을 독차지하지 않게 합니다.
  * - 일반 등급만 받고, 선정적 태그와 저해상도 이미지는 거릅니다.
  * - 이미지마다 출처를 manifest.jsonl에 남깁니다.
@@ -11,11 +11,21 @@
  *
  * 받은 이미지는 저작권자에게 권리가 있으므로 개인 보관용입니다. 저장소와 배포본에는 넣지 않습니다.
  *
- * 사용: node scripts/media/download.mjs [--limit-gb 100] [--only fate,saekano] [--dry-run]
+ * 사용: node scripts/media/download.mjs [--limit-gb 200] [--only fate,saekano] [--dry-run]
  */
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream, readFileSync, unlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile, appendFile, stat, rename, rm, link } from 'node:fs/promises';
+import {
+  mkdir,
+  readFile,
+  readdir,
+  writeFile,
+  appendFile,
+  stat,
+  rename,
+  rm,
+  link,
+} from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,9 +33,13 @@ import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Downloads', 'Fanatic-Museum');
+const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
-const LOG_FILE = join(MEDIA, 'download.log');
+// 드라이런 기록은 실제 다운로드 로그(진행 알림이 읽는 파일)와 나눠 씁니다.
+const LOG_FILE = join(
+  MEDIA,
+  process.argv.includes('--dry-run') ? 'download.dry-run.log' : 'download.log',
+);
 const UA = 'FanaticMuseumArchiver/1.0 (personal archive)';
 // 일부 쇼핑몰은 일반 브라우저 이름으로만 응답합니다.
 const BROWSER_UA =
@@ -36,7 +50,7 @@ const argValue = (name) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 100) * 1000 ** 3;
+const LIMIT_BYTES = Number(argValue('--limit-gb') ?? 200) * 1000 ** 3;
 const ONLY = argValue('--only')?.split(',');
 const DRY_RUN = args.includes('--dry-run');
 
@@ -142,6 +156,39 @@ async function fetchFile(url, extraHeaders = {}) {
       await sleep(5000 * attempt);
     }
   }
+}
+
+/** 인터넷 연결 문제로 보이는 오류(서버가 응답한 HTTP 오류는 제외) */
+function isNetworkError(error) {
+  const text = `${error?.name} ${error?.message} ${error?.cause?.code ?? ''}`;
+  return /fetch failed|aborted|timeout|응답 없음|ENOTFOUND|ECONNRESET|ECONNREFUSED|EAI_AGAIN|ENETUNREACH|ETIMEDOUT|socket/i.test(
+    text,
+  );
+}
+
+/** 인터넷이 다시 연결될 때까지 30초마다 확인하며 기다립니다(잠자기·와이파이 끊김 대비).
+ * 한 곳만 막혀도 계속 기다리지 않도록 여러 주소 가운데 하나라도 응답하면 연결된 것으로 봅니다. */
+const PROBES = [
+  'https://www.gstatic.com/generate_204',
+  'https://captive.apple.com/hotspot-detect.html',
+  'https://yande.re/',
+];
+async function isOnline() {
+  const results = await Promise.allSettled(
+    PROBES.map((url) => fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) })),
+  );
+  return results.some((r) => r.status === 'fulfilled' && r.value.status < 500);
+}
+async function waitForNetwork() {
+  let announced = false;
+  while (!(await isOnline())) {
+    if (!announced) {
+      await log('인터넷 연결이 끊겨 연결될 때까지 기다립니다.');
+      announced = true;
+    }
+    await sleep(30_000);
+  }
+  if (announced) await log('인터넷 연결이 돌아와 다시 받습니다.');
 }
 
 async function getJson(url) {
@@ -300,6 +347,119 @@ const adapters = {
           headers: { 'User-Agent': BROWSER_UA },
         });
       }
+    }
+    return items;
+  },
+  /**
+   * BoardGameGeek 이미지 갤러리(보드게임 상자·구성물·플레이 사진). 갤러리 한 쪽(50장)씩 받고,
+   * 이미지마다 원본 해상도 주소를 다시 물어 받습니다.
+   */
+  async bgg(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA };
+    const api = 'https://api.geekdo.com/api';
+    const url = `${api}/images?ajax=1&gallery=all&nosession=1&objectid=${source.id}&objecttype=thing&pageid=${page}&showcount=50&size=original&sort=hot`;
+    const res = await politeFetch(url, { headers });
+    // 실패 응답(HTML 오류 페이지 등)을 JSON으로 읽지 않고, 다음 차례에 다시 시도합니다.
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+    const list = await res.json();
+    const images = list.images ?? [];
+    if (!images.length) return null;
+    const items = [];
+    for (const image of images) {
+      // 원본 주소를 묻습니다. 일시적 실패(429·5xx·네트워크)는 politeFetch가 다시 시도하고,
+      // 그래도 실패하면 이 쪽 전체를 다음 차례에 다시 봅니다(1024px로 저장해 원본을 놓치지 않도록).
+      // 원본 정보가 아예 없을 때(404 등)만 큰 크기(1024px)로 받습니다.
+      let imageUrl = image.imageurl_lg;
+      const detailRes = await politeFetch(`${api}/images/${image.imageid}`, { headers });
+      if (detailRes.ok) {
+        imageUrl = (await detailRes.json()).images?.original?.url ?? imageUrl;
+      } else {
+        await detailRes.body?.cancel();
+        if (detailRes.status !== 404 && detailRes.status !== 410)
+          throw new Error(`HTTP ${detailRes.status} 이미지 ${image.imageid}`);
+      }
+      if (!imageUrl) continue;
+      items.push({
+        key: `bgg-${image.imageid}`,
+        fileUrl: imageUrl,
+        ext: extensionOf(imageUrl),
+        size: null,
+        width: 0,
+        height: 0,
+        rating: null,
+        official: true,
+        tags: [],
+        page: `https://boardgamegeek.com/image/${image.imageid}`,
+        origin: `${source.name ?? source.id}${image.caption ? ` — ${image.caption}` : ''}`,
+        author: image.user?.username ?? null,
+        headers,
+      });
+    }
+    return items;
+  },
+  /**
+   * pixiv 작가 계정의 공개 작품(로그인 없이 볼 수 있는 전체 연령 작품만). 한 쪽에 20작품씩,
+   * 작품마다 등급(xRestrict)과 AI 생성 여부를 확인하고 원본 이미지를 모두 받습니다.
+   * 원본 서버(i.pximg.net)는 pixiv에서 온 요청(Referer)만 허용합니다.
+   */
+  async pixiv(source, page) {
+    const headers = { 'User-Agent': BROWSER_UA, Referer: 'https://www.pixiv.net/' };
+    const ajax = 'https://www.pixiv.net/ajax';
+    const getBody = async (url) => {
+      const res = await politeFetch(url, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+      const json = await res.json();
+      if (json.error) throw new Error(`pixiv 오류 ${json.message} ${url}`);
+      return json.body;
+    };
+    let slice;
+    if (source.tag) {
+      // 작품·작가 태그 검색: 전체 연령(mode=safe)만, 한 쪽 60작품. 큰 태그는 source.pages까지만 봅니다.
+      if (page > (source.pages ?? 30)) return null;
+      const tag = encodeURIComponent(source.tag);
+      const body = await getBody(
+        `${ajax}/search/artworks/${tag}?word=${tag}&order=date_d&mode=safe&p=${page}&s_mode=s_tag&type=all`,
+      );
+      const data = body.illustManga?.data ?? [];
+      if (!data.length) return null;
+      slice = data.filter((x) => x.id && x.xRestrict === 0 && x.aiType !== 2).map((x) => x.id);
+    } else {
+      const profile = await getBody(`${ajax}/user/${source.userId}/profile/all`);
+      const ids = [...Object.keys(profile.illusts ?? {}), ...Object.keys(profile.manga ?? {})].sort(
+        (a, b) => Number(b) - Number(a),
+      );
+      slice = ids.slice((page - 1) * 20, page * 20);
+      if (!slice.length) return null;
+    }
+    const items = [];
+    for (const id of slice) {
+      let info;
+      try {
+        info = await getBody(`${ajax}/illust/${id}`);
+      } catch {
+        continue; // 로그인해야 보이는 작품(성인 등급 등)은 건너뜁니다.
+      }
+      if (info.xRestrict !== 0 || info.aiType === 2) continue;
+      const pages = await getBody(`${ajax}/illust/${id}/pages`);
+      pages.forEach((p, i) => {
+        const url = p.urls?.original;
+        if (!url) return;
+        items.push({
+          key: `pixiv-${id}-p${i}`,
+          fileUrl: url,
+          ext: extensionOf(url),
+          size: null,
+          width: p.width,
+          height: p.height,
+          rating: null,
+          official: true,
+          tags: (info.tags?.tags ?? []).map((t) => t.tag),
+          page: `https://www.pixiv.net/artworks/${id}`,
+          origin: info.title,
+          author: info.userName,
+          headers,
+        });
+      });
     }
     return items;
   },
@@ -521,6 +681,12 @@ async function main() {
   const everywhere = new Map();
   for (const slug of Object.keys(groups)) {
     await mkdir(join(MEDIA, slug), { recursive: true });
+    // 지난번에 중간에 끊긴 미완성 파일(.part)을 지웁니다(다운로더는 한 번에 하나만 돕니다).
+    if (!DRY_RUN) {
+      for (const name of await readdir(join(MEDIA, slug))) {
+        if (name.endsWith('.part')) await rm(join(MEDIA, slug, name), { force: true });
+      }
+    }
     const entries = await readManifest(slug);
     seen.set(slug, new Set(entries.map((e) => e.key)));
     for (const e of entries) if (!e.linked) everywhere.set(e.key, { ...e, dir: slug });
@@ -549,6 +715,7 @@ async function main() {
       items = await adapters[task.source.type](task.source, page);
     } catch (error) {
       await log(`${task.id} ${page}쪽 목록 실패: ${error.message}. 다음 차례에 다시 시도합니다.`);
+      if (isNetworkError(error)) await waitForNetwork();
       queue.push(task);
       continue;
     }
@@ -568,6 +735,7 @@ async function main() {
     // 동시에 받는 파일의 크기를 미리 예약해 한도를 넘지 않게 하고,
     // 한도 때문에 받지 못한 후보가 있으면 다음 페이지로 넘어가지 않습니다.
     let leftover = false;
+    let retryPage = false;
     const worker = async () => {
       while (pending.length) {
         if (used + reserved >= LIMIT_BYTES) {
@@ -655,6 +823,9 @@ async function main() {
         } catch (error) {
           keys.delete(item.key);
           await rm(join(MEDIA, task.slug, `${item.key}.${item.ext}.part`), { force: true });
+          // 인터넷 문제로 실패한 이미지가 있으면 이 쪽을 넘기지 않고 다음 차례에 다시 받습니다.
+          if (isNetworkError(error) && !String(error.message).includes('용량 한도'))
+            retryPage = true;
           await log(`${task.slug} ${item.key} 실패: ${error.message}`);
         } finally {
           if (!released) reserved -= reservation;
@@ -662,6 +833,14 @@ async function main() {
       }
     };
     await Promise.all(Array.from({ length: FILE_CONCURRENCY }, worker));
+    if (retryPage && !leftover) {
+      await log(
+        `${task.id} ${page}쪽: 연결 문제로 못 받은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`,
+      );
+      await waitForNetwork();
+      queue.push(task);
+      continue;
+    }
     if (leftover || pending.length) {
       await log(`${task.id} ${page}쪽: 용량 한도로 남은 이미지가 있어 이 쪽을 다음에 다시 봅니다.`);
       stoppedByLimit = true;
@@ -673,14 +852,52 @@ async function main() {
     queue.push(task);
   }
 
-  await log(
+  // 진행 알림이 최종 용량을 읽을 수 있게 누적 용량을 함께 남깁니다.
+  const result =
     stoppedByLimit || used >= LIMIT_BYTES
       ? '용량 한도에 도달해 멈췄습니다.'
-      : '모든 출처를 받았습니다.',
-  );
+      : '모든 출처를 받았습니다.';
+  await log(`${result} 누적 ${(used / 1e9).toFixed(2)}GB`);
 }
 
-main().catch(async (error) => {
-  await log(`중단: ${error.stack ?? error}`);
-  process.exit(1);
-});
+/**
+ * 다운로더는 한 번에 하나만 돕니다. 이미 도는 다운로더가 있으면 상태 파일을 덮어쓰거나
+ * 받는 중인 미완성 파일(.part)을 지우지 않도록 바로 끝냅니다(정상 종료라 LaunchAgent가 다시 띄우지 않습니다).
+ */
+async function acquireLock() {
+  if (DRY_RUN) return true;
+  await mkdir(MEDIA, { recursive: true });
+  const lock = join(MEDIA, '.download.lock');
+  try {
+    const pid = Number(await readFile(lock, 'utf8'));
+    if (pid && pid !== process.pid) {
+      try {
+        process.kill(pid, 0);
+        console.log(`이미 다운로더가 돌고 있습니다(PID ${pid}). 끝냅니다.`);
+        return false;
+      } catch {
+        // 남아 있던 잠금 파일입니다(그 프로세스는 끝났습니다).
+      }
+    }
+  } catch {
+    // 잠금 파일이 없습니다.
+  }
+  await writeFile(lock, String(process.pid));
+  const release = () => {
+    try {
+      if (readFileSync(lock, 'utf8') === String(process.pid)) unlinkSync(lock);
+    } catch {
+      // 이미 지워졌습니다.
+    }
+  };
+  process.on('exit', release);
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(143));
+  return true;
+}
+
+if (await acquireLock()) {
+  main().catch(async (error) => {
+    await log(`중단: ${error.stack ?? error}`);
+    process.exit(1);
+  });
+}

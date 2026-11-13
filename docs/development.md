@@ -45,21 +45,26 @@ TypeScript 7에는 JS API가 없어서 `typescript` 패키지는 TypeScript 6 �
 작품 이미지는 저작권자에게 권리가 있어 저장소와 배포본에 넣지 않습니다. 관리자 컴퓨터에만 보관합니다.
 
 ```bash
-pnpm media:download   # 원본을 ~/Downloads/Fanatic-Museum/<작품>/ 에 내려받기 (기본 100GB 한도)
+pnpm media:download   # 원본을 ~/Documents/Fanatic-Museum/<작품>/ 에 내려받기 (기본 200GB 한도)
 pnpm media:build      # 작품별로 골라 public/media/에 WebP 변환본과 index.json 만들기
 pnpm build && pnpm preview
 ```
 
-- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다. 출처 종류는 yande.re·Konachan(전체 이용가 판)·Safebooru·Steam 공식 스크린샷·교보문고 표지·네이버 웹툰(작품 포스터와 회차 썸네일, 본문 원고는 받지 않음)입니다. 회사·시리즈 모음(`collections`: TYPE-MOON, FF7 컴필레이션)과 상품 모음(`merch-*`: 윙건담, 사이버 포뮬러, 고죠 사토루, FF7, 사에카노 피규어·프라모델 등 HobbyLink Japan 상품 사진, 성인 상품 제외)은 `collections/<slug>/`에 받습니다.
-- 다운로드는 일반 등급만 받고 선정적 태그를 거릅니다. 해상도·점수 하한은 없고, 이미지 게시판은 점수 높은 순서로 받다가 전체 한도(100GB)에서 멈춥니다. 출처에 `minLongEdge`·`minScore`를 주면 그 출처만 기준을 둘 수 있습니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
-- 작가 모음(`sources.json`의 `artists`)은 `~/Downloads/Fanatic-Museum/artists/<작가>/`에 받습니다. 박성우, 김형태, 미사키 쿠레히토, 쿠로야 시노부, 시라비의 작가 태그와 참여작 표지·스크린샷입니다. 다른 폴더에 이미 있는 이미지와 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)은 하드 링크로 연결해 용량을 쓰지 않습니다(`pnpm media:download --only artists`로 작가 모음만 받을 수 있습니다).
-- 중간에 멈춰도 다시 실행하면 이어서 받습니다. 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
+- 출처와 검색 태그는 `scripts/media/sources.json`에서 작품 slug별로 정합니다. 출처 종류는 yande.re·Konachan(전체 이용가 판)·Safebooru·Steam 공식 스크린샷·교보문고 표지·네이버 웹툰(작품 포스터와 회차 썸네일, 본문 원고는 받지 않음)·pixiv(작가 사용자 ID로 공개 전체 연령 작품만, 성인 등급·AI 생성 작품 제외)입니다. 회사·시리즈 모음(`collections`: TYPE-MOON, FF7 컴필레이션)과 상품 모음(`merch-*`: 윙건담, 사이버 포뮬러, 고죠 사토루, FF7, 사에카노 피규어·프라모델 등 HobbyLink Japan 상품 사진, 성인 상품 제외)과 보드게임 모음(`boardgame-*`: 미식 배틀, 이클립스 2판, 에이언즈 엔드, 타임 스토리즈, 히어로 렐름, 테인티드 그레일, 패스파인더 ACG, 어센션, 도라스레의 기본판·확장, BoardGameGeek 갤러리 원본)은 `collections/<slug>/`에 받습니다.
+- 다운로드는 일반 등급만 받고 선정적 태그를 거릅니다. 해상도·점수 하한은 없고, 이미지 게시판은 점수 높은 순서로 받다가 전체 한도(200GB)에서 멈춥니다. 출처에 `minLongEdge`·`minScore`를 주면 그 출처만 기준을 둘 수 있습니다. 이미지마다 출처 페이지를 `manifest.jsonl`에 남깁니다.
+- 작가 모음(`sources.json`의 `artists`)은 `~/Documents/Fanatic-Museum/artists/<작가>/`에 받습니다. 박성우, 김형태, 미사키 쿠레히토, 쿠로야 시노부, 시라비의 작가 태그와 참여작 표지·스크린샷입니다. 다른 폴더에 이미 있는 이미지와 다른 사이트에 올라온 같은 그림(MD5가 같은 파일)은 하드 링크로 연결해 용량을 쓰지 않습니다(`pnpm media:download --only artists`로 작가 모음만 받을 수 있습니다).
+- 중간에 멈춰도 다시 실행하면 이어서 받습니다. 인터넷이 끊기면 받던 쪽을 넘기지 않고, 연결될 때까지 30초마다 확인하며 기다립니다.
+- `pnpm media:agent install [한도GB]`로 macOS 로그인 항목(LaunchAgent)에 등록하면, 로그인할 때 자동으로 시작하고 비정상 종료되면 1분 뒤 다시 시작합니다. 다 받았거나 한도에 도달해 정상 종료하면 다시 시작하지 않습니다. `status`로 상태를, `uninstall`로 해제합니다. 함께 등록되는 진행 알림이 2시간마다 받은 용량·비율, 지난 알림 이후 늘어난 양, 지금 받는 모음을 알림 센터로 알리고, 다운로더가 멈췄거나 인터넷을 기다리는 중이면 그 사실을 알립니다(간격은 `FANATIC_NOTIFY_INTERVAL` 초, 기록은 `notify.log`). 잠자기 중에는 멈추고 깨어나면 이어 받습니다(`caffeinate -i`로 자동 잠자기는 막지만 덮개를 닫으면 잠듭니다). 위치는 `FANATIC_MEDIA_DIR`로 바꿀 수 있습니다.
 - `public/media/`가 없으면(CI, 배포) 로더가 빈 목록을 받고, 화면은 번호와 대표색으로 만든 자리 표시 그래픽을 보여 줍니다.
 - Vercel CLI는 `.gitignore`를 따르지 않으므로 `.vercelignore`에서 `media/`·`public/media/`를 뺍니다. 그래도 들어가는 일이 없도록 `VERCEL`·`CI` 환경의 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).
 
 ## 모니터링
 
-`src/app/monitoring`이 첫 화면을 그린 뒤 Sentry와 web-vitals를 불러옵니다.
+`src/app/monitoring`이 Sentry와 web-vitals를 첫 화면 뒤에 따로 불러옵니다.
+
+- Sentry는 페이지를 다 받은 뒤(load) 브라우저가 한가할 때 받고, 쓰는 함수만 다시 내보내는 `sentry.ts`를 거칩니다. 그 사이 난 오류는 20개까지 모았다가 처리되지 않은 오류로 보냅니다.
+- 오류 내용만 보냅니다. 사용자 정보·쿠키·헤더·쿼리 문자열·스택 변수는 모으지 않고(`dataCollection`), 방문 세션·이동 기록·콘솔 기록도 끕니다. 감싼 콜백의 인수와 주소의 `#` 뒤는 지웁니다.
+- DSN이 없는 배포에서는 web-vitals도 받지 않습니다.
 
 | 환경 변수         | 설명                                                                                            |
 | ----------------- | ----------------------------------------------------------------------------------------------- |
@@ -71,12 +76,14 @@ pnpm build && pnpm preview
 - 갤러리는 WAI-ARIA APG 캐러셀 패턴(자동 넘김 없음)입니다. 터치 스와이프는 CSS scroll-snap이 처리하고, 이전·다음 버튼과 위치 안내(`aria-live`)를 함께 둡니다.
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다.
 - `eslint-plugin-jsx-a11y`(strict)로 코드를 쓸 때 검사하고, E2E에서 모든 페이지를 axe로 검사합니다.
+- 홈 전시관의 움직임은 CSS 스크롤 타임라인(`animation-timeline: view()`)으로만 만듭니다. `@supports`와 `prefers-reduced-motion: no-preference` 안에만 두어, 지원하지 않거나 동작 줄이기를 켜면 정지 화면입니다. 전시관을 화면에 붙이면(sticky) 붙은 동안 타임라인이 멈추고, 화면이 낮거나 글자를 키웠을 때 내용이 다음 전시관에 가려지므로 붙이지 않습니다.
 
 ## 테스트와 품질
 
 | 명령                                                    | 내용                                                                                      |
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `pnpm test`                                             | Vitest 단위·컴포넌트 테스트, 모든 스토리 렌더 검사                                        |
+| `pnpm test:storybook`                                   | 모든 스토리를 실제 브라우저(Chromium)에서 그리고 play 함수와 접근성 검사(addon-a11y)      |
 | `pnpm test:e2e`                                         | 프로덕션 빌드에서 axe 접근성, 320~1440px 가로 넘침, 글자 200%, 키보드·검색·이동, 정적 API |
 | `pnpm size`                                             | 번들 크기 예산(size-limit)                                                                |
 | `pnpm lhci`                                             | Lighthouse CI 예산(성능 0.9, 접근성 1.0, LCP 2.5초 등)                                    |
