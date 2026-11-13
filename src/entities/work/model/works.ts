@@ -438,7 +438,3 @@ export const works = [
 ] as const satisfies readonly WorkRecord[];
 
 export const WORK_SLUGS: readonly string[] = works.map((w) => w.slug);
-
-export function findWork(slug: string): WorkRecord | undefined {
-  return works.find((w) => w.slug === slug);
-}
