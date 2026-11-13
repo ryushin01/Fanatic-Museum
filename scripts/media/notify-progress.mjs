@@ -7,9 +7,10 @@
  * 사용: node scripts/media/notify-progress.mjs [한도GB]
  */
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, userInfo } from 'node:os';
 import { join } from 'node:path';
+import { notify } from './alert.mjs';
 
 const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
 const LIMIT = Number(process.argv[2] ?? 200);
@@ -76,10 +77,4 @@ if (/모든 출처를 받았습니다|용량 한도에 도달해 멈췄습니다
   body = `지난 알림 이후 +${delta}GB · 지금: ${current}`;
 }
 
-const quote = (text) => `"${text.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
-execFileSync('osascript', [
-  '-e',
-  `display notification ${quote(body)} with title "Fanatic Museum 다운로드" subtitle ${quote(title)}`,
-]);
-const now = new Date().toLocaleString('sv-SE', { hour12: false });
-appendFileSync(join(MEDIA, 'notify.log'), `[${now}] ${title} — ${body}\n`);
+notify(MEDIA, { subtitle: title, body });
