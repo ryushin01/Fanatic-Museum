@@ -135,6 +135,7 @@ function captureUnhandled(Sentry: SentryModule, error: unknown, type: string) {
 /**
  * 페이지를 다 받은 뒤(load) 브라우저가 한가할 때 풀립니다. 첫 화면을 그리는 동안 Sentry를 받느라 대역폭을 나눠 쓰지 않게 합니다.
  * requestIdleCallback이 없는 브라우저(Safari 등)는 바로 다음 차례에 풉니다. 그 사이 오류는 위의 버퍼가 모읍니다.
+ * load가 10초 안에 오지 않으면 그때 바로 받기 시작합니다.
  */
 function afterFirstPaint(): Promise<void> {
   return new Promise((resolve) => {
@@ -143,6 +144,10 @@ function afterFirstPaint(): Promise<void> {
         ? window.requestIdleCallback(() => resolve(), { timeout: 3000 })
         : setTimeout(resolve, 0);
     if (document.readyState === 'complete') idle();
-    else window.addEventListener('load', idle, { once: true });
+    else {
+      window.addEventListener('load', idle, { once: true });
+      // 끝나지 않는 요청(스트림, 멈춘 이미지 등)이 load를 붙잡아도 10초가 지나면 바로 받기 시작합니다.
+      setTimeout(resolve, 10_000);
+    }
   });
 }

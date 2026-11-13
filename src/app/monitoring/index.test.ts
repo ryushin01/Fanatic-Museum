@@ -23,10 +23,35 @@ vi.mock('./sentry', () => sentry);
 vi.mock('web-vitals', () => ({ onCLS() {}, onINP() {}, onLCP() {}, onFCP() {}, onTTFB() {} }));
 
 afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.resetModules();
   vi.clearAllMocks();
   sentry.processors.length = 0;
+});
+
+it('load가 10초 안에 오지 않으면 한가할 때를 기다리지 않고 10초에 Sentry를 받는다', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
+  // 한가한 때가 오지 않는 브라우저: 기한에 다시 requestIdleCallback을 기다리면 받지 못합니다.
+  const idleWindow = window as unknown as { requestIdleCallback?: () => number };
+  const original = idleWindow.requestIdleCallback;
+  idleWindow.requestIdleCallback = vi.fn(() => 0);
+  vi.stubEnv('VITE_SENTRY_DSN', 'https://key@o1.ingest.sentry.io/1');
+  const { initMonitoring } = await import('./index');
+  sentry.init.mockClear();
+
+  try {
+    initMonitoring();
+    await vi.advanceTimersByTimeAsync(9_000);
+    expect(sentry.init).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.waitFor(() => expect(sentry.init).toHaveBeenCalledTimes(1));
+  } finally {
+    if (original) idleWindow.requestIdleCallback = original;
+    else delete idleWindow.requestIdleCallback;
+  }
 });
 
 const load = async (dsn?: string) => {
