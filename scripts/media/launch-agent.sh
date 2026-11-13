@@ -4,12 +4,18 @@
 # - 다 받았거나 용량 한도에 도달해 정상 종료하면 다시 시작하지 않습니다.
 # - 인터넷이 끊기면 다운로더가 연결될 때까지 기다렸다가 이어서 받습니다.
 #
+# - 2시간마다 진행 상황(받은 용량·비율·멈춤 여부)을 알림 센터로 알립니다.
+#
 # 사용: scripts/media/launch-agent.sh install [한도GB]   # 기본 200
 #       scripts/media/launch-agent.sh uninstall
 #       scripts/media/launch-agent.sh status
 set -e
 LABEL=com.ryushin0.fanatic-museum-download
 PLIST=~/Library/LaunchAgents/$LABEL.plist
+# 2시간마다 진행 상황을 알림 센터로 알리는 항목
+NOTIFY_LABEL=com.ryushin0.fanatic-museum-progress
+NOTIFY_PLIST=~/Library/LaunchAgents/$NOTIFY_LABEL.plist
+NOTIFY_INTERVAL=${FANATIC_NOTIFY_INTERVAL:-7200}
 REPO=${0:A:h:h:h}
 MEDIA=${FANATIC_MEDIA_DIR:-$HOME/Documents/Fanatic-Museum}
 DOMAIN=gui/$(id -u)
@@ -59,11 +65,36 @@ PLIST
       sleep 1
     done
     launchctl bootstrap "$DOMAIN" "$PLIST"
-    echo "등록했습니다: $PLIST (한도 ${LIMIT}GB, 보관함 $MEDIA)"
+    cat > "$NOTIFY_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>$NOTIFY_LABEL</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$X_NODE</string><string>$X_REPO/scripts/media/notify-progress.mjs</string><string>$LIMIT</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict><key>FANATIC_MEDIA_DIR</key><string>$X_MEDIA</string></dict>
+  <key>StartInterval</key><integer>$NOTIFY_INTERVAL</integer>
+  <key>StandardErrorPath</key><string>$X_MEDIA/notify.err.log</string>
+</dict>
+</plist>
+PLIST
+    plutil -lint "$NOTIFY_PLIST" >/dev/null
+    launchctl bootout "$DOMAIN/$NOTIFY_LABEL" 2>/dev/null || true
+    for i in {1..30}; do
+      launchctl print "$DOMAIN/$NOTIFY_LABEL" >/dev/null 2>&1 || break
+      sleep 1
+    done
+    launchctl bootstrap "$DOMAIN" "$NOTIFY_PLIST"
+    echo "등록했습니다: $PLIST (한도 ${LIMIT}GB, 보관함 $MEDIA), 진행 알림 $((NOTIFY_INTERVAL / 60))분마다"
     ;;
   uninstall)
     launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
-    rm -f "$PLIST"
+    launchctl bootout "$DOMAIN/$NOTIFY_LABEL" 2>/dev/null || true
+    rm -f "$PLIST" "$NOTIFY_PLIST"
     echo "해제했습니다."
     ;;
   status)
