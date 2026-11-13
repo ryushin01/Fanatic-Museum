@@ -4,7 +4,7 @@
 
 ## 1. 빌드할 때 사전 렌더링과 이미지
 
-`react-router.config.ts`의 `prerender`에 적힌 주소마다 로더를 한 번씩 실행해 HTML을 만듭니다. 저작권 이미지는 관리자 컴퓨터에만 있으므로, 배포 빌드에서는 이미지 목록이 비어 자리 표시 그래픽이 그려집니다.
+`react-router.config.ts`의 `prerender`에 적힌 주소마다 로더를 한 번씩 실행해 HTML을 만듭니다. 저작권 이미지는 관리자 컴퓨터에만 있으므로, 배포 빌드에서는 이미지 목록이 비어 자리 표시 그래픽이 그려집니다. 빌드 명령(`pnpm build`)은 사전 렌더링 뒤에 정리(`prune-assets.mjs`)와 사이트맵(`sitemap.mjs`)을 차례로 실행합니다.
 
 ```mermaid
 sequenceDiagram
@@ -15,10 +15,11 @@ sequenceDiagram
     participant 작품 as getWorks<br/>(entities/work/api/get-works.server)
     participant 미디어 as loadMediaIndex<br/>(shared/api/media.server)
     participant 정리 as 빌드 뒤 정리<br/>(scripts/prune-assets.mjs)
+    participant 지도 as 사이트맵<br/>(scripts/sitemap.mjs)
 
     opt 관리자 컴퓨터에서만
         관리자->>변환: pnpm media:build
-        변환->>변환: ~/Downloads/Fanatic-Museum 원본을 WebP로 변환
+        변환->>변환: ~/Documents/Fanatic-Museum 원본을 WebP로 변환<br/>(위치는 FANATIC_MEDIA_DIR로 바꿀 수 있음)
         변환-->>관리자: public/media/:slug/, index.json
     end
     관리자->>빌드: pnpm build
@@ -39,11 +40,13 @@ sequenceDiagram
     alt VERCEL 또는 CI 환경
         정리->>정리: build/client/media 삭제 (저작권 이미지 배포 방지)
     end
+    빌드->>지도: 사전 렌더링된 HTML 목록
+    지도->>지도: sitemap.xml, robots.txt 생성
 ```
 
 ## 2. 소장품 검색 조건을 주소에 남기기
 
-입력은 화면 상태에 먼저 반영하고 주소(`?q=&c=`)는 뒤따라 맞춥니다. 결과 목록은 지연값으로 걸러 빠르게 입력해도 버벅이지 않습니다.
+입력은 화면 상태에 먼저 반영하고 주소(`?q=&c=`)는 뒤따라 맞춥니다. 분류는 여러 개를 고를 수 있어 쉼표로 이어 붙입니다(`c=novel,comic`). 결과 목록은 지연값으로 걸러 빠르게 입력해도 버벅이지 않습니다.
 
 ```mermaid
 sequenceDiagram
@@ -53,7 +56,7 @@ sequenceDiagram
     participant 주소 as 주소 검색 매개변수<br/>(useSearchParams)
     participant 거르기 as filterWorks<br/>(pages/works/model/filter)
 
-    방문자->>화면: /works?q=브레이커&c=novel 열기
+    방문자->>화면: /works?q=브레이커&c=novel,comic 열기
     화면->>훅: 사전 렌더링된 소장품 목록
     훅->>주소: q, c 읽기 (없는 분류는 버림)
     훅->>거르기: 검색어·분류
@@ -61,7 +64,7 @@ sequenceDiagram
     방문자->>화면: 검색어 입력, 분류 선택
     화면->>훅: onChange(next)
     훅->>훅: 화면 상태 바로 갱신
-    훅->>주소: setParams (replace, 스크롤 유지)
+    훅->>주소: setParams (replace, 스크롤 유지, 분류는 쉼표로 연결)
     훅->>거르기: 지연값(useDeferredValue)으로 다시 거르기
     거르기-->>화면: 결과 목록
     방문자->>주소: 뒤로 가기
@@ -89,5 +92,5 @@ sequenceDiagram
         빌드->>호스팅: build/client/api/*.json
     end
     이용자->>호스팅: GET /api/works.json
-    호스팅-->>이용자: { total, items }
+    호스팅-->>이용자: { total, items } (JSON, CORS 허용)
 ```
