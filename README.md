@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.2.0-b5121b)
+![version](https://img.shields.io/badge/version-1.2.1-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -111,11 +111,12 @@ src/
 
 화면에는 출처를 적지 않고 여기에 모읍니다. 소개 화면의 '이미지에 대하여'가 이곳으로 잇습니다.
 
-| 자료                             | 저작자                                                                | 사용 허락                                       | 원본                                                                                                                                                                                                             |
-| -------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Noto Sans KR 글꼴 (가변)         | Adobe                                                                 | SIL OFL 1.1                                     | [Google Fonts](https://fonts.google.com/specimen/Noto+Sans+KR)                                                                                                                                                   |
-| 작품 이미지 (로컬 보관함에만 둠) | 각 작품의 저작권자                                                    | 개인 보관용. 공개 사이트와 저장소에는 싣지 않음 | yande.re, Konachan, Safebooru, pixiv, Steam 공식 스크린샷, 교보문고 표지, 네이버 웹툰, HobbyLink Japan 상품 사진, BoardGameGeek 갤러리 (작품별 정의: [`scripts/media/sources.json`](scripts/media/sources.json)) |
-| 자리 표시 그래픽                 | 직접 만든 자료 (작품 번호와 대표색으로 코드에서 그림)                 | —                                               | —                                                                                                                                                                                                                |
-| 소장품 소개 글                   | 직접 쓴 글 (한국 작가 작품의 연도·연재처는 나무위키 작가 문서로 확인) | —                                               | —                                                                                                                                                                                                                |
+| 자료                             | 저작자                                                                | 사용 허락                                               | 원본                                                                                                                                                                                                             |
+| -------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Noto Sans KR 글꼴 (가변)         | Adobe                                                                 | SIL OFL 1.1                                             | [Google Fonts](https://fonts.google.com/specimen/Noto+Sans+KR)                                                                                                                                                   |
+| 박물관 아이콘 (파비콘·로고)      | Icons8 (Flat Color Icons)                                             | MIT ([사본](public/brand/LICENSE-flat-color-icons.txt)) | [icons8/flat-color-icons](https://github.com/icons8/flat-color-icons)                                                                                                                                            |
+| 작품 이미지 (로컬 보관함에만 둠) | 각 작품의 저작권자                                                    | 개인 보관용. 공개 사이트와 저장소에는 싣지 않음         | yande.re, Konachan, Safebooru, pixiv, Steam 공식 스크린샷, 교보문고 표지, 네이버 웹툰, HobbyLink Japan 상품 사진, BoardGameGeek 갤러리 (작품별 정의: [`scripts/media/sources.json`](scripts/media/sources.json)) |
+| 자리 표시 그래픽                 | 직접 만든 자료 (작품 번호와 대표색으로 코드에서 그림)                 | —                                                       | —                                                                                                                                                                                                                |
+| 소장품 소개 글                   | 직접 쓴 글 (한국 작가 작품의 연도·연재처는 나무위키 작가 문서로 확인) | —                                                       | —                                                                                                                                                                                                                |
 
 공개 사이트와 위 화면 스크린샷에는 작품 이미지 대신 자리 표시 그래픽만 나옵니다. 이미지마다의 원본 페이지는 로컬 보관함의 목록(`manifest.jsonl`)에만 있어 이 표에 두지 않고, 로컬에서 이미지를 볼 때 뷰어의 '원본 출처'로 보여 줍니다.

@@ -20,9 +20,7 @@ export function SiteHeader() {
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
         <Link to="/" className={styles.logo} viewTransition prefetch="intent">
-          <span aria-hidden="true">
-            FM<span className={styles.logoDot}>.</span>A
-          </span>
+          <img src="/brand/logo.svg" alt="" width={32} height={32} className={styles.logoMark} />
           <span className="visually-hidden">{site.koreanName} 홈</span>
           <span className={styles.logoName} aria-hidden="true">
             {site.name.toUpperCase()}
