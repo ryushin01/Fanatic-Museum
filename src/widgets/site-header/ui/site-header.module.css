@@ -27,8 +27,10 @@
   text-decoration: none;
 }
 
-.logoDot {
-  color: var(--color-accent);
+.logoMark {
+  inline-size: 32px;
+  block-size: 32px;
+  flex: none;
 }
 
 .logoName {

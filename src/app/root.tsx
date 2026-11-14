@@ -19,6 +19,7 @@ import './styles/global.css';
 
 export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+  { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
