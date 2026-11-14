@@ -43,6 +43,7 @@ describe('소장품 데이터', () => {
       '나우',
       '흑신',
       '브레이커',
+      '신드로이아 연대기',
     ])
       expect(titles, name).toContain(name);
   });
