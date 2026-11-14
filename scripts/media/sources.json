@@ -404,6 +404,38 @@
         "type": "naver",
         "titleId": 828715
       }
+    ],
+    "syndroia-chronicle": [
+      {
+        "type": "kyobo",
+        "query": "사신도 박건",
+        "match": "^사신도",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "올마스터 박건",
+        "match": "^올 ?마스터",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "DIO 박건",
+        "match": "^디오",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "당신의 머리 위에 박건",
+        "match": "^당신의 머리 ?위에",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "열일하는 과금기사 박건",
+        "match": "^열일하는 과금 ?기사",
+        "pages": 3
+      }
     ]
   },
   "artists": {
@@ -874,6 +906,38 @@
         "type": "kyobo",
         "query": "Air Gear",
         "match": "^Air Gear",
+        "pages": 3
+      }
+    ],
+    "park-geon": [
+      {
+        "type": "kyobo",
+        "query": "사신도 박건",
+        "match": "^사신도",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "올마스터 박건",
+        "match": "^올 ?마스터",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "DIO 박건",
+        "match": "^디오",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "당신의 머리 위에 박건",
+        "match": "^당신의 머리 ?위에",
+        "pages": 2
+      },
+      {
+        "type": "kyobo",
+        "query": "열일하는 과금기사 박건",
+        "match": "^열일하는 과금 ?기사",
         "pages": 3
       }
     ]

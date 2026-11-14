@@ -11,7 +11,7 @@ export function meta() {
     { title: `작가 — ${site.name}` },
     {
       name: 'description',
-      content: '박성우, 박진환, 이경영, 이영도. 대장정을 함께한 한국 만화가와 판타지 소설가.',
+      content: '박건, 박성우, 박진환, 이경영, 이영도. 대장정을 함께한 한국 만화가와 판타지 소설가.',
     },
   ];
 }

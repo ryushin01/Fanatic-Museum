@@ -435,6 +435,23 @@ export const works = [
     accent: '#5b2c6f',
     related: ['nanyak', 'the-breaker'],
   },
+  {
+    slug: 'syndroia-chronicle',
+    number: 30,
+    title: '신드로이아 연대기',
+    categories: ['novel'],
+    creators: [{ role: '글', name: '박건', author: 'park-geon' }],
+    origin: '한국',
+    firstReleased: 2003,
+    summary:
+      '박건 작가의 소설들이 함께 쓰는 세계관. 물질계와 천계·신계·마계·명계·영계로 이루어진 육계를 무대로, 초월자들의 활극과 그 틈에서 발버둥치며 자라는 필멸자들의 이야기를 판타지·무협·신화·SF를 넘나들며 그립니다.',
+    notes: [
+      '출간 순서: 「사신도」(2003), 「올마스터」, 「D.I.O」, 「당신의 머리 위에」, 「열일하는 과금기사」(2020, 카카오페이지). 앞 작품의 인물이 뒤 작품에 다시 나옵니다.',
+      '이름은 가장 중요한 복선인 "신드로이아"에서 왔습니다. 처음에는 다른 사람이 붙인 이름이었지만 작가가 직접 인정했습니다.',
+    ],
+    accent: '#2b2d6e',
+    related: [],
+  },
 ] as const satisfies readonly WorkRecord[];
 
 export const WORK_SLUGS: readonly string[] = works.map((w) => w.slug);

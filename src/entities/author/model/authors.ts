@@ -3,6 +3,16 @@ import type { Author } from '@/shared/api';
 /** 작가. 내용은 참고 문서(나무위키)에서 확인한 것만 적습니다. */
 export const authors = [
   {
+    slug: 'park-geon',
+    name: '박건',
+    occupation: '판타지 소설가',
+    born: 1986,
+    debut: '2003년 「사신도」',
+    summary:
+      '중학생 무렵 출간 제의를 받아 2003년 「사신도」로 책을 냈습니다. 「올마스터」, 「D.I.O」, 「당신의 머리 위에」, 「열일하는 과금기사」까지 작품마다 한 세계관을 이어 가며, 이 작품들은 「신드로이아 연대기」로 묶입니다.',
+    reference: 'https://namu.wiki/w/박건(작가)',
+  },
+  {
     slug: 'park-sung-woo',
     name: '박성우',
     occupation: '만화가',

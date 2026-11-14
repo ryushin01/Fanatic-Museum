@@ -40,7 +40,7 @@ export function HomePage() {
         <div className={styles.intro}>
           <p className={styles.lede}>
             사이버 포뮬러의 아스라다에서 시작해 Fate와 소드 아트 온라인, 파이널 판타지와 창세기전,
-            이영도와 이경영의 판타지 소설, 박성우·박진환의 만화까지. 한 사람의 서브컬처 대장정을
+            이영도·이경영·박건의 판타지 소설, 박성우·박진환의 만화까지. 한 사람의 서브컬처 대장정을
             소장품처럼 번호를 붙여 전시합니다.
           </p>
           <dl className={styles.stats}>
