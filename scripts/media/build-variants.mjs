@@ -63,6 +63,13 @@ async function readManifest(slug) {
 }
 
 async function main() {
+  // 보관함이 없을 때 빈 목록을 써 버리면 로컬 이미지가 조용히 사라지므로, 목록을 그대로 두고 멈춥니다.
+  if (!(await exists(ORIGINALS))) {
+    console.error(
+      `보관함 폴더가 없습니다: ${ORIGINALS}\n보관함을 이 위치로 옮기거나 FANATIC_MEDIA_DIR로 위치를 알려 주세요. public/media/index.json은 그대로 둡니다.`,
+    );
+    process.exit(1);
+  }
   const slugs = (await readdir(ORIGINALS, { withFileTypes: true }).catch(() => []))
     .filter((d) => d.isDirectory())
     .map((d) => d.name);
