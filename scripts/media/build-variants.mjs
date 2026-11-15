@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 로컬 보관함(기본 ~/Documents/Fanatic-Museum/<slug>/)의 원본에서 작품마다 이미지를 골라
+ * 로컬 보관함(기본 ~/Documents/Archive/Fanatic-Museum/<slug>/)의 원본에서 작품마다 이미지를 골라
  * 화면용 WebP 변환본(public/media/<slug>/)과 목록(public/media/index.json)을 만듭니다.
  *
  * - 원본 순서(출처의 점수순)를 따르되, 한 출처에 쏠리지 않게 출처를 번갈아 고릅니다.
@@ -16,7 +16,8 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const ORIGINALS = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
+const ORIGINALS =
+  process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Archive', 'Fanatic-Museum');
 const OUT = join(ROOT, 'public', 'media');
 const WIDTHS = [640, 1280, 2048];
 
@@ -62,9 +63,21 @@ async function readManifest(slug) {
 }
 
 async function main() {
-  const slugs = (await readdir(ORIGINALS, { withFileTypes: true }).catch(() => []))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+  // 보관함이 없을 때 빈 목록을 써 버리면 로컬 이미지가 조용히 사라지므로, 목록을 그대로 두고 멈춥니다.
+  if (!(await exists(ORIGINALS))) {
+    console.error(
+      `보관함 폴더가 없습니다: ${ORIGINALS}\n보관함을 이 위치로 옮기거나 FANATIC_MEDIA_DIR로 위치를 알려 주세요. public/media/index.json은 그대로 둡니다.`,
+    );
+    process.exit(1);
+  }
+  // 폴더가 아니거나 읽을 수 없으면 빈 보관함으로 여기지 않고, 목록을 그대로 둔 채 멈춥니다.
+  const entries = await readdir(ORIGINALS, { withFileTypes: true }).catch((error) => {
+    console.error(
+      `보관함 폴더를 읽지 못했습니다: ${ORIGINALS} (${error.code ?? error.message})\npublic/media/index.json은 그대로 둡니다.`,
+    );
+    process.exit(1);
+  });
+  const slugs = entries.filter((d) => d.isDirectory()).map((d) => d.name);
   const index = {};
 
   for (const slug of slugs) {

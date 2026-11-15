@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Documents/Fanatic-Museum/<slug>/)에 내려받습니다.
+ * 작품별 고화질 이미지를 로컬 보관함(기본 ~/Documents/Archive/Fanatic-Museum/<slug>/)에 내려받습니다.
  * 위치는 FANATIC_MEDIA_DIR 환경 변수로 바꿀 수 있습니다.
  *
  * - 전체 용량 한도(기본 200GB)를 넘기지 않습니다.
@@ -50,7 +50,8 @@ import {
 } from './run-state.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
+const MEDIA =
+  process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Archive', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
 // 멈춤·다시 시작 알림용 실행 기록과, 등록 스크립트(install·uninstall)가 남기는 수동 정지 표시
 const RUN_FILE = join(MEDIA, '.download-run.json');
