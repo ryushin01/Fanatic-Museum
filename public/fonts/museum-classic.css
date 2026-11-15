@@ -1,4 +1,4 @@
-/* 국립박물관문화재단 클래식체: 수정할 수 없는 글꼴이라 원본 파일 그대로 씁니다. DeferredFonts가 페이지를 다 받은 뒤 붙입니다. */
+/* 국립박물관문화재단 클래식체: 수정할 수 없는 글꼴이라 원본 파일 그대로 씁니다. FontLoader가 다 받을 때까지 로딩 화면을 보여 줍니다. */
 @font-face {
   font-family: 'Museum Classic';
   font-style: normal;
