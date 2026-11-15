@@ -39,8 +39,10 @@ describe('FontLoader', () => {
     const faces = document.createElement('style');
     faces.id = 'font-faces';
     document.head.append(faces);
+    // 두 굵기가 함께 쓰는 하나의 약속을 돌려줘, 나중에 한 번 풀면 Promise.all까지 끝나게 함
     let finish: (value: unknown) => void = () => {};
-    stubFonts(() => new Promise((resolve) => (finish = resolve)));
+    const late = new Promise((resolve) => (finish = resolve));
+    stubFonts(() => late);
     run();
     vi.advanceTimersByTime(FONT_LOADER_TIMEOUT_MS);
     expect(state()).toBe('ready');
