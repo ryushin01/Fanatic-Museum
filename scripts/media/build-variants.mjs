@@ -70,9 +70,14 @@ async function main() {
     );
     process.exit(1);
   }
-  const slugs = (await readdir(ORIGINALS, { withFileTypes: true }).catch(() => []))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+  // 폴더가 아니거나 읽을 수 없으면 빈 보관함으로 여기지 않고, 목록을 그대로 둔 채 멈춥니다.
+  const entries = await readdir(ORIGINALS, { withFileTypes: true }).catch((error) => {
+    console.error(
+      `보관함 폴더를 읽지 못했습니다: ${ORIGINALS} (${error.code ?? error.message})\npublic/media/index.json은 그대로 둡니다.`,
+    );
+    process.exit(1);
+  });
+  const slugs = entries.filter((d) => d.isDirectory()).map((d) => d.name);
   const index = {};
 
   for (const slug of slugs) {
