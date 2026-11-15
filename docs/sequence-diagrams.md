@@ -19,7 +19,7 @@ sequenceDiagram
 
     opt 관리자 컴퓨터에서만
         관리자->>변환: pnpm media:build
-        변환->>변환: ~/Documents/Fanatic-Museum 원본을 WebP로 변환<br/>(위치는 FANATIC_MEDIA_DIR로 바꿀 수 있음)
+        변환->>변환: ~/Documents/Archive/Fanatic-Museum 원본을 WebP로 변환<br/>(위치는 FANATIC_MEDIA_DIR로 바꿀 수 있음)
         변환-->>관리자: public/media/:slug/, index.json
     end
     관리자->>빌드: pnpm build

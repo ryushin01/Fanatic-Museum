@@ -12,7 +12,8 @@ import { homedir, userInfo } from 'node:os';
 import { join } from 'node:path';
 import { notify } from './alert.mjs';
 
-const MEDIA = process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Fanatic-Museum');
+const MEDIA =
+  process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Archive', 'Fanatic-Museum');
 const LIMIT = Number(process.argv[2] ?? 200);
 const LOG = join(MEDIA, 'download.log');
 const STATE = join(MEDIA, '.notify-state');

@@ -18,7 +18,7 @@ NOTIFY_LABEL=com.ryushin0.fanatic-museum-progress
 NOTIFY_PLIST=~/Library/LaunchAgents/$NOTIFY_LABEL.plist
 NOTIFY_INTERVAL=${FANATIC_NOTIFY_INTERVAL:-7200}
 REPO=${0:A:h:h:h}
-MEDIA=${FANATIC_MEDIA_DIR:-$HOME/Documents/Fanatic-Museum}
+MEDIA=${FANATIC_MEDIA_DIR:-$HOME/Documents/Archive/Fanatic-Museum}
 DOMAIN=gui/$(id -u)
 
 # plist(XML)에 넣는 값의 특수문자를 바꿉니다.
