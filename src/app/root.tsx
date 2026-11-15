@@ -14,7 +14,7 @@ import { PageHeader } from '@/shared/ui';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
 
-import { FontLoader } from './fonts/font-loader';
+import { FONT_FACE_CSS, FontLoader } from './fonts/font-loader';
 import { reportError } from './monitoring';
 import './styles/global.css';
 
@@ -36,7 +36,6 @@ export const links: LinksFunction = () => [
     type: 'font/woff',
     crossOrigin: 'anonymous',
   },
-  { rel: 'stylesheet', href: '/fonts/museum-classic.css' },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -52,6 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta property="og:site_name" content={site.name} />
         <Meta />
         <Links />
+        <style dangerouslySetInnerHTML={{ __html: FONT_FACE_CSS }} />
       </head>
       <body>
         <FontLoader />
