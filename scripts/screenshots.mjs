@@ -37,14 +37,22 @@ for (const shot of shots) {
     colorScheme: shot.dark ? 'dark' : 'light',
   });
   await page.goto(base + shot.path, { waitUntil: 'networkidle' });
-  // 통파일 글꼴(클래식체)을 다 받아 로딩 화면이 걷힐 때까지 기다립니다.
-  await page.waitForFunction(() => document.documentElement.dataset.fonts === 'ready', null, {
-    timeout: 30_000,
-  });
-  // 글꼴을 받지 못한 채(8초 제한으로) 열렸으면 기존 화면을 덮어쓰지 않고 멈춥니다.
-  if (!(await page.evaluate(() => document.fonts.check('500 1em "Museum Classic"', '가')))) {
-    await browser.close();
-    throw new Error('클래식체를 받지 못해 화면을 바꾸지 않았습니다.');
+  // 앱 화면은 통파일 글꼴(클래식체)을 다 받아 로딩 화면이 걷힐 때까지 기다립니다(Storybook은 앱 화면이 아니라 건너뜀).
+  // 받지 못한 채(8초 제한으로) 열려 글꼴 정의가 꺼졌으면 기존 화면을 덮어쓰지 않고 멈춥니다.
+  if (!shot.path.startsWith('/storybook/')) {
+    await page.waitForFunction(() => document.documentElement.dataset.fonts === 'ready', null, {
+      timeout: 30_000,
+    });
+    const loaded = await page.evaluate(
+      () =>
+        document.getElementById('font-faces')?.disabled === false &&
+        document.fonts.check('500 1em "Museum Classic"', '가') &&
+        document.fonts.check('700 1em "Museum Classic"', '가'),
+    );
+    if (!loaded) {
+      await browser.close();
+      throw new Error('클래식체를 받지 못해 화면을 바꾸지 않았습니다.');
+    }
   }
   if (shot.hall) {
     await page.evaluate(
