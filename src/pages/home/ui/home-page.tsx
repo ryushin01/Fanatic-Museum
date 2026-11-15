@@ -31,8 +31,8 @@ export function HomePage() {
           <span className="num">{since} — Now</span>
         </div>
         <h1 id="home-title" className={styles.title}>
-          <span className={styles.titleLine}>Fanatic</span>
-          <span className={styles.titleLine}>
+          <span className={`${styles.titleLine} ${styles.titleLatin}`}>Fanatic</span>
+          <span className={`${styles.titleLine} ${styles.titleLatin}`}>
             Museum<span className={styles.accent}>.</span>
           </span>
           <span className={`${styles.titleLine} ${styles.accent}`}>{site.tagline}</span>

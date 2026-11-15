@@ -21,6 +21,14 @@
   display: block;
 }
 
+/* 영문 제목은 다크 판타지 글꼴 MedievalSharp(굵기 하나라 굵게 만들지 않음) */
+.titleLatin {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.01em;
+}
+
 .accent {
   color: var(--color-accent);
 }

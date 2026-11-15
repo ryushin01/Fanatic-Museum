@@ -1,11 +1,19 @@
-@import '@fontsource-variable/noto-sans-kr/wght.css';
+/*
+ * 글꼴: 영문·숫자는 Archivo(좁은 너비 75%), 한글은 국립박물관문화재단 클래식체.
+ * 클래식체는 수정할 수 없는 글꼴이라 원본 파일(public/fonts/museum-classic)을 그대로 쓰고,
+ * 굵기마다 약 0.7MB라 DeferredFonts가 페이지를 다 받은 뒤 붙입니다. 그 전에는 운영체제 글꼴로 보입니다.
+ * 홈의 영문 제목(Fanatic Museum)만 MedievalSharp입니다. 한글 제목 속 영문·숫자는 Archivo입니다.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/medievalsharp/400.css';
 
 :root {
   color-scheme: light dark;
 
   --font-sans:
-    'Noto Sans KR Variable', 'Noto Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo',
+    'Archivo Variable', 'Museum Classic', system-ui, -apple-system, 'Apple SD Gothic Neo',
     sans-serif;
+  --font-display: 'MedievalSharp', var(--font-sans);
 
   --color-bg: #f1efe9;
   --color-surface: #e7e4dc;
@@ -94,6 +102,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
+  font-stretch: 75%;
   font-size: var(--text-md);
   line-height: 1.7;
   word-break: keep-all;
