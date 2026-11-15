@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.2.1-b5121b)
+![version](https://img.shields.io/badge/version-1.3.0-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -57,7 +57,7 @@
 | 구분       | 사용 기술                                                                                                                                   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | 프레임워크 | React Router 8(프레임워크 모드, 정적 사전 렌더링), React 19, TypeScript 7                                                                   |
-| UI·접근성  | React Aria Components, CSS Modules, Noto Sans KR, CSS scroll-snap 스와이프                                                                  |
+| UI·접근성  | React Aria Components, CSS Modules, 웹 폰트(Archivo·MedievalSharp·국립박물관문화재단 클래식체), CSS scroll-snap 스와이프                    |
 | API        | OpenAPI 3.1 문서와 openapi-typescript 타입 생성, 정적 JSON API                                                                              |
 | 모니터링   | Sentry(`@sentry/react-router`), web-vitals                                                                                                  |
 | 성능 예산  | Lighthouse CI, size-limit, 반응형 이미지(`srcset`·`fetchpriority`), sharp WebP 변환                                                         |
@@ -107,13 +107,22 @@ src/
 | [시퀀스 다이어그램](docs/sequence-diagrams.md) | 빌드할 때 사전 렌더링과 이미지, 검색 조건을 주소에 남기기, 정적 JSON API |
 | [버전 기록](CHANGELOG.md)                      | 버전별 변경 내용                                                         |
 
+## 웹 폰트
+
+| 글꼴                        | 쓰는 곳                         | 굵기         | 저작자              | 라이선스                             | 원본                                                                                                           |
+| --------------------------- | ------------------------------- | ------------ | ------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Archivo                     | 영문·숫자 (제목·본문, 너비 75%) | 100~900 가변 | Omnibus-Type        | SIL OFL 1.1                          | [Google Fonts](https://fonts.google.com/specimen/Archivo) · [Fontsource](https://fontsource.org/fonts/archivo) |
+| MedievalSharp               | 홈의 영문 제목 (Fanatic Museum) | 400          | Wojciech Kalinowski | SIL OFL 1.1                          | [Google Fonts](https://fonts.google.com/specimen/MedievalSharp)                                                |
+| 국립박물관문화재단 클래식체 | 한글 (제목·본문)                | 500·700      | 국립박물관문화재단  | 무료(배포·웹 임베딩 가능, 수정 금지) | [눈누](https://noonnu.cc/font_page/326)                                                                        |
+
+모두 같은 사이트에서 제공합니다(외부 글꼴 CDN 없음). 클래식체는 수정할 수 없는 글꼴이라 원본 파일을 그대로 쓰고(`public/fonts/museum-classic`, 굵기마다 약 0.7MB), 첫 화면을 막지 않게 페이지를 다 받은 뒤 붙입니다. 라이선스 요지는 `public/fonts/museum-classic/LICENSE.txt`에 있습니다.
+
 ## 출처
 
 화면에는 출처를 적지 않고 여기에 모읍니다. 소개 화면의 '이미지에 대하여'가 이곳으로 잇습니다.
 
 | 자료                             | 저작자                                                                | 사용 허락                                               | 원본                                                                                                                                                                                                             |
 | -------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Noto Sans KR 글꼴 (가변)         | Adobe                                                                 | SIL OFL 1.1                                             | [Google Fonts](https://fonts.google.com/specimen/Noto+Sans+KR)                                                                                                                                                   |
 | 박물관 아이콘 (파비콘·로고)      | Icons8 (Flat Color Icons)                                             | MIT ([사본](public/brand/LICENSE-flat-color-icons.txt)) | [icons8/flat-color-icons](https://github.com/icons8/flat-color-icons)                                                                                                                                            |
 | 작품 이미지 (로컬 보관함에만 둠) | 각 작품의 저작권자                                                    | 개인 보관용. 공개 사이트와 저장소에는 싣지 않음         | yande.re, Konachan, Safebooru, pixiv, Steam 공식 스크린샷, 교보문고 표지, 네이버 웹툰, HobbyLink Japan 상품 사진, BoardGameGeek 갤러리 (작품별 정의: [`scripts/media/sources.json`](scripts/media/sources.json)) |
 | 자리 표시 그래픽                 | 직접 만든 자료 (작품 번호와 대표색으로 코드에서 그림)                 | —                                                       | —                                                                                                                                                                                                                |

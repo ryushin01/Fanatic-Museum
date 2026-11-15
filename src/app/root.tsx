@@ -14,6 +14,7 @@ import { PageHeader } from '@/shared/ui';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
 
+import { DeferredFonts } from './fonts/deferred-fonts';
 import { reportError } from './monitoring';
 import './styles/global.css';
 
@@ -45,6 +46,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <SiteFooter />
+        {/* 한글 국립박물관문화재단 클래식체(통파일)는 첫 화면 뒤에 받음 */}
+        <DeferredFonts href="/fonts/museum-classic.css" />
         <ScrollRestoration />
         <Scripts />
       </body>
