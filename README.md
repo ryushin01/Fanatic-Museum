@@ -115,7 +115,7 @@ src/
 | MedievalSharp               | 홈의 영문 제목 (Fanatic Museum) | 400          | Wojciech Kalinowski | SIL OFL 1.1                          | [Google Fonts](https://fonts.google.com/specimen/MedievalSharp)                                                |
 | 국립박물관문화재단 클래식체 | 한글 (제목·본문)                | 500·700      | 국립박물관문화재단  | 무료(배포·웹 임베딩 가능, 수정 금지) | [눈누](https://noonnu.cc/font_page/326)                                                                        |
 
-모두 같은 사이트에서 제공합니다(외부 글꼴 CDN 없음). 클래식체는 수정할 수 없는 글꼴이라 원본 파일을 그대로 쓰고(`public/fonts/museum-classic`, 굵기마다 약 0.7MB), 첫 화면을 막지 않게 페이지를 다 받은 뒤 붙입니다. 라이선스 요지는 `public/fonts/museum-classic/LICENSE.txt`에 있습니다.
+모두 같은 사이트에서 제공합니다(외부 글꼴 CDN 없음). 클래식체는 수정할 수 없는 글꼴이라 원본 파일을 그대로 쓰고(`public/fonts/museum-classic`, 굵기마다 약 0.7MB), 페이지를 열자마자 받기 시작합니다(`preload`). 글자가 중간에 바뀌지 않게 다 받을 때까지 빈 액자에 조명이 지나가는 로딩 화면("전시실 조명을 켜는 중입니다")으로 덮고, 8초가 지나거나 받지 못하면 클래식체를 끄고 운영체제 글꼴로 엽니다(`src/app/fonts/font-loader.tsx`). 자바스크립트가 꺼져 있으면 로딩 화면 없이 바로 보입니다. 라이선스 요지는 `public/fonts/museum-classic/LICENSE.txt`에 있습니다.
 
 ## 출처
 
