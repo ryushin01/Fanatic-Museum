@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta property="og:site_name" content={site.name} />
         <Meta />
         <Links />
-        <style dangerouslySetInnerHTML={{ __html: FONT_FACE_CSS }} />
+        <style id="font-faces" dangerouslySetInnerHTML={{ __html: FONT_FACE_CSS }} />
       </head>
       <body>
         <FontLoader />
