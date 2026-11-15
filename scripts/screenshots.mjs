@@ -46,8 +46,14 @@ for (const shot of shots) {
     const loaded = await page.evaluate(
       () =>
         document.getElementById('font-faces')?.disabled === false &&
-        document.fonts.check('500 1em "Museum Classic"', '가') &&
-        document.fonts.check('700 1em "Museum Classic"', '가'),
+        ['500', '700'].every((weight) =>
+          [...document.fonts].some(
+            (face) =>
+              face.family.includes('Museum Classic') &&
+              face.weight === weight &&
+              face.status === 'loaded',
+          ),
+        ),
     );
     if (!loaded) {
       await browser.close();
