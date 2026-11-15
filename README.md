@@ -75,15 +75,15 @@ pnpm install
 pnpm dev    # http://localhost:5173
 ```
 
-| 명령                                   | 설명                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------- |
-| `pnpm build` / `preview`               | 정적 사전 렌더링 빌드 / 빌드 결과 미리보기(`http://localhost:4173`)       |
-| `pnpm build:all`                       | 앱과 Storybook(`/storybook`)을 함께 빌드                                  |
-| `pnpm media:download` / `media:build`  | 작품 이미지를 `~/Documents/Fanatic-Museum/`에 받기 / 화면용 변환본 만들기 |
-| `pnpm lint` / `lint:fsd` / `typecheck` | ESLint / FSD 검사 / 타입 검사                                             |
-| `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E                                    |
-| `pnpm size` / `lhci`                   | 번들 크기 예산 / Lighthouse 예산                                          |
-| `pnpm api:types`                       | OpenAPI 문서에서 타입 다시 생성                                           |
+| 명령                                   | 설명                                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------------- |
+| `pnpm build` / `preview`               | 정적 사전 렌더링 빌드 / 빌드 결과 미리보기(`http://localhost:4173`)               |
+| `pnpm build:all`                       | 앱과 Storybook(`/storybook`)을 함께 빌드                                          |
+| `pnpm media:download` / `media:build`  | 작품 이미지를 `~/Documents/Archive/Fanatic-Museum/`에 받기 / 화면용 변환본 만들기 |
+| `pnpm lint` / `lint:fsd` / `typecheck` | ESLint / FSD 검사 / 타입 검사                                                     |
+| `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E                                            |
+| `pnpm size` / `lhci`                   | 번들 크기 예산 / Lighthouse 예산                                                  |
+| `pnpm api:types`                       | OpenAPI 문서에서 타입 다시 생성                                                   |
 
 ## 프로젝트 구조
 
