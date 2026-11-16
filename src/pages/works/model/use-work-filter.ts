@@ -4,9 +4,9 @@ import { useLocation, useNavigationType, useSearchParams } from 'react-router';
 import type { CategorySlug, Work } from '@/shared/api';
 import { useHydrated } from '@/shared/lib';
 
-import { filterWorks, type WorkFilter } from './filter';
+import { filterWorks, WORK_SORTS, type WorkFilter, type WorkSort } from './filter';
 
-const EMPTY: WorkFilter = { query: '', categories: [] };
+const EMPTY: WorkFilter = { query: '', categories: [], sort: 'number' };
 
 function readCategories(params: URLSearchParams, valid: readonly CategorySlug[]): CategorySlug[] {
   return (params.get('c')?.split(',') ?? []).filter((c): c is CategorySlug =>
@@ -14,12 +14,21 @@ function readCategories(params: URLSearchParams, valid: readonly CategorySlug[])
   );
 }
 
+function readSort(params: URLSearchParams): WorkSort {
+  const value = params.get('s');
+  return WORK_SORTS.find((sort) => sort === value) ?? 'number';
+}
+
 function readFilter(params: URLSearchParams, valid: readonly CategorySlug[]): WorkFilter {
-  return { query: params.get('q') ?? '', categories: readCategories(params, valid) };
+  return {
+    query: params.get('q') ?? '',
+    categories: readCategories(params, valid),
+    sort: readSort(params),
+  };
 }
 
 /**
- * 검색 조건을 주소의 ?q=&c= 에 남겨 공유·새로 고침에도 유지합니다.
+ * 검색 조건과 정렬을 주소의 ?q=&c=&s= 에 남겨 공유·새로 고침에도 유지합니다.
  * 입력값은 화면 상태로 바로 반영하고(빠르게 입력해도 글자가 빠지지 않게) 주소는 뒤따라 맞춥니다.
  * 결과 목록은 지연값으로 걸러 입력이 버벅이지 않게 합니다.
  *
@@ -59,6 +68,7 @@ export function useWorkFilter(works: readonly Work[], validCategories: readonly 
       const search = new URLSearchParams();
       if (next.query) search.set('q', next.query);
       if (next.categories.length) search.set('c', next.categories.join(','));
+      if (next.sort !== 'number') search.set('s', next.sort);
       setParams(search, { replace: true, preventScrollReset: true });
     },
     [setParams],

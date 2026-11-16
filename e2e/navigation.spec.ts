@@ -52,6 +52,27 @@ test('소장품 찾기: 검색과 분류를 주소에 남기고, 새로 고쳐�
   );
 });
 
+test('초성으로 찾고, 처음 나온 해 순서로 정렬해 주소에 남긴다', async ({ page }) => {
+  await page.goto('/works');
+  await page.getByRole('searchbox', { name: '소장품 찾기' }).fill('ㄷㄹㄱㄹㅈ');
+  await expect(page.locator('main').getByRole('status')).toHaveText(/가운데 1점/);
+  await expect(page.getByRole('link', { name: /드래곤 라자/ })).toBeVisible();
+
+  await page.getByRole('button', { name: '조건 모두 지우기' }).click();
+  // 숨긴 네이티브 라디오를 감싼 알약 모양 label을 누릅니다(사용자가 누르는 곳).
+  await page.getByText('처음 나온 해', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: '처음 나온 해' })).toBeChecked();
+  await expect(page).toHaveURL(/s=year/);
+  const dated: readonly { title: string; number: number; firstReleased?: number }[] = works;
+  const oldest = dated
+    .filter((w) => w.firstReleased !== undefined)
+    .toSorted((a, b) => a.firstReleased! - b.firstReleased! || a.number - b.number)[0]!;
+  await expect(page.getByRole('link', { name: /^\d+번 / }).first()).toContainText(oldest.title);
+
+  await page.reload();
+  await expect(page.getByRole('radio', { name: '처음 나온 해' })).toBeChecked();
+});
+
 test('홈 전시 띠를 버튼으로 넘긴다', async ({ page }) => {
   await page.goto('/');
   const next = page.getByRole('button', { name: '다음' }).first();

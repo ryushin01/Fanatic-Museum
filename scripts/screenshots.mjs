@@ -2,7 +2,8 @@
 /**
  * README용 화면을 docs/images/에 JPG로 찍습니다.
  * 저작권 이미지가 나오지 않도록 public/media 없이 빌드한 결과(pnpm preview)를 찍어야 합니다.
- * 사용: pnpm build:all && pnpm preview & node scripts/screenshots.mjs
+ * 사용: pnpm build:all && pnpm preview & node scripts/screenshots.mjs [--only 이름,이름]
+ * 바뀐 화면만 다시 찍으려면 --only works-filter처럼 이름을 줍니다.
  */
 import { chromium } from '@playwright/test';
 
@@ -29,8 +30,11 @@ const shots = [
   },
 ];
 
+const onlyIndex = process.argv.indexOf('--only');
+const only = onlyIndex >= 0 ? process.argv[onlyIndex + 1].split(',') : null;
+
 const browser = await chromium.launch();
-for (const shot of shots) {
+for (const shot of shots.filter((s) => !only || only.includes(s.name))) {
   const page = await browser.newPage({
     viewport: { width: shot.width, height: shot.height },
     deviceScaleFactor: shot.width < 500 ? 2 : 1,

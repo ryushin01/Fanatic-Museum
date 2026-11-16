@@ -99,6 +99,16 @@
   outline-offset: 2px;
 }
 
+/* 정렬: 분류 토글과 같은 알약 모양의 라디오(숨긴 네이티브 라디오를 감싼 label) */
+.sort {
+  display: grid;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+}
+
 .count {
   font-size: var(--text-sm);
   color: var(--color-muted);
