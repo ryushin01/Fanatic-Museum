@@ -31,11 +31,15 @@ test('홈에서 소장품을 눌러 상세로 가고, 이전·다음으로 오�
 test('소장품 찾기: 검색과 분류를 주소에 남기고, 새로 고쳐도 유지된다', async ({ page }) => {
   await page.goto('/works');
   await page.getByRole('searchbox', { name: '소장품 찾기' }).fill('이영도');
-  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${byLeeYoungDo}점`));
+  await expect(page.locator('main').getByRole('status')).toHaveText(
+    new RegExp(`가운데 ${byLeeYoungDo}점`),
+  );
   await expect(page).toHaveURL(/q=/);
   await page.reload();
   await expect(page.getByRole('searchbox', { name: '소장품 찾기' })).toHaveValue('이영도');
-  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${byLeeYoungDo}점`));
+  await expect(page.locator('main').getByRole('status')).toHaveText(
+    new RegExp(`가운데 ${byLeeYoungDo}점`),
+  );
 
   await page.getByRole('button', { name: '조건 모두 지우기' }).click();
   await page.getByRole('button', { name: '프라모델' }).click();
@@ -43,7 +47,9 @@ test('소장품 찾기: 검색과 분류를 주소에 남기고, 새로 고쳐�
     'aria-pressed',
     'true',
   );
-  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${plasticModels}점`));
+  await expect(page.locator('main').getByRole('status')).toHaveText(
+    new RegExp(`가운데 ${plasticModels}점`),
+  );
 });
 
 test('홈 전시 띠를 버튼으로 넘긴다', async ({ page }) => {
@@ -53,6 +59,75 @@ test('홈 전시 띠를 버튼으로 넘긴다', async ({ page }) => {
   await expect(prev).toBeDisabled();
   await next.click();
   await expect(prev).toBeEnabled();
+});
+
+test('전시 띠를 키보드로 처음까지 되돌리면 초점이 사라지지 않고 다음 버튼으로 간다', async ({
+  page,
+}) => {
+  // 부드러운 스크롤의 진행 시점에 따라 결과가 흔들리지 않게 움직임 줄이기(바로 이동)로 확인합니다.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const next = page.getByRole('button', { name: '다음' }).first();
+  const prev = page.getByRole('button', { name: '이전' }).first();
+  await next.focus();
+  await page.keyboard.press('Enter');
+  await expect(prev).toBeEnabled();
+  await prev.focus();
+  await page.keyboard.press('Enter');
+  await expect(prev).toBeDisabled();
+  await expect(next).toBeFocused();
+});
+
+test('전시 띠의 다음을 빠르게 두 번 누르면 두 칸 넘어간다', async ({ page }) => {
+  await page.goto('/');
+  const strip = page.locator('section', { has: page.getByRole('heading', { name: '전시실' }) });
+  await strip.getByRole('button', { name: '다음' }).focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  // 스크롤이 멈추면 세 번째 소장품이 띠의 맨 앞(붙는 자리)에 옵니다.
+  await expect
+    .poll(() =>
+      strip.locator('ol').evaluate((track) => {
+        const third = track.children[2]!;
+        const padding = parseFloat(getComputedStyle(track).scrollPaddingInlineStart) || 0;
+        const left = third.getBoundingClientRect().left - track.getBoundingClientRect().left;
+        return Math.abs(left - padding);
+      }),
+    )
+    .toBeLessThanOrEqual(1);
+});
+
+test('전시 띠를 키보드로 끝까지 넘겨도 초점이 이전 버튼에 남는다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const strip = page.locator('section', { has: page.getByRole('heading', { name: '전시실' }) });
+  const next = strip.getByRole('button', { name: '다음' });
+  const prev = strip.getByRole('button', { name: '이전' });
+  await next.focus();
+  for (let i = 0; i < works.length && (await next.isEnabled()); i += 1) {
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(200);
+  }
+  await expect(next).toBeDisabled();
+  await expect(prev).toBeFocused();
+});
+
+test('목록에서 작품을 열면 본문으로 초점을 옮기고 새 페이지 제목을 알린다', async ({ page }) => {
+  await page.goto('/works');
+  await page.getByRole('link', { name: /^1번/ }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/works\/cyber-formula$/);
+  await expect(page.locator('main')).toBeFocused();
+  await expect(page.getByRole('status').filter({ hasText: '사이버 포뮬러' })).toHaveText(
+    '신세기 GPX 사이버 포뮬러 — Fanatic Museum',
+  );
+});
+
+test('일본어 원제에는 언어를 표시한다', async ({ page }) => {
+  await page.goto('/works/cyber-formula');
+  await expect(
+    page.locator('[lang="ja"]', { hasText: '新世紀GPXサイバーフォーミュラ' }),
+  ).toBeVisible();
 });
 
 test('카테고리 탭은 지금 카테고리를 aria-current로 알린다', async ({ page }) => {
@@ -83,14 +158,18 @@ test('검색 조건이 있는 주소로 바로 들어와도 하이드레이션 �
   page.on('pageerror', (e) => errors.push(e.message));
   const comics = works.filter((w) => (w.categories as readonly string[]).includes('comic'));
   await page.goto('/works?c=comic');
-  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${comics.length}점`));
+  await expect(page.locator('main').getByRole('status')).toHaveText(
+    new RegExp(`가운데 ${comics.length}점`),
+  );
   await expect(page.getByRole('button', { name: '만화·웹툰' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
   await page.goto(`/works?q=${encodeURIComponent('이영도')}`);
   await expect(page.getByRole('searchbox', { name: '소장품 찾기' })).toHaveValue('이영도');
-  await expect(page.getByRole('status')).toHaveText(new RegExp(`가운데 ${byLeeYoungDo}점`));
+  await expect(page.locator('main').getByRole('status')).toHaveText(
+    new RegExp(`가운데 ${byLeeYoungDo}점`),
+  );
   expect(errors, '하이드레이션·런타임 오류').toEqual([]);
 });
 

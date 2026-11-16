@@ -6,37 +6,38 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteLoaderData,
   type LinksFunction,
 } from 'react-router';
 
+import { getWorks } from '@/entities/work/index.server';
 import { site } from '@/shared/config';
 import { themeInitScript, useTheme } from '@/shared/lib';
 import { errorTitle, NotFoundNotice, PageHeader } from '@/shared/ui';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
 
-import { FONT_FACE_CSS, FontLoader } from './fonts/font-loader';
+import { FONT_FACE_CSS, FontLoader, MUSEUM_CLASSIC_FILES } from './fonts/font-loader';
 import { reportError } from './monitoring';
+import { RouteAnnouncer } from './navigation/route-announcer';
 import './styles/global.css';
+
+/** 빌드할 때 한 번 실행됩니다. 푸터의 소장품 수만 넘겨, 소장품 데이터가 모든 페이지의 JS에 실리지 않게 합니다. */
+export async function loader() {
+  return { workCount: (await getWorks()).length };
+}
 
 export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
   { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
   // 한글 클래식체(통파일): 바로 받기 시작하고, 다 받을 때까지 FontLoader가 로딩 화면을 보여 줌
-  {
+  ...MUSEUM_CLASSIC_FILES.map((href) => ({
     rel: 'preload',
-    href: '/fonts/museum-classic/MuseumClassic-M.woff',
+    href,
     as: 'font',
     type: 'font/woff',
-    crossOrigin: 'anonymous',
-  },
-  {
-    rel: 'preload',
-    href: '/fonts/museum-classic/MuseumClassic-B.woff',
-    as: 'font',
-    type: 'font/woff',
-    crossOrigin: 'anonymous',
-  },
+    crossOrigin: 'anonymous' as const,
+  })),
 ];
 
 /**
@@ -49,6 +50,7 @@ export function meta({ error }: { error?: unknown }) {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [theme] = useTheme();
+  const root = useRouteLoaderData<typeof loader>('root');
   return (
     // 저장된 테마는 그리기 전에 인라인 스크립트가 data-theme으로 적용하므로 html 속성 차이는 허용합니다.
     // 하이드레이션 뒤에는 React도 같은 값을 그려, 오류 등으로 문서를 다시 그려도 테마가 풀리지 않습니다.
@@ -73,7 +75,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main id="main" tabIndex={-1}>
           {children}
         </main>
-        <SiteFooter />
+        <SiteFooter workCount={root?.workCount} />
+        <RouteAnnouncer />
         <ScrollRestoration />
         <Scripts />
       </body>
