@@ -1,5 +1,5 @@
 import type { WorkImage } from '@/shared/api';
-import { padNumber } from '@/shared/lib';
+import { isLightColor, padNumber } from '@/shared/lib';
 
 import styles from './work-cover.module.css';
 
@@ -15,13 +15,6 @@ export interface WorkCoverProps {
   priority?: boolean;
   /** 이미지 대체 텍스트. 주변에 제목이 있어 꾸밈용이면 빈 문자열 */
   alt?: string;
-}
-
-/** 밝은 대표색 위에는 어두운 글자를 씁니다(명도 대비). */
-function isLight(hex: string): boolean {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-  const lum = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-  return 0.2126 * lum(r!) + 0.7152 * lum(g!) + 0.0722 * lum(b!) > 0.4;
 }
 
 /**
@@ -55,7 +48,7 @@ export function WorkCover({
       ) : (
         <div className={styles.artFrame} aria-hidden="true">
           <div
-            className={`${styles.art} ${isLight(accent) ? styles.artLight : ''}`}
+            className={`${styles.art} ${isLightColor(accent) ? styles.artLight : ''}`}
             style={{ ['--accent' as string]: accent }}
           >
             <span className={styles.artNumber}>{padNumber(number)}</span>

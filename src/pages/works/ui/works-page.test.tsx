@@ -13,6 +13,7 @@ const works = [
     number: 1,
     title: '소드 아트 온라인',
     categories: ['light-novel', 'game'],
+    firstReleased: 2009,
   }),
   makeWork({
     slug: 'breaker',
@@ -21,7 +22,13 @@ const works = [
     categories: ['comic'],
     origin: '한국',
   }),
-  makeWork({ slug: 'ff', number: 3, title: '파이널 판타지 시리즈', categories: ['game'] }),
+  makeWork({
+    slug: 'ff',
+    number: 3,
+    title: '파이널 판타지 시리즈',
+    categories: ['game'],
+    firstReleased: 1987,
+  }),
 ];
 
 function renderPage(initial = '/works') {
@@ -76,5 +83,28 @@ describe('WorksPage', () => {
     renderPage();
     await user.type(await screen.findByRole('searchbox'), '없는작품');
     expect(await screen.findByText(/조건에 맞는 소장품이 없습니다/)).toBeInTheDocument();
+  });
+
+  const order = () =>
+    screen.getAllByRole('link', { name: /^\d+번 / }).map((link) => link.textContent?.trim());
+
+  it('정렬을 처음 나온 해로 바꾸면 오래된 소장품부터 놓고, 연도를 모르면 뒤로 보낸다', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    const year = await screen.findByRole('radio', { name: '처음 나온 해' });
+    await user.click(year);
+    expect(year).toBeChecked();
+    await waitFor(() =>
+      expect(order()).toEqual(['3번 파이널 판타지 시리즈', '1번 소드 아트 온라인', '2번 브레이커']),
+    );
+  });
+
+  it('주소의 정렬(?s=)을 읽고, 화살표 키로 다른 정렬을 고른다', async () => {
+    const user = userEvent.setup();
+    renderPage('/works?s=year');
+    expect(await screen.findByRole('radio', { name: '처음 나온 해' })).toBeChecked();
+    screen.getByRole('radio', { name: '처음 나온 해' }).focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('radio', { name: '가나다순' })).toBeChecked();
   });
 });
