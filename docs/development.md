@@ -4,13 +4,13 @@
 
 React Router 8 프레임워크 모드의 `appDirectory`를 FSD의 `app` 계층(`src/app`)으로 둡니다.
 
-| 계층           | 내용                                                                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/app`      | 루트 레이아웃(`root.tsx`), 라우트 설정(`routes.ts`), 라우트 모듈(`routes/`), 전역 스타일, 모니터링, `entry.client.tsx`                     |
-| `src/pages`    | 홈, 소장품, 작품 상세, 카테고리, 소개, 404. 한 페이지에서만 쓰는 부품(갤러리, 크게 보기, 검색 필터, 전시 띠)은 그 페이지 슬라이스에 둡니다 |
-| `src/widgets`  | 헤더, 푸터, 번호가 붙은 소장품 목록                                                                                                        |
-| `src/entities` | 소장품(`work`), 카테고리(`category`) 데이터와 표지                                                                                         |
-| `src/shared`   | OpenAPI 타입(`api`), 설정, 유틸리티, 공용 UI                                                                                               |
+| 계층           | 내용                                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/app`      | 루트 레이아웃(`root.tsx`), 라우트 설정(`routes.ts`), 라우트 모듈(`routes/`), 전역 스타일, 모니터링, `entry.client.tsx`                           |
+| `src/pages`    | 홈, 소장품, 작품 상세, 카테고리, 소개, 404. 한 페이지에서만 쓰는 부품(갤러리, 크게 보기, 검색 필터, 전시 띠)은 그 페이지 슬라이스에 둡니다       |
+| `src/widgets`  | 헤더, 푸터, 번호가 붙은 소장품 목록                                                                                                              |
+| `src/entities` | 소장품(`work`), 카테고리(`category`), 작가(`author`) 데이터와 표지. 소장품 데이터(`works`)는 빌드할 때만 쓰므로 `index.server.ts`로만 내보냅니다 |
+| `src/shared`   | OpenAPI 타입(`api`), 설정, 유틸리티, 공용 UI                                                                                                     |
 
 - 라우트 모듈(`src/app/routes/*.tsx`)은 페이지 슬라이스를 다시 내보내기만 합니다. 로더는 페이지의 `index.server.ts`에서 내보냅니다.
 - 서버(빌드)에서만 도는 코드는 `*.server.ts`로 두고 `index.server.ts`로 공개합니다. 클라이언트 번들에 들어가지 않습니다.
@@ -22,6 +22,8 @@ React Router 8 프레임워크 모드의 `appDirectory`를 FSD의 `app` 계층(`
 
 - 없는 주소는 `404.html`(앱 셸)이 404 화면을 그립니다. 없는 작품·카테고리·작가(`/works/없는-slug` 등)는 그 라우트의 404 경계(`NotFoundBoundary`)가 같은 안내(`NotFoundNotice`)를 그립니다. 루트 오류 경계까지 올라가면 문서 전체를 다시 그리므로, 404는 라우트에서 받고 다른 오류만 루트로 넘깁니다.
 - 미리 그린 HTML과 다르게 그려야 하는 값(주소의 검색 조건 등)은 하이드레이션이 끝난 뒤(`useHydrated()`가 true)에 씁니다. 하이드레이션 중에 다르게 그리면 React가 문서를 다시 그리며 `html`의 테마 속성 같은 것을 지웁니다.
+- 루트 로더는 빌드할 때 푸터의 소장품 수만 넘깁니다. 화면 JS에 소장품 데이터가 실리지 않게 하려는 것입니다.
+- 보안 헤더는 `vercel.json`에 둡니다. 모든 주소에 `nosniff`·Referrer-Policy·Permissions-Policy를 보냅니다. 사이트 화면에는 CSP(`frame-ancestors 'none'`, Sentry 수집 주소 허용)를 보냅니다. 인라인 스크립트(테마·글꼴 로더·React Router 하이드레이션 데이터)가 페이지마다 달라 `script-src`에 `'unsafe-inline'`을 둡니다. Storybook(`/storybook/`)은 미리보기 iframe 때문에 `frame-ancestors 'self'`만 둡니다.
 - 미리보기는 `pnpm preview`(sirv)로 합니다. `vite preview`는 폴더의 `index.html` 대신 루트 `index.html`을 돌려줘서 하이드레이션 오류가 납니다.
 
 ## 정적 JSON API와 OpenAPI 타입
@@ -78,6 +80,9 @@ pnpm build && pnpm preview
 ## 접근성
 
 - 갤러리는 WAI-ARIA APG 캐러셀 패턴(자동 넘김 없음)입니다. 터치 스와이프는 CSS scroll-snap이 처리하고, 이전·다음 버튼과 위치 안내(`aria-live`)를 함께 둡니다.
+- 전시 띠·갤러리·크게 보기의 이전·다음 버튼은 `shared/ui`의 `StepButtons` 하나입니다. 초점이 있던 버튼이 끝에서 비활성되면 반대쪽 버튼으로 초점을 옮깁니다. 버튼으로 옮기는 동안(부드러운 스크롤)에는 지나가는 항목으로 번호를 바꾸지 않아(`useSnapIndex`), 빠르게 연달아 눌러도 누른 만큼 넘어갑니다.
+- 화면을 옮기면 `RouteAnnouncer`가 새 페이지 제목을 상태 영역(`role="status"`)으로 알립니다. 누른 링크가 사라져 초점을 잃었으면 본문(`main`)으로 초점을 옮깁니다.
+- 움직임 줄이기에서는 화면 전환(View Transitions) 애니메이션도 끕니다. 원제는 `lang="ja"`/`"en"`으로 표시합니다(`OriginalTitle`).
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다.
 - `eslint-plugin-jsx-a11y`(strict)로 코드를 쓸 때 검사하고, E2E에서 모든 페이지를 axe로 검사합니다.
 - 홈 전시관의 움직임은 CSS 스크롤 타임라인(`animation-timeline: view()`)으로만 만듭니다. `@supports`와 `prefers-reduced-motion: no-preference` 안에만 두어, 지원하지 않거나 동작 줄이기를 켜면 정지 화면입니다. 전시관을 화면에 붙이면(sticky) 붙은 동안 타임라인이 멈추고, 화면이 낮거나 글자를 키웠을 때 내용이 다음 전시관에 가려지므로 붙이지 않습니다.

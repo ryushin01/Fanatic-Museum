@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from 'react-router';
 
 import { findCategory } from '@/entities/category';
+import { OriginalTitle } from '@/entities/work';
 import { site } from '@/shared/config';
 import { padNumber } from '@/shared/lib';
 import { errorTitle, PageHeader } from '@/shared/ui';
@@ -41,11 +42,7 @@ export function WorkPage() {
         }
         title={work.title}
       >
-        {(work.originalTitle || work.nickname) && (
-          <p className={styles.original}>
-            {[work.nickname, work.originalTitle].filter(Boolean).join(' · ')}
-          </p>
-        )}
+        <OriginalTitle work={work} className={styles.original} as="p" />
       </PageHeader>
 
       <div className="container">

@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.4.2-b5121b)
+![version](https://img.shields.io/badge/version-1.5.0-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -62,7 +62,7 @@
 | 모니터링   | Sentry(`@sentry/react-router`), web-vitals                                                                                                  |
 | 성능 예산  | Lighthouse CI, size-limit, 반응형 이미지(`srcset`·`fetchpriority`), sharp WebP 변환                                                         |
 | 품질       | ESLint(`eslint-plugin-jsx-a11y` strict), Steiger(FSD), Prettier, Vitest + Testing Library, Storybook 10 스토리 테스트, Playwright + axe E2E |
-| 배포       | Vercel, GitHub Actions, Dependabot                                                                                                          |
+| 배포       | Vercel(보안 헤더·CSP), GitHub Actions, Dependabot                                                                                           |
 
 ## 시작하기
 
@@ -115,7 +115,7 @@ src/
 | MedievalSharp               | 홈의 영문 제목 (Fanatic Museum) | 400          | Wojciech Kalinowski | SIL OFL 1.1                          | [Google Fonts](https://fonts.google.com/specimen/MedievalSharp)                                                |
 | 국립박물관문화재단 클래식체 | 한글 (제목·본문)                | 500·700      | 국립박물관문화재단  | 무료(배포·웹 임베딩 가능, 수정 금지) | [눈누](https://noonnu.cc/font_page/326)                                                                        |
 
-모두 같은 사이트에서 제공합니다(외부 글꼴 CDN 없음). 클래식체는 수정할 수 없는 글꼴이라 원본 파일을 그대로 쓰고(`public/fonts/museum-classic`, 굵기마다 약 0.7MB), 페이지를 열자마자 받기 시작합니다(`preload`). 글자가 중간에 바뀌지 않게 다 받을 때까지 빈 액자에 조명이 지나가는 로딩 화면("전시실 조명을 켜는 중입니다")으로 덮고, 8초가 지나거나 받지 못하면 클래식체를 끄고 운영체제 글꼴로 엽니다(`src/app/fonts/font-loader.tsx`). 자바스크립트가 꺼져 있으면 로딩 화면 없이 바로 보입니다. 라이선스 요지는 `public/fonts/museum-classic/LICENSE.txt`에 있습니다.
+모두 같은 사이트에서 제공합니다(외부 글꼴 CDN 없음). 클래식체는 수정할 수 없는 글꼴이라 원본 파일을 그대로 쓰고(`src/app/fonts/museum-classic`, 굵기마다 약 0.7MB), 페이지를 열자마자 받기 시작합니다(`preload`). 파일 내용은 그대로 두고 이름에만 해시를 붙여 내보내므로 한 번 받으면 1년 동안 다시 받지 않습니다. 글자가 중간에 바뀌지 않게 다 받을 때까지 빈 액자에 조명이 지나가는 로딩 화면("전시실 조명을 켜는 중입니다")으로 덮고, 8초가 지나거나 받지 못하면 클래식체를 끄고 운영체제 글꼴로 엽니다(`src/app/fonts/font-loader.tsx`). 자바스크립트가 꺼져 있으면 로딩 화면 없이 바로 보입니다. 라이선스 요지는 `src/app/fonts/museum-classic/LICENSE.txt`에 있습니다.
 
 ## 출처
 

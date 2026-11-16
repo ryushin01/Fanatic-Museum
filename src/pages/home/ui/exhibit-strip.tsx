@@ -1,10 +1,10 @@
 import { useId } from 'react';
-import { Button } from 'react-aria-components';
 import { Link } from 'react-router';
 
 import { WorkCover } from '@/entities/work';
 import type { Work } from '@/shared/api';
 import { padNumber, useSnapIndex } from '@/shared/lib';
+import { StepButtons } from '@/shared/ui';
 
 import styles from './exhibit-strip.module.css';
 
@@ -29,24 +29,7 @@ export function ExhibitStrip({ title, description, works }: ExhibitStripProps) {
           </h2>
           {description && <p className="label">{description}</p>}
         </div>
-        <div className={styles.controls}>
-          <Button
-            className={styles.button}
-            aria-controls={listId}
-            onPress={() => goTo(Math.max(0, index - 1))}
-            isDisabled={index === 0}
-          >
-            이전
-          </Button>
-          <Button
-            className={styles.button}
-            aria-controls={listId}
-            onPress={() => goTo(Math.min(works.length - 1, index + 1))}
-            isDisabled={index === works.length - 1}
-          >
-            다음
-          </Button>
-        </div>
+        <StepButtons index={index} count={works.length} onChange={goTo} controls={listId} />
       </div>
       <ol id={listId} ref={trackRef} className={styles.track}>
         {works.map((work, i) => (

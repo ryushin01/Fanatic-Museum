@@ -1,6 +1,6 @@
 /*
  * 글꼴: 영문·숫자는 Archivo(좁은 너비 75%), 한글은 국립박물관문화재단 클래식체.
- * 클래식체는 수정할 수 없는 글꼴이라 원본 파일(public/fonts/museum-classic)을 그대로 쓰고,
+ * 클래식체는 수정할 수 없는 글꼴이라 원본 파일(src/app/fonts/museum-classic, 해시 이름으로 내보냄)을 그대로 쓰고,
  * 굵기마다 약 0.7MB라 다 받을 때까지 FontLoader가 로딩 화면을 보여 줍니다(맨 아래 .font-loader).
  * 홈의 영문 제목(Fanatic Museum)만 MedievalSharp입니다. 한글 제목 속 영문·숫자는 Archivo입니다.
  */
@@ -213,6 +213,13 @@ button {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* 화면 전환(View Transitions)의 의사 요소는 위의 *에 걸리지 않아 따로 끕니다 */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

@@ -1,1 +1,1 @@
-export { SiteFooter } from './ui/site-footer';
+export { SiteFooter, type SiteFooterProps } from './ui/site-footer';
