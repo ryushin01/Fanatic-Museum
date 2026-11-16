@@ -1,19 +1,25 @@
 import { Link, useLoaderData } from 'react-router';
 
 import { site } from '@/shared/config';
+import { breadcrumbList, pageMeta } from '@/shared/lib';
 import { PageHeader } from '@/shared/ui';
 
 import type { loader } from '../api/loader.server';
 import styles from './authors-page.module.css';
 
 export function meta() {
-  return [
-    { title: `작가 — ${site.name}` },
-    {
-      name: 'description',
-      content: '박건, 박성우, 박진환, 이경영, 이영도. 대장정을 함께한 한국 만화가와 판타지 소설가.',
-    },
-  ];
+  return pageMeta({
+    title: `작가 — ${site.name}`,
+    description:
+      '박건, 박성우, 박진환, 이경영, 이영도. 대장정을 함께한 한국 만화가와 판타지 소설가.',
+    path: '/authors',
+    jsonLd: [
+      breadcrumbList([
+        { name: '홈', path: '/' },
+        { name: '작가', path: '/authors' },
+      ]),
+    ],
+  });
 }
 
 export function AuthorsPage() {

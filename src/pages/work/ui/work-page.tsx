@@ -3,12 +3,13 @@ import { Link, useLoaderData } from 'react-router';
 import { findCategory } from '@/entities/category';
 import { OriginalTitle } from '@/entities/work';
 import { site } from '@/shared/config';
-import { padNumber } from '@/shared/lib';
+import { breadcrumbList, padNumber, pageMeta } from '@/shared/lib';
 import { errorTitle, PageHeader } from '@/shared/ui';
 import { WorkGallery } from './work-gallery';
 import { WorkIndex } from '@/widgets/work-index';
 
 import type { loader } from '../api/loader.server';
+import { workJsonLd } from '../model/structured-data';
 import styles from './work-page.module.css';
 
 export function meta({
@@ -18,14 +19,23 @@ export function meta({
   loaderData?: Awaited<ReturnType<typeof loader>>;
   error?: unknown;
 }) {
-  if (!loaderData) return [{ title: errorTitle(error) }];
+  if (!loaderData) return [{ title: errorTitle(error) }, { name: 'robots', content: 'noindex' }];
   const { work } = loaderData;
-  return [
-    { title: `${work.title} — ${site.name}` },
-    { name: 'description', content: work.summary },
-    { property: 'og:title', content: work.title },
-    { property: 'og:description', content: work.summary },
-  ];
+  const path = `/works/${work.slug}`;
+  return pageMeta({
+    title: `${work.title} — ${site.name}`,
+    shareTitle: work.title,
+    description: work.summary,
+    path,
+    jsonLd: [
+      workJsonLd(work),
+      breadcrumbList([
+        { name: '홈', path: '/' },
+        { name: '소장품', path: '/works' },
+        { name: work.title, path },
+      ]),
+    ],
+  });
 }
 
 export function WorkPage() {

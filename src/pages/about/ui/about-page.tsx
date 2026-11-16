@@ -1,13 +1,15 @@
 import { site } from '@/shared/config';
+import { pageMeta } from '@/shared/lib';
 import { PageHeader } from '@/shared/ui';
 
 import styles from './about-page.module.css';
 
 export function meta() {
-  return [
-    { title: `소개 — ${site.name}` },
-    { name: 'description', content: '파나틱 뮤지엄이 무엇을, 어떻게 전시하는지 소개합니다.' },
-  ];
+  return pageMeta({
+    title: `소개 — ${site.name}`,
+    description: '파나틱 뮤지엄이 무엇을, 어떻게 전시하는지 소개합니다.',
+    path: '/about',
+  });
 }
 
 export function AboutPage() {

@@ -64,6 +64,23 @@ pnpm build && pnpm preview
 - 외부 자료의 출처는 화면이 아니라 README의 `## 출처`에 모읍니다(모든 프로젝트 공통 규칙). 출처 종류를 더하면(`sources.json`) README의 표도 고칩니다. 이미지마다의 원본 페이지는 로컬 목록(`manifest.jsonl`, `public/media/index.json`의 `sourcePage`)에만 있어 README에 두지 않고, 로컬 뷰어의 '원본 출처'로 보여 줍니다.
 - Vercel CLI는 `.gitignore`를 따르지 않으므로 `.vercelignore`에서 `media/`·`public/media/`를 뺍니다. 그래도 들어가는 일이 없도록 `VERCEL`·`CI` 환경의 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).
 
+## 검색·공유 정보
+
+페이지마다 `meta`에서 `pageMeta()`(`shared/lib/meta.ts`)를 돌려줍니다. 제목·설명, canonical(검색 조건 없는 대표 주소), Open Graph·X 미리보기, 구조화 데이터를 한 모양으로 만듭니다.
+
+| 페이지          | 구조화 데이터(schema.org)                                                   |
+| --------------- | --------------------------------------------------------------------------- |
+| 홈              | `WebSite`                                                                   |
+| 소장품·카테고리 | `CollectionPage`, `BreadcrumbList`                                          |
+| 작품            | `CreativeWork`(원제, 처음 나온 해, 나라, 분류, 만든 사람), `BreadcrumbList` |
+| 작가            | `Person`, `BreadcrumbList`                                                  |
+
+- 작품의 만든 사람은 사람으로 볼 수 있는 역할(글·그림·만화·감독·기획·각색)만 `creator`로, 회사(제작·키트)는 `producer`로 넣습니다. '원작'은 작품일 때도 있어 넣지 않습니다.
+- 없는 주소와 오류 화면은 `robots: noindex`이고 canonical을 두지 않습니다.
+- 공유 미리보기 이미지는 `pnpm og:build`(`scripts/og-images.mjs`)가 사이트 글꼴·색으로 그린 HTML을 Chromium으로 찍어 `public/og/`에 만듭니다. 사이트 이름이나 소장품이 바뀌면 다시 만들어 커밋합니다.
+- 웹 앱 매니페스트(`public/manifest.webmanifest`)의 아이콘은 `pnpm icons:build`(`scripts/app-icons.mjs`)가 박물관 로고로 만듭니다.
+- 사이트 주소는 `shared/config/site.ts`의 `url`입니다. 주소가 바뀌면 이 값과 사이트맵의 `SITE_URL`을 함께 바꿉니다.
+
 ## 모니터링
 
 `src/app/monitoring`이 Sentry와 web-vitals를 첫 화면 뒤에 따로 불러옵니다.
@@ -98,7 +115,7 @@ pnpm build && pnpm preview
 | `pnpm lhci`                                             | Lighthouse CI 예산(성능 0.9, 접근성 1.0, LCP 2.5초 등)                                    |
 | `pnpm format:check` / `lint` / `lint:fsd` / `typecheck` | Prettier / ESLint / Steiger / 타입 검사                                                   |
 
-CI(GitHub Actions)는 위 단계를 모두 돌립니다. Dependabot이 의존성을 매주 확인합니다.
+CI(GitHub Actions)는 위 단계를 모두 돌립니다. Dependabot이 의존성을 매주 확인합니다. 개발 도구가 끌어오는 옛 버전의 보안 권고(`pnpm audit`)는 `pnpm-workspace.yaml`의 `overrides`로 고쳐진 버전에 맞춥니다.
 
 ## PR 미리보기 배포
 
