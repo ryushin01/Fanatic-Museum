@@ -2,14 +2,20 @@ import { Link, useLoaderData } from 'react-router';
 
 import { categories } from '@/entities/category';
 import { site } from '@/shared/config';
-import { PageHeader } from '@/shared/ui';
+import { errorTitle, PageHeader } from '@/shared/ui';
 import { WorkIndex } from '@/widgets/work-index';
 
 import type { loader } from '../api/loader.server';
 import styles from './category-page.module.css';
 
-export function meta({ loaderData }: { loaderData?: Awaited<ReturnType<typeof loader>> }) {
-  if (!loaderData) return [{ title: `카테고리 — ${site.name}` }];
+export function meta({
+  loaderData,
+  error,
+}: {
+  loaderData?: Awaited<ReturnType<typeof loader>>;
+  error?: unknown;
+}) {
+  if (!loaderData) return [{ title: errorTitle(error) }];
   return [
     { title: `${loaderData.category.name} — ${site.name}` },
     { name: 'description', content: loaderData.category.description },
