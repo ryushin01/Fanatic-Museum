@@ -27,6 +27,11 @@ export function meta({
     shareTitle: work.title,
     description: work.summary,
     path,
+    // 공개 사이트의 자리 표시 그래픽과 같은 모양의 공유 이미지(pnpm og:build)
+    image: {
+      src: `/og/works/${work.slug}.png`,
+      alt: `${padNumber(work.number)} ${work.title}`,
+    },
     jsonLd: [
       workJsonLd(work),
       breadcrumbList([

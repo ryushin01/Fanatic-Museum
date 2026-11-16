@@ -1,3 +1,4 @@
+export { isLightColor } from './color';
 export { padNumber, textLang } from './format';
 export { absoluteUrl, breadcrumbList, pageMeta, type PageMetaOptions } from './meta';
 export { themeInitScript, useTheme, type ThemeChoice } from './theme';

@@ -7,7 +7,11 @@ import type { WorkFilter as WorkFilterValue } from '../model/filter';
 import { WorkFilter } from './work-filter';
 
 function Stateful() {
-  const [value, setValue] = useState<WorkFilterValue>({ query: '', categories: ['game'] });
+  const [value, setValue] = useState<WorkFilterValue>({
+    query: '',
+    categories: ['game'],
+    sort: 'number',
+  });
   return (
     <WorkFilter
       value={value}
@@ -31,7 +35,7 @@ const meta = {
     ),
   ],
   args: {
-    value: { query: '', categories: [] },
+    value: { query: '', categories: [], sort: 'number' },
     onChange: () => {},
     categories,
     resultCount: 17,

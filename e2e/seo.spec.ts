@@ -4,7 +4,10 @@ import { pages } from './pages';
 
 const SITE = 'https://fanatic-museum-ryushin01.vercel.app';
 
-test('모든 페이지에 대표 주소·공유 미리보기·구조화 데이터가 있다', async ({ page }) => {
+/** 구조화 데이터를 두지 않는 페이지(연표·소개). 나머지는 꼭 있어야 합니다. */
+const WITHOUT_JSON_LD = new Set(['/timeline', '/about']);
+
+test('모든 페이지에 대표 주소·공유 미리보기·구조화 데이터가 있다', async ({ page, request }) => {
   for (const path of pages) {
     await page.goto(path);
     const canonical = page.locator('link[rel="canonical"]');
@@ -12,11 +15,14 @@ test('모든 페이지에 대표 주소·공유 미리보기·구조화 데이�
     const href = new URL(path, SITE).href;
     await expect(canonical, path).toHaveAttribute('href', href);
     await expect(page.locator('meta[property="og:url"]'), path).toHaveAttribute('content', href);
-    await expect(page.locator('meta[property="og:image"]'), path).toHaveAttribute(
-      'content',
-      /^https:\/\/.+\.png$/,
-    );
-    for (const script of await page.locator('script[type="application/ld+json"]').all()) {
+    const image = page.locator('meta[property="og:image"]');
+    await expect(image, path).toHaveAttribute('content', /^https:\/\/.+\.png$/);
+    // 공유 이미지가 빌드 결과에 실제로 있는지 같은 경로로 받아 봅니다.
+    const imagePath = new URL((await image.getAttribute('content'))!).pathname;
+    expect((await request.get(imagePath)).status(), `${path} → ${imagePath}`).toBe(200);
+    const scripts = page.locator('script[type="application/ld+json"]');
+    if (!WITHOUT_JSON_LD.has(path)) expect(await scripts.count(), `${path} 구조화 데이터`).toBe(1);
+    for (const script of await scripts.all()) {
       const data = JSON.parse((await script.textContent()) ?? '');
       expect(data['@context'], path).toBe('https://schema.org');
     }

@@ -26,6 +26,15 @@ React Router 8 프레임워크 모드의 `appDirectory`를 FSD의 `app` 계층(`
 - 보안 헤더는 `vercel.json`에 둡니다. 모든 주소에 `nosniff`·Referrer-Policy·Permissions-Policy를 보냅니다. 사이트 화면에는 CSP(`frame-ancestors 'none'`, Sentry 수집 주소 허용)를 보냅니다. 인라인 스크립트(테마·글꼴 로더·React Router 하이드레이션 데이터)가 페이지마다 달라 `script-src`에 `'unsafe-inline'`을 둡니다. Storybook(`/storybook/`)은 미리보기 iframe 때문에 `frame-ancestors 'self'`만 둡니다.
 - 미리보기는 `pnpm preview`(sirv)로 합니다. `vite preview`는 폴더의 `index.html` 대신 루트 `index.html`을 돌려줘서 하이드레이션 오류가 납니다.
 
+## 글꼴
+
+영문·숫자는 Archivo(너비 75%), 한글은 국립박물관문화재단 클래식체, 홈의 영문 제목은 MedievalSharp입니다. 모두 같은 사이트에서 냅니다(출처는 README의 웹 폰트 표).
+
+- 클래식체는 수정할 수 없는 글꼴이라 원본 WOFF(굵기마다 약 0.7MB)를 서브셋이나 변환 없이 그대로 씁니다. `src/app/fonts/museum-classic`에 두면 Vite가 내용은 그대로 두고 이름에 해시를 붙여 `/assets`로 내보내므로, 한 번 받으면 1년 동안 다시 받지 않습니다.
+- 페이지를 열자마자 받기 시작하고(`preload`), 글자가 중간에 바뀌지 않게 다 받을 때까지 빈 액자에 조명이 지나가는 로딩 화면("전시실 조명을 켜는 중입니다")으로 덮습니다(`src/app/fonts/font-loader.tsx`).
+- 8초가 지나거나 받지 못하면 글꼴 정의를 꺼서 늦게 도착해도 글자가 바뀌지 않게 하고 운영체제 글꼴로 엽니다. 자바스크립트가 꺼져 있으면 로딩 화면 없이 바로 보입니다.
+- 느린 모바일 망(Lighthouse Slow 4G)에서는 첫 방문 때 로딩 화면이 8~10초 보입니다. 공식 배포처에 WOFF2가 생기면 바꾸는 것이 가장 효과가 큽니다.
+
 ## 정적 JSON API와 OpenAPI 타입
 
 `openapi/archive.yaml`이 API 문서이고, 화면의 데이터 타입은 이 문서에서 생성합니다.
