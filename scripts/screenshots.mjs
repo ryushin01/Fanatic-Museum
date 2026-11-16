@@ -44,18 +44,22 @@ if (only && (only.length === 0 || unknown.length > 0)) {
   process.exit(1);
 }
 
-// 미리보기 서버가 뜰 때까지 기다립니다.
-for (let tries = 0; ; tries += 1) {
-  const ready = await fetch(base).then(
-    (response) => response.ok,
-    () => false,
-  );
+// 미리보기 서버가 뜰 때까지 기다립니다(실제 시간으로 60초까지, 느린 응답도 그 안에서 끊음).
+const deadline = Date.now() + 60_000;
+while (true) {
+  const left = deadline - Date.now();
+  const ready =
+    left > 0 &&
+    (await fetch(base, { signal: AbortSignal.timeout(left) }).then(
+      (response) => response.ok,
+      () => false,
+    ));
   if (ready) break;
-  if (tries >= 60) {
+  if (Date.now() >= deadline) {
     console.error(`미리보기 서버(${base})에 연결하지 못했습니다. pnpm preview를 먼저 띄워 주세요.`);
     process.exit(1);
   }
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, Math.min(1000, deadline - Date.now())));
 }
 
 const browser = await chromium.launch();
