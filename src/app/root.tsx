@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   isRouteErrorResponse,
   Links,
@@ -9,8 +10,8 @@ import {
 } from 'react-router';
 
 import { site } from '@/shared/config';
-import { themeInitScript } from '@/shared/lib';
-import { PageHeader } from '@/shared/ui';
+import { themeInitScript, useTheme } from '@/shared/lib';
+import { errorTitle, NotFoundNotice, PageHeader } from '@/shared/ui';
 import { SiteFooter } from '@/widgets/site-footer';
 import { SiteHeader } from '@/widgets/site-header';
 
@@ -38,10 +39,20 @@ export const links: LinksFunction = () => [
   },
 ];
 
+/**
+ * 루트에서 그리는 화면(오류 화면, 페이지를 받기 전의 앱 셸)의 제목.
+ * 페이지가 그려지면 각 페이지의 meta가 이것을 대신합니다.
+ */
+export function meta({ error }: { error?: unknown }) {
+  return [{ title: error ? errorTitle(error) : `${site.name} — ${site.tagline}` }];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [theme] = useTheme();
   return (
-    // 저장된 테마를 그리기 전에 data-theme으로 적용하므로 html 속성 차이는 허용합니다.
-    <html lang="ko" suppressHydrationWarning>
+    // 저장된 테마는 그리기 전에 인라인 스크립트가 data-theme으로 적용하므로 html 속성 차이는 허용합니다.
+    // 하이드레이션 뒤에는 React도 같은 값을 그려, 오류 등으로 문서를 다시 그려도 테마가 풀리지 않습니다.
+    <html lang="ko" data-theme={theme === 'system' ? undefined : theme} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
@@ -83,21 +94,23 @@ export function HydrateFallback() {
 }
 
 export function ErrorBoundary({ error }: { error: unknown }) {
-  if (isRouteErrorResponse(error) && error.status === 404) {
-    return (
-      <PageHeader
-        eyebrow="404"
-        title="전시실을 찾을 수 없습니다"
-        description="주소가 바뀌었거나 아직 들어오지 않은 소장품입니다."
-      />
-    );
-  }
-  reportError(error);
+  const notFound = isRouteErrorResponse(error) && error.status === 404;
+  // 렌더는 여러 번 돌 수 있어, 화면에 나온 뒤 한 번만 보냅니다.
+  useEffect(() => {
+    if (!notFound) reportError(error);
+  }, [error, notFound]);
+
+  if (notFound) return <NotFoundNotice />;
   return (
     <PageHeader
       eyebrow="Error"
       title="문제가 생겼습니다"
       description="잠시 뒤 다시 시도해 주세요. 문제가 이어지면 GitHub 저장소에 알려 주세요."
-    />
+    >
+      <p style={{ marginTop: 24 }}>
+        {/* 화면 상태가 망가졌을 수 있어 새로 불러오는 일반 링크로 둡니다. */}
+        <a href="/">홈으로 가기</a>
+      </p>
+    </PageHeader>
   );
 }

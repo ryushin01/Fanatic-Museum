@@ -20,7 +20,8 @@ React Router 8 프레임워크 모드의 `appDirectory`를 FSD의 `app` 계층(`
 
 `ssr: false`와 `prerender`로 모든 주소를 빌드할 때 HTML로 미리 그립니다(`build/client`). 서버 없이 정적 호스팅(Vercel)에 올립니다.
 
-- 없는 주소는 `404.html`(앱 셸)이 404 화면을 그립니다.
+- 없는 주소는 `404.html`(앱 셸)이 404 화면을 그립니다. 없는 작품·카테고리·작가(`/works/없는-slug` 등)는 그 라우트의 404 경계(`NotFoundBoundary`)가 같은 안내(`NotFoundNotice`)를 그립니다. 루트 오류 경계까지 올라가면 문서 전체를 다시 그리므로, 404는 라우트에서 받고 다른 오류만 루트로 넘깁니다.
+- 미리 그린 HTML과 다르게 그려야 하는 값(주소의 검색 조건 등)은 하이드레이션이 끝난 뒤(`useHydrated()`가 true)에 씁니다. 하이드레이션 중에 다르게 그리면 React가 문서를 다시 그리며 `html`의 테마 속성 같은 것을 지웁니다.
 - 미리보기는 `pnpm preview`(sirv)로 합니다. `vite preview`는 폴더의 `index.html` 대신 루트 `index.html`을 돌려줘서 하이드레이션 오류가 납니다.
 
 ## 정적 JSON API와 OpenAPI 타입
@@ -37,6 +38,7 @@ pnpm api:check   # 생성 결과가 커밋된 파일과 다르면 실패 (CI)
 | `/api/works.json`        | 소장품 전체          |
 | `/api/works/{slug}.json` | 소장품 하나          |
 | `/api/categories.json`   | 카테고리와 소장품 수 |
+| `/api/authors.json`      | 작가                 |
 
 TypeScript 7에는 JS API가 없어서 `typescript` 패키지는 TypeScript 6 호환판(`@typescript/typescript6`)으로 두고 openapi-typescript·typescript-eslint가 씁니다. 타입 검사(`tsc`)는 TypeScript 7(`@typescript/native`)이 합니다.
 
