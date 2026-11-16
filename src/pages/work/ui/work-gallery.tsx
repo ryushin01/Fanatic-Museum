@@ -1,10 +1,11 @@
 import { useId, useState } from 'react';
-import { Button } from 'react-aria-components';
 
 import { WorkCover } from '@/entities/work';
-import { ImageViewer } from './image-viewer';
 import type { Work } from '@/shared/api';
 import { useSnapIndex } from '@/shared/lib';
+import { StepButtons } from '@/shared/ui';
+
+import { ImageViewer } from './image-viewer';
 
 import styles from './work-gallery.module.css';
 
@@ -46,28 +47,12 @@ export function WorkGallery({ work }: WorkGalleryProps) {
         <h2 id={headingId} className="label">
           전시 이미지 <span className="num">{images.length}</span>장
         </h2>
-        <div className={styles.controls}>
-          <Button
-            className={styles.button}
-            aria-controls={trackId}
-            onPress={() => goTo(Math.max(0, index - 1))}
-            isDisabled={index === 0}
-          >
-            이전
-          </Button>
+        <StepButtons index={index} count={images.length} onChange={goTo} controls={trackId}>
           <p className="num" aria-live="polite" aria-atomic="true">
             <span className="visually-hidden">이미지 </span>
             {index + 1} / {images.length}
           </p>
-          <Button
-            className={styles.button}
-            aria-controls={trackId}
-            onPress={() => goTo(Math.min(images.length - 1, index + 1))}
-            isDisabled={index === images.length - 1}
-          >
-            다음
-          </Button>
-        </div>
+        </StepButtons>
       </div>
       <div id={trackId} ref={trackRef} className={styles.track}>
         {images.map((image, i) => (

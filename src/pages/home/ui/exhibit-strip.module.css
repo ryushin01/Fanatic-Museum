@@ -18,38 +18,6 @@
   letter-spacing: -0.03em;
 }
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.button {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius);
-  background: transparent;
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.button[data-hovered] {
-  border-color: var(--color-text);
-}
-
-.button[data-focus-visible] {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-.button[data-disabled] {
-  opacity: 0.4;
-  cursor: default;
-}
-
 .track {
   display: grid;
   grid-auto-flow: column;

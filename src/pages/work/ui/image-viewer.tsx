@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Button, Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
 import type { WorkImage } from '@/shared/api';
+import { StepButtons } from '@/shared/ui';
 
 import styles from './image-viewer.module.css';
 
@@ -21,12 +22,6 @@ export interface ImageViewerProps {
 export function ImageViewer({ title, images, index, onIndexChange, onClose }: ImageViewerProps) {
   const image = index === null ? undefined : images[index];
   const total = images.length;
-
-  const go = (step: number) => {
-    if (index === null) return;
-    const next = index + step;
-    if (next >= 0 && next < total) onIndexChange(next);
-  };
 
   // 열려 있는 동안 좌우 화살표 키로 넘깁니다.
   useEffect(() => {
@@ -71,31 +66,31 @@ export function ImageViewer({ title, images, index, onIndexChange, onClose }: Im
                   />
                 )}
               </figure>
-              <div className={styles.controls}>
-                <Button className={styles.button} onPress={() => go(-1)} isDisabled={index === 0}>
-                  이전 이미지
-                </Button>
+              <StepButtons
+                index={index ?? 0}
+                count={total}
+                onChange={onIndexChange}
+                previousLabel="이전 이미지"
+                nextLabel="다음 이미지"
+                className={styles.controls}
+                buttonClassName={styles.button}
+                trailing={
+                  image?.sourcePage && (
+                    <a
+                      className={styles.source}
+                      href={image.sourcePage}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      원본 출처<span className="visually-hidden">(새 창)</span>
+                    </a>
+                  )
+                }
+              >
                 <p className="num" aria-live="polite">
                   {index === null ? 0 : index + 1} / {total}
                 </p>
-                <Button
-                  className={styles.button}
-                  onPress={() => go(1)}
-                  isDisabled={index === total - 1}
-                >
-                  다음 이미지
-                </Button>
-                {image?.sourcePage && (
-                  <a
-                    className={styles.source}
-                    href={image.sourcePage}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    원본 출처<span className="visually-hidden">(새 창)</span>
-                  </a>
-                )}
-              </div>
+              </StepButtons>
             </>
           )}
         </Dialog>

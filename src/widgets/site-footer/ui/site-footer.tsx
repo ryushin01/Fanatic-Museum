@@ -1,13 +1,17 @@
 import { Link } from 'react-router';
 
 import { categories } from '@/entities/category';
-import { works } from '@/entities/work';
 import { site } from '@/shared/config';
 import { padNumber } from '@/shared/lib';
 
 import styles from './site-footer.module.css';
 
-export function SiteFooter() {
+export interface SiteFooterProps {
+  /** 소장품 수. 있으면 맨 아래에 전시 번호 범위(001–030)를 보여 줍니다. */
+  workCount?: number;
+}
+
+export function SiteFooter({ workCount }: SiteFooterProps) {
   return (
     <footer className={styles.footer}>
       <div className="container">
@@ -51,9 +55,11 @@ export function SiteFooter() {
           <span>
             {site.koreanName} · {site.tagline}
           </span>
-          <span className="num">
-            소장품 {padNumber(1)}–{padNumber(works.length)}
-          </span>
+          {workCount !== undefined && workCount > 0 && (
+            <span className="num">
+              소장품 {padNumber(1)}–{padNumber(workCount)}
+            </span>
+          )}
         </div>
       </div>
     </footer>

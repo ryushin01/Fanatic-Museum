@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 
 import { findCategory } from '@/entities/category';
-import { WorkCover } from '@/entities/work';
+import { OriginalTitle, WorkCover } from '@/entities/work';
 import type { Work } from '@/shared/api';
 import { padNumber } from '@/shared/lib';
 
@@ -35,11 +35,7 @@ export function WorkIndex({
             <Link to={`/works/${work.slug}`} viewTransition prefetch="intent">
               <span className="visually-hidden">{work.number}번</span> {work.title}
             </Link>
-            {(work.originalTitle || work.nickname) && (
-              <span className={styles.original}>
-                {[work.nickname, work.originalTitle].filter(Boolean).join(' · ')}
-              </span>
-            )}
+            <OriginalTitle work={work} className={styles.original} />
           </Heading>
           <ul className={styles.tags} aria-label="분류">
             {work.categories.map((slug) => (
