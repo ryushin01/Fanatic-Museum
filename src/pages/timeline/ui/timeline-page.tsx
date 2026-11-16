@@ -4,6 +4,7 @@ import { findCategory } from '@/entities/category';
 import { formatCreators } from '@/entities/work';
 import type { Work } from '@/shared/api';
 import { site } from '@/shared/config';
+import { pageMeta } from '@/shared/lib';
 import { PageHeader } from '@/shared/ui';
 import { WorkIndex } from '@/widgets/work-index';
 
@@ -11,10 +12,11 @@ import type { loader } from '../api/loader.server';
 import styles from './timeline-page.module.css';
 
 export function meta() {
-  return [
-    { title: `연표 — ${site.name}` },
-    { name: 'description', content: '처음 나온 해 순서로 따라가는 서브컬처 대장정.' },
-  ];
+  return pageMeta({
+    title: `연표 — ${site.name}`,
+    description: '처음 나온 해 순서로 따라가는 서브컬처 대장정.',
+    path: '/timeline',
+  });
 }
 
 function groupByDecade(works: readonly Work[]) {

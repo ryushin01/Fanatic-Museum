@@ -2,6 +2,7 @@ import { Link, useLoaderData } from 'react-router';
 
 import { categories } from '@/entities/category';
 import { site } from '@/shared/config';
+import { absoluteUrl, breadcrumbList, pageMeta } from '@/shared/lib';
 import { errorTitle, PageHeader } from '@/shared/ui';
 import { WorkIndex } from '@/widgets/work-index';
 
@@ -15,11 +16,26 @@ export function meta({
   loaderData?: Awaited<ReturnType<typeof loader>>;
   error?: unknown;
 }) {
-  if (!loaderData) return [{ title: errorTitle(error) }];
-  return [
-    { title: `${loaderData.category.name} — ${site.name}` },
-    { name: 'description', content: loaderData.category.description },
-  ];
+  if (!loaderData) return [{ title: errorTitle(error) }, { name: 'robots', content: 'noindex' }];
+  const { category } = loaderData;
+  const path = `/categories/${category.slug}`;
+  return pageMeta({
+    title: `${category.name} — ${site.name}`,
+    description: category.description,
+    path,
+    jsonLd: [
+      {
+        '@type': 'CollectionPage',
+        name: category.name,
+        description: category.description,
+        url: absoluteUrl(path),
+      },
+      breadcrumbList([
+        { name: '홈', path: '/' },
+        { name: category.name, path },
+      ]),
+    ],
+  });
 }
 
 export function CategoryPage() {

@@ -4,19 +4,32 @@ import { categories, CATEGORY_SLUGS } from '@/entities/category';
 import { useWorkFilter } from '../model/use-work-filter';
 import { WorkFilter } from './work-filter';
 import { site } from '@/shared/config';
+import { absoluteUrl, breadcrumbList, pageMeta } from '@/shared/lib';
 import { PageHeader } from '@/shared/ui';
 import { WorkIndex } from '@/widgets/work-index';
 
 import type { loader } from '../api/loader.server';
 
+const DESCRIPTION = '파나틱 뮤지엄의 소장품 전체를 제목, 작가, 분류로 찾아봅니다.';
+
 export function meta() {
-  return [
-    { title: `소장품 — ${site.name}` },
-    {
-      name: 'description',
-      content: '파나틱 뮤지엄의 소장품 전체를 제목, 작가, 분류로 찾아봅니다.',
-    },
-  ];
+  return pageMeta({
+    title: `소장품 — ${site.name}`,
+    description: DESCRIPTION,
+    path: '/works',
+    jsonLd: [
+      {
+        '@type': 'CollectionPage',
+        name: '소장품',
+        description: DESCRIPTION,
+        url: absoluteUrl('/works'),
+      },
+      breadcrumbList([
+        { name: '홈', path: '/' },
+        { name: '소장품', path: '/works' },
+      ]),
+    ],
+  });
 }
 
 export function WorksPage() {
