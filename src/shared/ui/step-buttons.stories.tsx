@@ -38,3 +38,18 @@ export const KeepsFocusAtEnds: Story = {
     await expect(canvas.getByRole('button', { name: '이전' })).toHaveFocus();
   },
 };
+
+/** 항목이 둘이면 누를 때마다 두 버튼이 한꺼번에 바뀝니다. 그래도 초점이 남은 버튼으로 옮겨 갑니다. */
+export const TwoItems: Story = {
+  args: { count: 2 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const next = canvas.getByRole('button', { name: '다음' });
+    const previous = canvas.getByRole('button', { name: '이전' });
+    next.focus();
+    await userEvent.keyboard('{Enter}');
+    await expect(previous).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    await expect(next).toHaveFocus();
+  },
+};

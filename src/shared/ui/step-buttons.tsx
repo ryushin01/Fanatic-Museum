@@ -63,7 +63,11 @@ export function StepButtons({
       const button = event.currentTarget as HTMLButtonElement;
       if (event.relatedTarget !== null || !button.disabled) return;
       const other = button === previous ? next : previous;
-      if (!other.disabled) other.focus();
+      // 두 버튼이 한 번에 바뀌면(항목이 둘일 때) blur가 반대쪽 버튼이 풀리기 전에 날 수 있어,
+      // 그리기를 마친 뒤 초점이 여전히 body에 있을 때만 옮깁니다.
+      queueMicrotask(() => {
+        if (!other.disabled && document.activeElement === document.body) other.focus();
+      });
     };
     previous.addEventListener('blur', onBlur);
     next.addEventListener('blur', onBlur);
