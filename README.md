@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.5.0-b5121b)
+![version](https://img.shields.io/badge/version-1.6.0-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -48,7 +48,7 @@
 | 연표      | 처음 나온 해 순서로 따라가는 1987년부터의 대장정                                                           |
 | 정적 API  | `/api/works.json`, `/api/works/{slug}.json`, `/api/categories.json`, `/api/authors.json`                   |
 
-소장품 30점(애니메이션·게임·라이트 노벨·한국 판타지 소설·한국 만화와 웹툰·피규어·프라모델), 라이트·다크·시스템 테마, 키보드와 화면 낭독기 사용을 지원합니다.
+소장품 30점(애니메이션·게임·라이트 노벨·한국 판타지 소설·한국 만화와 웹툰·피규어·프라모델), 라이트·다크·시스템 테마, 키보드와 화면 낭독기 사용을 지원합니다. 링크를 공유하면 미리보기 그림이 함께 나옵니다.
 
 ## 기술 스택
 
@@ -59,6 +59,7 @@
 | 프레임워크 | React Router 8(프레임워크 모드, 정적 사전 렌더링), React 19, TypeScript 7                                                                   |
 | UI·접근성  | React Aria Components, CSS Modules, 웹 폰트(Archivo·MedievalSharp·국립박물관문화재단 클래식체), CSS scroll-snap 스와이프                    |
 | API        | OpenAPI 3.1 문서와 openapi-typescript 타입 생성, 정적 JSON API                                                                              |
+| 검색·공유  | canonical·Open Graph·JSON-LD(schema.org), 웹 앱 매니페스트, sitemap·robots                                                                  |
 | 모니터링   | Sentry(`@sentry/react-router`), web-vitals                                                                                                  |
 | 성능 예산  | Lighthouse CI, size-limit, 반응형 이미지(`srcset`·`fetchpriority`), sharp WebP 변환                                                         |
 | 품질       | ESLint(`eslint-plugin-jsx-a11y` strict), Steiger(FSD), Prettier, Vitest + Testing Library, Storybook 10 스토리 테스트, Playwright + axe E2E |
@@ -84,6 +85,7 @@ pnpm dev    # http://localhost:5173
 | `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E                                            |
 | `pnpm size` / `lhci`                   | 번들 크기 예산 / Lighthouse 예산                                                  |
 | `pnpm api:types`                       | OpenAPI 문서에서 타입 다시 생성                                                   |
+| `pnpm og:build`                        | 공유 미리보기 이미지(`public/og/`) 다시 만들기                                    |
 
 ## 프로젝트 구조
 

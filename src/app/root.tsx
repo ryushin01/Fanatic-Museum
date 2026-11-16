@@ -30,6 +30,7 @@ export async function loader() {
 export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
   { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+  { rel: 'manifest', href: '/manifest.webmanifest' },
   // 한글 클래식체(통파일): 바로 받기 시작하고, 다 받을 때까지 FontLoader가 로딩 화면을 보여 줌
   ...MUSEUM_CLASSIC_FILES.map((href) => ({
     rel: 'preload',
@@ -45,8 +46,12 @@ export const links: LinksFunction = () => [
  * 페이지가 그려지면 각 페이지의 meta가 이것을 대신합니다.
  */
 export function meta({ error }: { error?: unknown }) {
-  return [{ title: error ? errorTitle(error) : `${site.name} — ${site.tagline}` }];
+  if (error) return [{ title: errorTitle(error) }, { name: 'robots', content: 'noindex' }];
+  return [{ title: `${site.name} — ${site.tagline}` }];
 }
+
+/** 페이지 바탕색(global.css의 --color-bg)과 같은 주소창 색 */
+const THEME_COLOR = { light: '#f1efe9', dark: '#0f0f0f' } as const;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [theme] = useTheme();
@@ -59,8 +64,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#f1efe9" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />
+        {/* 모바일 주소창 색: 테마를 고르면 그 색, 시스템이면 운영체제 설정을 따릅니다 */}
+        {theme === 'system' ? (
+          <>
+            <meta
+              name="theme-color"
+              content={THEME_COLOR.light}
+              media="(prefers-color-scheme: light)"
+            />
+            <meta
+              name="theme-color"
+              content={THEME_COLOR.dark}
+              media="(prefers-color-scheme: dark)"
+            />
+          </>
+        ) : (
+          <meta name="theme-color" content={THEME_COLOR[theme]} />
+        )}
         <meta property="og:site_name" content={site.name} />
         <Meta />
         <Links />

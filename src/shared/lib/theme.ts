@@ -20,19 +20,30 @@ function apply(choice: ThemeChoice) {
   else root.dataset.theme = choice;
 }
 
+/**
+ * 테마 구독. 렌더마다 다시 구독하지 않게 모듈에 하나만 둡니다.
+ * 다른 탭에서 테마를 바꾸면(storage 이벤트) 이 탭도 따라갑니다.
+ */
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== null && event.key !== KEY) return;
+    apply(read());
+    onChange();
+  };
+  window.addEventListener('storage', onStorage);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener('storage', onStorage);
+  };
+}
+
 /** 첫 화면을 그리기 전에 저장된 테마를 적용하는 인라인 스크립트(깜빡임 방지) */
 export const themeInitScript = `try{var t=localStorage.getItem('${KEY}');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`;
 
 /** 화면 테마 선택. 서버(사전 렌더링)에서는 항상 'system'입니다. */
 export function useTheme() {
-  const choice = useSyncExternalStore(
-    (onChange) => {
-      listeners.add(onChange);
-      return () => listeners.delete(onChange);
-    },
-    read,
-    () => 'system' as const,
-  );
+  const choice = useSyncExternalStore(subscribe, read, () => 'system' as const);
 
   const setChoice = useCallback((next: ThemeChoice) => {
     try {

@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from 'react-router';
 
 import { site } from '@/shared/config';
+import { absoluteUrl, pageMeta } from '@/shared/lib';
 import { ExhibitStrip } from './exhibit-strip';
 import { GalleryHalls } from './gallery-halls';
 import { WorkIndex } from '@/widgets/work-index';
@@ -9,12 +10,21 @@ import type { loader } from '../api/loader.server';
 import styles from './home-page.module.css';
 
 export function meta() {
-  return [
-    { title: `${site.name} — ${site.tagline}` },
-    { name: 'description', content: site.description },
-    { property: 'og:title', content: `${site.name} — ${site.tagline}` },
-    { property: 'og:description', content: site.description },
-  ];
+  return pageMeta({
+    title: `${site.name} — ${site.tagline}`,
+    description: site.description,
+    path: '/',
+    jsonLd: [
+      {
+        '@type': 'WebSite',
+        name: site.name,
+        alternateName: site.koreanName,
+        url: absoluteUrl('/'),
+        description: site.description,
+        inLanguage: 'ko',
+      },
+    ],
+  });
 }
 
 export function HomePage() {

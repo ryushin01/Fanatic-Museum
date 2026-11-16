@@ -1,6 +1,7 @@
 import { useLoaderData } from 'react-router';
 
 import { site } from '@/shared/config';
+import { absoluteUrl, breadcrumbList, pageMeta } from '@/shared/lib';
 import { errorTitle, PageHeader } from '@/shared/ui';
 import { WorkIndex } from '@/widgets/work-index';
 
@@ -14,11 +15,31 @@ export function meta({
   loaderData?: Awaited<ReturnType<typeof loader>>;
   error?: unknown;
 }) {
-  if (!loaderData) return [{ title: errorTitle(error) }];
-  return [
-    { title: `${loaderData.author.name} — ${site.name}` },
-    { name: 'description', content: loaderData.author.summary },
-  ];
+  if (!loaderData) return [{ title: errorTitle(error) }, { name: 'robots', content: 'noindex' }];
+  const { author } = loaderData;
+  const path = `/authors/${author.slug}`;
+  return pageMeta({
+    title: `${author.name} — ${site.name}`,
+    shareTitle: author.name,
+    description: author.summary,
+    path,
+    jsonLd: [
+      {
+        '@type': 'Person',
+        name: author.name,
+        jobTitle: author.occupation,
+        description: author.summary,
+        ...(author.born && { birthDate: String(author.born) }),
+        url: absoluteUrl(path),
+        sameAs: [author.reference],
+      },
+      breadcrumbList([
+        { name: '홈', path: '/' },
+        { name: '작가', path: '/authors' },
+        { name: author.name, path },
+      ]),
+    ],
+  });
 }
 
 export function AuthorPage() {

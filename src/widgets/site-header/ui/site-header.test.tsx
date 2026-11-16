@@ -52,4 +52,21 @@ describe('ThemeToggle', () => {
     expect(document.documentElement.dataset.theme).toBeUndefined();
     expect(localStorage.getItem('fm-theme')).toBeNull();
   });
+
+  it('다른 탭에서 바꾼 테마를 따라간다', async () => {
+    const { act } = await import('@testing-library/react');
+    renderAt('/');
+    const button = await screen.findByRole('button', { name: '화면 테마: 시스템' });
+    localStorage.setItem('fm-theme', 'dark');
+    act(() => {
+      window.dispatchEvent(new StorageEvent('storage', { key: 'fm-theme', newValue: 'dark' }));
+    });
+    expect(button).toHaveAccessibleName('화면 테마: 어둡게');
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    localStorage.removeItem('fm-theme');
+    act(() => {
+      window.dispatchEvent(new StorageEvent('storage', { key: 'fm-theme', newValue: null }));
+    });
+    expect(document.documentElement.dataset.theme).toBeUndefined();
+  });
 });
