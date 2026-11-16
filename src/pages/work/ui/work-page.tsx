@@ -3,15 +3,21 @@ import { Link, useLoaderData } from 'react-router';
 import { findCategory } from '@/entities/category';
 import { site } from '@/shared/config';
 import { padNumber } from '@/shared/lib';
-import { PageHeader } from '@/shared/ui';
+import { errorTitle, PageHeader } from '@/shared/ui';
 import { WorkGallery } from './work-gallery';
 import { WorkIndex } from '@/widgets/work-index';
 
 import type { loader } from '../api/loader.server';
 import styles from './work-page.module.css';
 
-export function meta({ loaderData }: { loaderData?: Awaited<ReturnType<typeof loader>> }) {
-  if (!loaderData) return [{ title: `소장품 — ${site.name}` }];
+export function meta({
+  loaderData,
+  error,
+}: {
+  loaderData?: Awaited<ReturnType<typeof loader>>;
+  error?: unknown;
+}) {
+  if (!loaderData) return [{ title: errorTitle(error) }];
   const { work } = loaderData;
   return [
     { title: `${work.title} — ${site.name}` },

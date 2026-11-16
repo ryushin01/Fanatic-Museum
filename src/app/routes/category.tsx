@@ -1,2 +1,2 @@
 export { loader } from '@/pages/category/index.server';
-export { CategoryPage as default, meta } from '@/pages/category';
+export { CategoryPage as default, ErrorBoundary, meta } from '@/pages/category';
