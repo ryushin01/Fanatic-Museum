@@ -2,8 +2,11 @@
 /**
  * README용 화면을 docs/images/에 JPG로 찍습니다.
  * 저작권 이미지가 나오지 않도록 public/media 없이 빌드한 결과(pnpm preview)를 찍어야 합니다.
- * 사용: pnpm build:all && pnpm preview & node scripts/screenshots.mjs [--only 이름,이름]
- * 바뀐 화면만 다시 찍으려면 --only works-filter처럼 이름을 줍니다.
+ * 사용:
+ *   1. pnpm build:all
+ *   2. 다른 터미널에서 pnpm preview (http://localhost:4173, 다른 주소면 BASE_URL로 알려 줌)
+ *   3. node scripts/screenshots.mjs [--only 이름,이름]
+ * 미리보기 서버가 뜰 때까지 60초까지 기다립니다. 바뀐 화면만 다시 찍으려면 --only works-filter처럼 이름을 줍니다.
  */
 import { chromium } from '@playwright/test';
 
@@ -31,7 +34,29 @@ const shots = [
 ];
 
 const onlyIndex = process.argv.indexOf('--only');
-const only = onlyIndex >= 0 ? process.argv[onlyIndex + 1].split(',') : null;
+const only = onlyIndex >= 0 ? (process.argv[onlyIndex + 1] ?? '').split(',').filter(Boolean) : null;
+// 이름을 잘못 쓰면 그 화면이 옛것으로 남으므로, 모르는 이름이 있으면 찍기 전에 멈춥니다.
+const unknown = (only ?? []).filter((name) => !shots.some((shot) => shot.name === name));
+if (only && (only.length === 0 || unknown.length > 0)) {
+  console.error(
+    `모르는 화면 이름: ${unknown.join(', ') || '(없음)'}\n쓸 수 있는 이름: ${shots.map((s) => s.name).join(', ')}`,
+  );
+  process.exit(1);
+}
+
+// 미리보기 서버가 뜰 때까지 기다립니다.
+for (let tries = 0; ; tries += 1) {
+  const ready = await fetch(base).then(
+    (response) => response.ok,
+    () => false,
+  );
+  if (ready) break;
+  if (tries >= 60) {
+    console.error(`미리보기 서버(${base})에 연결하지 못했습니다. pnpm preview를 먼저 띄워 주세요.`);
+    process.exit(1);
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+}
 
 const browser = await chromium.launch();
 for (const shot of shots.filter((s) => !only || only.includes(s.name))) {
