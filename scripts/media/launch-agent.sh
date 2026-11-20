@@ -185,7 +185,8 @@ PLIST
     ;;
   status)
     launchctl print "$DOMAIN/$LABEL" 2>/dev/null | grep -E 'state =|runs =|pid =|last exit' | head -4
-    if [[ -f $RESUME_PLIST ]]; then
+    # 멈춘 동안 맥을 다시 켜면 다운로더는 로그인 때 다시 켜지고 예약 파일만 남으므로, 예약 항목이 올라와 있을 때만 알립니다.
+    if [[ -f $RESUME_PLIST ]] && launchctl print "$DOMAIN/$RESUME_LABEL" >/dev/null 2>&1; then
       echo "잠시 멈춤 중: $(plutil -extract StartCalendarInterval.Month raw "$RESUME_PLIST")월 $(plutil -extract StartCalendarInterval.Day raw "$RESUME_PLIST")일 $(printf '%02d:%02d' $(plutil -extract StartCalendarInterval.Hour raw "$RESUME_PLIST") $(plutil -extract StartCalendarInterval.Minute raw "$RESUME_PLIST"))에 자동으로 이어 받습니다."
     fi
     tail -3 "$MEDIA/download.log"
