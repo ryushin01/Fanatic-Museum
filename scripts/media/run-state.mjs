@@ -36,7 +36,7 @@ export function restartReason(prev, { now, bootAt, stopRequestedAt = 0 }) {
   // 마지막 생존 신호 뒤에 맥이 켜졌으면 재부팅(또는 전원 꺼짐) 뒤입니다.
   if (bootAt > last) return { kind: 'reboot', downMs };
   if (prev.ended === 'error') return { kind: 'error', downMs, detail: prev.detail ?? '' };
-  // 등록 스크립트(install·uninstall)가 멈춘 경우: 다운로더는 신호를 못 받고 끝났을 수 있습니다.
+  // 등록 스크립트(install·pause·uninstall)가 멈춘 경우: 다운로더는 신호를 못 받고 끝났을 수 있습니다.
   if (stopRequestedAt && stopRequestedAt >= last - 60_000) return { kind: 'manual', downMs };
   if (prev.ended === 'signal') return { kind: 'signal', downMs };
   if (prev.ended === 'done') return { kind: 'rerun', downMs };
@@ -58,7 +58,7 @@ export function describeRestart(reason, usedGb) {
         body: `${gap}. ${reason.detail ? `원인: ${reason.detail.slice(0, 80)}. ` : ''}${used}.`,
       };
     case 'manual':
-      return { subtitle: '다운로더를 다시 등록해 이어 받습니다', body: `${gap}. ${used}.` };
+      return { subtitle: '멈췄던 다운로더를 다시 켜 이어 받습니다', body: `${gap}. ${used}.` };
     case 'signal':
       return { subtitle: '종료됐다가 다시 시작했습니다', body: `${gap}. ${used}.` };
     case 'rerun':

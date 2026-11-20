@@ -53,7 +53,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MEDIA =
   process.env.FANATIC_MEDIA_DIR ?? join(homedir(), 'Documents', 'Archive', 'Fanatic-Museum');
 const STATE_FILE = join(MEDIA, '.download-state.json');
-// 멈춤·다시 시작 알림용 실행 기록과, 등록 스크립트(install·uninstall)가 남기는 수동 정지 표시
+// 멈춤·다시 시작 알림용 실행 기록과, 등록 스크립트(install·pause·uninstall)가 남기는 수동 정지 표시
 const RUN_FILE = join(MEDIA, '.download-run.json');
 const STOP_REQUEST_FILE = join(MEDIA, '.download-stop-requested');
 // 드라이런 기록은 실제 다운로드 로그(진행 알림이 읽는 파일)와 나눠 씁니다.
@@ -158,7 +158,7 @@ let startInfo = null;
 
 /**
  * 실행 기록을 가장 먼저 시작합니다. 시작 준비 중에 오류가 나도 '오류로 멈춤'을 기록하고 알릴 수 있게 합니다.
- * 다시 시작한 이유(재부팅, 오류, 다시 등록, 종료 신호, 강제 종료)를 정하고,
+ * 다시 시작한 이유(재부팅, 오류, 다시 등록·잠시 멈춤 뒤 다시 켬, 종료 신호, 강제 종료)를 정하고,
  * 30초마다 생존 시각을 남기면서 타이머가 크게 늦으면 잠자기에서 깬 것으로 알립니다.
  */
 async function beginRun() {
@@ -1022,7 +1022,7 @@ async function acquireLock() {
     process.on(signal, () => {
       markStopped('signal', {
         subtitle: '다운로드를 멈췄습니다',
-        body: '종료 신호를 받았습니다. 맥을 다시 켜거나 다시 등록하면 이어서 받습니다.',
+        body: '종료 신호를 받았습니다. 잠시 멈춤이면 정한 시각에, 아니면 맥을 다시 켜거나 다시 등록하면 이어서 받습니다.',
       });
       process.exit(143);
     });
