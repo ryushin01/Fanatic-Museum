@@ -3664,6 +3664,116 @@
         "tag": "五条悟",
         "pages": 30
       }
+    ],
+    "world-of-warcraft": [
+      {
+        "type": "yandere",
+        "tags": "world_of_warcraft"
+      },
+      {
+        "type": "konachan",
+        "tags": "world_of_warcraft"
+      },
+      {
+        "type": "safebooru",
+        "tags": "world_of_warcraft"
+      },
+      {
+        "type": "pixiv",
+        "tag": "WorldofWarcraft",
+        "pages": 45
+      },
+      {
+        "type": "pixiv",
+        "tag": "World of Warcraft",
+        "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "ワールドオブウォークラフト",
+        "pages": 2
+      }
+    ],
+    "diablo-series": [
+      {
+        "type": "steam",
+        "appids": [2344520, 3958690, 2536520]
+      },
+      {
+        "type": "safebooru",
+        "tags": "diablo_(series)"
+      },
+      {
+        "type": "konachan",
+        "tags": "diablo_3"
+      },
+      {
+        "type": "pixiv",
+        "tag": "Diablo2",
+        "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "Diablo3",
+        "pages": 3
+      },
+      {
+        "type": "pixiv",
+        "tag": "DiabloIII",
+        "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "Diablo4",
+        "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "DiabloIV",
+        "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "ディアブロ3",
+        "pages": 2
+      },
+      {
+        "type": "pixiv",
+        "tag": "ディアブロ4",
+        "pages": 2
+      }
+    ],
+    "starcraft": [
+      {
+        "type": "yandere",
+        "tags": "starcraft"
+      },
+      {
+        "type": "yandere",
+        "tags": "nova_(starcraft)"
+      },
+      {
+        "type": "konachan",
+        "tags": "starcraft"
+      },
+      {
+        "type": "safebooru",
+        "tags": "starcraft"
+      },
+      {
+        "type": "safebooru",
+        "tags": "starcraft_2"
+      },
+      {
+        "type": "pixiv",
+        "tag": "StarCraft",
+        "pages": 20
+      },
+      {
+        "type": "pixiv",
+        "tag": "スタークラフト",
+        "pages": 8
+      }
     ]
   }
 }
