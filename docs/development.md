@@ -117,14 +117,16 @@ pnpm build && pnpm preview
 
 ## 테스트와 품질
 
-| 명령                                                    | 내용                                                                                      |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `pnpm test`                                             | Vitest 단위·컴포넌트 테스트, 모든 스토리 렌더 검사                                        |
-| `pnpm test:storybook`                                   | 모든 스토리를 실제 브라우저(Chromium)에서 그리고 play 함수와 접근성 검사(addon-a11y)      |
-| `pnpm test:e2e`                                         | 프로덕션 빌드에서 axe 접근성, 320~1440px 가로 넘침, 글자 200%, 키보드·검색·이동, 정적 API |
-| `pnpm size`                                             | 번들 크기 예산(size-limit)                                                                |
-| `pnpm lhci`                                             | Lighthouse CI 예산(성능 0.9, 접근성 1.0, LCP 2.5초 등)                                    |
-| `pnpm format:check` / `lint` / `lint:fsd` / `typecheck` | Prettier / ESLint / Steiger / 타입 검사                                                   |
+| 명령                                                    | 내용                                                                                                |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `pnpm test`                                             | Vitest 단위·컴포넌트 테스트, 모든 스토리 렌더 검사                                                  |
+| `pnpm test:storybook`                                   | 모든 스토리를 실제 브라우저(Chromium)에서 그리고 play 함수와 접근성 검사(addon-a11y)                |
+| `pnpm test:e2e`                                         | 프로덕션 빌드에서 axe 접근성, 320~1440px 가로 넘침, 글자 200%, 키보드·검색·이동, 정적 API, 오프라인 |
+| `pnpm size`                                             | 번들 크기 예산(size-limit)                                                                          |
+| `pnpm lhci`                                             | Lighthouse CI 예산(성능 0.9, 접근성 1.0, LCP 2.5초 등)                                              |
+| `pnpm format:check` / `lint` / `lint:fsd` / `typecheck` | Prettier / ESLint / Steiger / 타입 검사                                                             |
+
+오프라인 검사(`e2e/offline.spec.ts`)는 localhost 밖으로 나가는 요청을 모두 막고(`route.abort`) 홈·소장품·작품·작가·연표·소개 화면이 제목과 본문을 보여 주는지, 글꼴 로딩 화면이 걷히는지, 막히거나 실패한 요청이 하나도 없는지 봅니다. `.env` 없이 빌드한 결과로 돌므로 비밀값 없는 실행도 함께 확인합니다. 바깥에서 무언가를 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 이 검사가 실패합니다. 꼭 필요하면 요청이 실패해도 화면이 그대로 보이게 만들고 검사에서 그 주소만 허용합니다.
 
 CI(GitHub Actions)는 위 단계를 모두 돌립니다. Dependabot이 의존성을 매주 확인합니다. 개발 도구가 끌어오는 옛 버전의 보안 권고(`pnpm audit`)는 `pnpm-workspace.yaml`의 `overrides`로 고쳐진 버전에 맞춥니다.
 
