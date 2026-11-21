@@ -38,6 +38,7 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       # 모든 스토리를 실제 브라우저에서 그리고 접근성 검사를 돌립니다.
       - run: pnpm test:storybook
+      # 오프라인 검사(e2e/offline.spec.ts)도 여기서 돕니다: localhost 밖 요청을 모두 막고 .env 없이 빌드한 사이트를 봅니다.
       - run: pnpm test:e2e
       - run: pnpm lhci
       - uses: actions/upload-artifact@v7

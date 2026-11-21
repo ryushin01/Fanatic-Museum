@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.7.2-b5121b)
+![version](https://img.shields.io/badge/version-1.7.3-b5121b)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -76,13 +76,24 @@ pnpm install
 pnpm dev    # http://localhost:5173
 ```
 
+`.env` 없이 clone → install → `pnpm dev`, `pnpm build && pnpm preview`가 바로 돕니다. 비밀값이 필요한 곳은 오류 수집(Sentry, `VITE_SENTRY_DSN`)뿐이고, 비워 두면 Sentry를 받지 않습니다.
+
+### 오프라인으로 보기
+
+사이트는 네트워크가 끊겨도 그대로 보입니다. 소장품 데이터는 빌드할 때 HTML과 정적 JSON(`/api/works.json`)에 들어가고, 글꼴·아이콘은 같은 사이트에서 주며(외부 CDN 없음), 작품 이미지는 배포본에 없고 대표색과 번호로 그린 자리 표시 그래픽을 씁니다(저작권 때문, [소장품 이미지](docs/development.md#소장품-이미지)). 바깥 주소는 README·작가 페이지의 링크(나무위키 등)뿐이고, 화면을 그리는 데 쓰지 않습니다.
+
+```bash
+pnpm build && pnpm preview                    # 한 번 빌드한 뒤에는 네트워크 없이 http://localhost:4173
+pnpm exec playwright test e2e/offline.spec.ts # localhost 밖 요청을 모두 막고 주요 화면을 검사
+```
+
 | 명령                                   | 설명                                                                              |
 | -------------------------------------- | --------------------------------------------------------------------------------- |
 | `pnpm build` / `preview`               | 정적 사전 렌더링 빌드 / 빌드 결과 미리보기(`http://localhost:4173`)               |
 | `pnpm build:all`                       | 앱과 Storybook(`/storybook`)을 함께 빌드                                          |
 | `pnpm media:download` / `media:build`  | 작품 이미지를 `~/Documents/Archive/Fanatic-Museum/`에 받기 / 화면용 변환본 만들기 |
 | `pnpm lint` / `lint:fsd` / `typecheck` | ESLint / FSD 검사 / 타입 검사                                                     |
-| `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E                                            |
+| `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E(오프라인 검사 포함)                        |
 | `pnpm size` / `lhci`                   | 번들 크기 예산 / Lighthouse 예산                                                  |
 | `pnpm api:types`                       | OpenAPI 문서에서 타입 다시 생성                                                   |
 | `pnpm og:build`                        | 공유 미리보기 이미지(`public/og/`) 다시 만들기                                    |
@@ -92,7 +103,7 @@ pnpm dev    # http://localhost:5173
 ```
 openapi/         정적 API 문서(OpenAPI 3.1)
 scripts/media/   이미지 다운로드·변환 스크립트와 작품별 출처
-e2e/             E2E 테스트 (접근성·레이아웃·이동·API)
+e2e/             E2E 테스트 (접근성·레이아웃·이동·API·오프라인)
 src/
 ├─ app/          루트 레이아웃, 라우트, 전역 스타일, 모니터링
 ├─ pages/        홈, 소장품, 작품, 카테고리, 작가, 연표, 소개
