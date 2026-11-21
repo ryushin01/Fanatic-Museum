@@ -53,19 +53,30 @@ pnpm test:e2e       # Playwright + axe, 320~1440px, 글자 200%, 키보드
 pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 ```
 
+- **Testing Library 원칙:** 구현 세부가 아니라 사용자가 보는 동작을 검사하고, 요소는 역할·이름(`getByRole`)으로 찾습니다. 단위·컴포넌트는 Vitest + Testing Library(`@testing-library/react`, `user-event`, `jest-dom`), 화면 흐름은 Playwright E2E, 접근성은 axe(`@axe-core/playwright`, Storybook `addon-a11y`)로 검사합니다. 버그를 고치면 고치기 전에 실패하는 테스트를 함께 넣습니다.
+
 ## 5. 코드 스타일
 
 - Prettier(`printWidth: 100`, `singleQuote: true`), ESLint(`eslint-plugin-jsx-a11y` strict, react-hooks).
+- **TypeScript strict:** `tsconfig.json`에 `strict: true`. `any`·`as` 단언·`@ts-ignore`를 피하고 외부 입력은 검증합니다.
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다. 이전·다음 버튼은 `shared/ui`의 `StepButtons` 하나를 씁니다.
 - 페이지 메타는 `pageMeta()`(`shared/lib/meta.ts`)로 만듭니다. 사이트 주소가 바뀌면 `shared/config/site.ts`의 `url`과 사이트맵 `SITE_URL`을 함께 바꿉니다.
 - 외부 자료의 출처는 화면이 아니라 README `## 출처`에 모읍니다. `sources.json`에 출처 종류를 더하면 README 표도 고칩니다.
-- 접근성(KWCAG 2.2): 네이티브 요소 먼저, 텍스트 대비 4.5:1 이상, 모든 기능 키보드 조작과 보이는 초점(`outline: none` 단독 금지), 조작 크기 24×24px 이상, 입력칸 레이블과 오류의 `aria-invalid`·`aria-describedby` 연결, 화면 전환 없는 안내는 `role="status"`. 화면 이동 시 `RouteAnnouncer`가 제목을 알리고, 움직임 줄이기에서는 애니메이션·View Transitions를 끕니다.
+- 접근성(WCAG 2.2·KWCAG 2.2): 네이티브 요소 먼저, 텍스트 대비 4.5:1 이상, 모든 기능 키보드 조작과 보이는 초점(`outline: none` 단독 금지), 조작 크기 24×24px 이상, 입력칸 레이블과 오류의 `aria-invalid`·`aria-describedby` 연결, 화면 전환 없는 안내는 `role="status"`. 화면 이동 시 `RouteAnnouncer`가 제목을 알리고, 움직임 줄이기에서는 애니메이션·View Transitions를 끕니다.
+- 접근성 기준은 **WCAG 2.2·KWCAG 2.2**입니다. 자동 검사는 `eslint-plugin-jsx-a11y`(strict), Storybook 스토리 axe(`pnpm test:storybook`), Playwright + axe E2E, Lighthouse 접근성 1.0입니다. 자동 검사를 통과해도 키보드·초점·대체 텍스트는 직접 확인합니다.
 
 ## 6. Git·PR
 
-- `main`에 직접 커밋·푸시하지 않습니다. 최신 `main`에서 `feat/…`, `fix/…`, `docs/…`, `chore/…` 브랜치를 만들어 PR을 올립니다.
-- 커밋·PR 제목은 한국어 요약 뒤에 버전: `feat: 한글 초성 검색, 소장품 정렬, 작품별 공유 이미지 v1.7.0`, `fix: … v1.4.2`, `chore: 의존성 갱신(…) v1.7.2`. 문서만 바꾸면 버전 없이 `docs: …`.
-- 기능·수정 PR은 `package.json` 버전, README 버전 배지, `CHANGELOG.md`(표 형식: 버전·날짜 `2026.11.20.`·내용)를 함께 올립니다. 여러 Dependabot PR은 하나로 묶어 올립니다.
+- **흐름: GitHub Flow.** `main`에 직접 커밋·푸시하지 않습니다. 최신 `main`에서 브랜치를 만들어 PR로만 병합하고, PR은 목적 하나로 작게 만들어 본문에 무엇·왜·검사 결과를 적습니다.
+- **브랜치 이름:** `feat/…`, `fix/…`, `refactor/…`, `docs/…`, `test/…`, `chore/…`, `release/…`.
+- **커밋 메시지: Conventional Commits**(`feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `chore`, `ci`, `build`) + 한국어 요약. 예: `feat: 한글 초성 검색, 소장품 정렬, 작품별 공유 이미지 v1.7.0`, `fix: 검색 조건 주소의 하이드레이션 실패와 없는 주소의 제목·테마 문제 v1.4.2`. 표준과 다른 점: 이 저장소는 버전을 괄호 없이 `vX.Y.Z`로 끝에 붙여 왔고, 타입 없는 제목(`블리자드 게임 모음 추가: …`)도 있었습니다. 새 커밋은 타입을 꼭 붙입니다. 문서만 바꾸면 버전 없이 `docs: …`.
+- 커밋 작성자는 ryushin01(`ryushin0 <141554987+ryushin01@users.noreply.github.com>`)입니다. 백엔드 저장소가 아니므로 `Co-Authored-By` 줄은 넣지 않습니다.
+- GitHub Actions가 커밋하는 워크플로를 만들면 커밋 작성자를 ryushin01로 설정합니다(`github-actions[bot]` 금지).
+- Dependabot PR(`.github/dependabot.yml`)은 그대로 병합하지 않고, 같은 변경을 ryushin01 커밋으로 다시 만들어 PR로 병합합니다.
+- **버전: Semantic Versioning(주.부.수).** 호환이 깨지면 주, 기능은 부, 수정·작은 개선은 수를 올립니다.
+  - 버전은 `package.json`의 `version`과 README 버전 배지에서 함께 맞춥니다.
+- **변경 기록: Keep a Changelog를 기준으로 하되 실제 형식을 따릅니다.**
+  - 표준과 다른 점: `CHANGELOG.md`는 표(버전·날짜 `2026.11.20.`·내용·비고) 형식이고 내용 칸 안에 `**분류**<br>- …`로 나눕니다. `[Unreleased]`는 쓰지 않고 버전을 올리는 PR에서 바로 그 버전 행을 더합니다.
 - 병합은 squash(`제목 (#번호)`)입니다. CI가 통과하면 바로 병합하고 CodeRabbit 리뷰는 기다리지 않습니다(이미 달린 맞는 지적은 반영).
 
 ## 7. 배포·릴리스
