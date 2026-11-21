@@ -49,10 +49,11 @@ pnpm test           # Vitest 단위·컴포넌트
 pnpm build:all      # 앱 + Storybook(build/client/storybook)
 pnpm size           # size-limit 예산
 pnpm test:storybook # 모든 스토리를 Chromium에서 그리고 axe 검사
-pnpm test:e2e       # Playwright + axe, 320~1440px, 글자 200%, 키보드
+pnpm test:e2e       # Playwright + axe, 320~1440px, 글자 200%, 키보드, 오프라인
 pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 ```
 
+- **오프라인 E2E**(`e2e/offline.spec.ts`, `pnpm test:e2e`에 포함): localhost 밖 요청을 모두 막고 `.env` 없이 빌드한 사이트의 주요 화면·정적 API가 뜨는지, 실패한 요청이 0개인지 봅니다. 외부에서 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 실패하므로, 꼭 필요하면 실패해도 화면이 보이게 만들고 그 주소만 허용합니다.
 - **Testing Library 원칙:** 구현 세부가 아니라 사용자가 보는 동작을 검사하고, 요소는 역할·이름(`getByRole`)으로 찾습니다. 단위·컴포넌트는 Vitest + Testing Library(`@testing-library/react`, `user-event`, `jest-dom`), 화면 흐름은 Playwright E2E, 접근성은 axe(`@axe-core/playwright`, Storybook `addon-a11y`)로 검사합니다. 버그를 고치면 고치기 전에 실패하는 테스트를 함께 넣습니다.
 
 ## 5. 코드 스타일
@@ -62,8 +63,7 @@ pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다. 이전·다음 버튼은 `shared/ui`의 `StepButtons` 하나를 씁니다.
 - 페이지 메타는 `pageMeta()`(`shared/lib/meta.ts`)로 만듭니다. 사이트 주소가 바뀌면 `shared/config/site.ts`의 `url`과 사이트맵 `SITE_URL`을 함께 바꿉니다.
 - 외부 자료의 출처는 화면이 아니라 README `## 출처`에 모읍니다. `sources.json`에 출처 종류를 더하면 README 표도 고칩니다.
-- 접근성(WCAG 2.2·KWCAG 2.2): 네이티브 요소 먼저, 텍스트 대비 4.5:1 이상, 모든 기능 키보드 조작과 보이는 초점(`outline: none` 단독 금지), 조작 크기 24×24px 이상, 입력칸 레이블과 오류의 `aria-invalid`·`aria-describedby` 연결, 화면 전환 없는 안내는 `role="status"`. 화면 이동 시 `RouteAnnouncer`가 제목을 알리고, 움직임 줄이기에서는 애니메이션·View Transitions를 끕니다.
-- 접근성 기준은 **WCAG 2.2·KWCAG 2.2**입니다. 자동 검사는 `eslint-plugin-jsx-a11y`(strict), Storybook 스토리 axe(`pnpm test:storybook`), Playwright + axe E2E, Lighthouse 접근성 1.0입니다. 자동 검사를 통과해도 키보드·초점·대체 텍스트는 직접 확인합니다.
+- **접근성(WCAG 2.2·KWCAG 2.2):** 네이티브 요소 먼저, 텍스트 대비 4.5:1 이상, 모든 기능 키보드 조작과 보이는 초점(`outline: none` 단독 금지), 조작 크기 24×24px 이상, 입력칸 레이블과 오류의 `aria-invalid`·`aria-describedby` 연결, 화면 전환 없는 안내는 `role="status"`. 화면 이동 시 `RouteAnnouncer`가 제목을 알리고, 움직임 줄이기에서는 애니메이션·View Transitions를 끕니다. 자동 검사는 `eslint-plugin-jsx-a11y`(strict), Storybook 스토리 axe(`pnpm test:storybook`), Playwright + axe E2E, Lighthouse 접근성 1.0입니다. 자동 검사를 통과해도 키보드·초점·대체 텍스트는 직접 확인합니다.
 
 ## 6. Git·PR
 
@@ -93,6 +93,9 @@ pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 - 작품 이미지(`media/`, `public/media/`)는 저장소·배포본에 넣지 않습니다. `.vercelignore`에서 빼고, `VERCEL`·`CI` 빌드는 `build/client/media`를 지웁니다(`scripts/prune-assets.mjs`).
 - 다운로드는 일반 등급만 받고 선정적 태그·성인 등급·AI 생성 작품을 거릅니다. 이 기준을 느슨하게 바꾸지 않습니다.
 - 클래식체 글꼴은 수정 금지 라이선스라 서브셋·변환하지 않고 원본을 그대로 씁니다.
+- 상태(CI·배포·릴리스·주소)는 명령 결과(`gh run`, `curl` 등)로 확인한 것만 말합니다.
+- 먼저 묻기: 새 런타임 의존성 추가, 빌드·배포 설정(`react-router.config.ts`, `vite.config.ts`, `vercel.json`, 워크플로) 변경.
+- 절대 금지: 비밀값을 `VITE_*`에 넣기(클라이언트 번들에 실림, `VITE_SENTRY_DSN`처럼 공개해도 되는 값만), `.env` 커밋, 작품 이미지 커밋, `eslint-disable`·`--no-verify`로 검사 우회, `main`에 직접 푸시.
 
 ## 9. 공통 규칙
 
