@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite';
 import { useLoaderData } from 'react-router';
 
 import { categories, CATEGORY_SLUGS } from '@/entities/category';
@@ -32,9 +33,9 @@ export function meta() {
   });
 }
 
-export function WorksPage() {
+export const WorksPage = observer(function WorksPage() {
   const { works } = useLoaderData<typeof loader>();
-  const { value, onChange, results } = useWorkFilter(works, CATEGORY_SLUGS);
+  const { store, onChange } = useWorkFilter(works, CATEGORY_SLUGS);
 
   return (
     <>
@@ -45,20 +46,20 @@ export function WorksPage() {
       />
       <div className="container">
         <WorkFilter
-          value={value}
+          value={store.filter}
           onChange={onChange}
           categories={categories}
-          resultCount={results.length}
-          total={works.length}
+          resultCount={store.resultCount}
+          total={store.total}
         />
         <h2 className="visually-hidden">검색 결과</h2>
         <div style={{ marginTop: 32 }}>
           <WorkIndex
-            works={results}
+            works={store.results}
             emptyMessage="조건에 맞는 소장품이 없습니다. 검색어나 분류를 바꿔 보세요."
           />
         </div>
       </div>
     </>
   );
-}
+});

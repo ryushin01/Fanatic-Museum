@@ -18,6 +18,7 @@
 - Feature-Sliced Design: `src/app` → `pages` → `widgets` → `entities` → `shared` (위 층만 아래 층을 가져옴). `pnpm lint:fsd`(Steiger)로 검사합니다.
   - 라우트 모듈(`src/app/routes/*.tsx`)은 페이지 슬라이스를 다시 내보내기만 하고, 로더는 페이지의 `index.server.ts`에서 내보냅니다.
   - 빌드에서만 도는 코드는 `*.server.ts`로 두고 `index.server.ts`로 공개합니다(소장품 데이터 `works`가 클라이언트 번들에 실리지 않게).
+- 상태 관리: 소장품 찾기의 검색 조건·결과만 MobX(`mobx`, `mobx-react-lite`)로 다룹니다. `WorkFilterStore`(`pages/works/model`)는 `observable`·`computed`, 컴포넌트는 `observer`. 스토어는 화면마다 새로 만들고 모듈 전역에 두지 않습니다(서버·요청 사이 공유 금지). 다른 상태는 억지로 옮기지 않습니다.
 - 미리 그린 HTML과 다르게 그릴 값(주소의 검색 조건 등)은 하이드레이션이 끝난 뒤(`useHydrated()`)에 씁니다.
 
 ## 3. 설치·개발 명령

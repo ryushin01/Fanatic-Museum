@@ -112,6 +112,7 @@ pnpm build && pnpm preview
 - 화면을 옮기면 `RouteAnnouncer`가 새 페이지 제목을 상태 영역(`role="status"`)으로 알립니다. 누른 링크가 사라져 초점을 잃었으면 본문(`main`)으로 초점을 옮깁니다.
 - 움직임 줄이기에서는 화면 전환(View Transitions) 애니메이션도 끕니다. 원제는 `lang="ja"`/`"en"`으로 표시합니다(`OriginalTitle`).
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다.
+- **상태 관리(MobX):** 소장품 찾기(`/works`)의 검색 조건과 결과만 MobX로 다룹니다(`src/pages/works/model/work-filter-store.ts`). 검색어·분류·정렬은 `observable`(통째로 바꾸는 값이라 `observableRef`), 거른 결과·개수는 `computed`이고, `WorksPage`는 `observer`로 감쌉니다. 주소(`?q=&c=&s=`) 읽기·쓰기와 하이드레이션 규칙은 `useWorkFilter`가 맡습니다. 스토어는 모듈 전역에 두지 않고 화면마다 `useState`로 하나씩 만들어 서버 요청·화면 사이에 공유하지 않습니다(사전 렌더링 HTML과 첫 렌더는 항상 조건 없는 상태). 상태를 더 옮기려면 같은 방식(스토어 클래스 + 단위 테스트 + `observer`)을 따릅니다.
 - `eslint-plugin-jsx-a11y`(strict)로 코드를 쓸 때 검사하고, E2E에서 모든 페이지를 axe로 검사합니다.
 - 디자인(v1.8.0~): 흰 바탕·거의 검은 글자(`#0a0b16`)·청록 강조(`--color-brand`, `#12dcd4`)의 12칸 격자, 칸 사이 8px, 모서리 없음. 작은 대문자 이름표(`.label`, 11px), 구역 머리(`.rule-head`, 가는 선 + 이름표), 화살표 버튼(`ArrowLink`, 마우스를 올리면 어두운 판이 밀려 들어옴)을 공용으로 씁니다. 디자인 개편(v1.8.0)은 사용자 지시로 글자 대비(4.5:1)를 검사하지 않아 axe의 `color-contrast`만 E2E·Storybook에서 껐습니다. 키보드·초점·레이블·역할·이름 검사는 그대로입니다.
 - 홈 첫 화면의 선 그림(`LineField`)은 캔버스로 그리는 꾸밈 그림입니다(`aria-hidden`). 마우스를 따라 휘는 중심이 조금 움직이고, 움직임 줄이기에서는 멈춘 그림입니다. 자바스크립트가 없으면 가운데 글자만 보입니다.
