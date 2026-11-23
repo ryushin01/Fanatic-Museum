@@ -1,35 +1,90 @@
+/*
+ * 전시실 띠: 가는 선 아래 이름표 줄(제목 · 위치 01 \ 30 · 이전/다음), 그 아래 가로로 넓은 표지를 두 장씩 보여 줍니다.
+ * 표지 아래에는 왼쪽에 제목과 분류, 오른쪽에 전시 번호를 둡니다.
+ */
 .strip {
   display: grid;
-  gap: 16px;
+  gap: clamp(48px, 7vw, 112px);
+  margin-top: clamp(96px, 16vw, 240px);
+  padding-inline: var(--gutter);
 }
 
 .head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: start;
 }
 
-.title {
-  font-size: var(--text-2xl);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+.titleGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.description {
+  color: var(--color-muted);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: -14px;
+}
+
+.counter {
+  display: flex;
+  gap: 4px;
+  order: -1;
+  margin-right: auto;
+}
+
+.step {
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.step[data-hovered] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.step[data-focus-visible] {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+}
+
+.step[data-disabled] {
+  color: var(--color-muted);
+  cursor: default;
+  text-decoration: none;
 }
 
 .track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: min(78vw, 360px);
-  gap: 16px;
+  grid-auto-columns: 88%;
+  gap: var(--gutter);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
+  margin-inline: calc(var(--gutter) * -1);
   padding-inline: var(--gutter);
   padding-bottom: 8px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+@media (min-width: 768px) {
+  .track {
+    grid-auto-columns: calc((100% - var(--gutter) * 3) / 2);
+  }
 }
 
 .item {
@@ -38,40 +93,68 @@
 
 .link {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
 }
 
-.link:hover .name {
-  text-decoration: underline;
+.link:focus-visible {
+  outline-offset: -3px;
+}
+
+.coverWrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+/* 표지 오른쪽 아래의 작은 흰 사각형 */
+.coverWrap::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
 }
 
 .meta {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  font-size: var(--text-sm);
+  align-items: start;
+  gap: 16px;
+}
+
+.metaLines {
+  display: grid;
 }
 
 .name {
-  font-weight: 700;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .num {
-  color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
+  flex: none;
+  text-align: right;
 }
 
-.coverWrap {
-  overflow: hidden;
+.link:hover .name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .coverWrap > * {
-    transition: transform 600ms var(--ease-out);
+    transition:
+      transform 700ms var(--ease-out),
+      filter 700ms var(--ease-out);
   }
 
   .link:hover .coverWrap > * {
-    transform: scale(1.03);
+    transform: scale(1.04);
   }
 }

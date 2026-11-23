@@ -1,27 +1,35 @@
+/* 카테고리 탭: 회색 칩 줄. 지금 카테고리는 검은 바탕·흰 글자 */
 .tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--gutter);
   margin-top: 32px;
 }
 
 .tab {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  font-size: var(--text-sm);
+  justify-content: center;
+  min-height: 32px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-decoration: none;
+  transition: background-color 240ms var(--ease-out);
 }
 
 .tab:hover {
-  border-color: var(--color-text);
+  background: var(--color-surface-strong);
 }
 
 .tab[aria-current='page'] {
-  border-color: var(--color-text);
   background: var(--color-text);
   color: var(--color-bg);
+}
+
+.tab:focus-visible {
+  outline-offset: 2px;
 }

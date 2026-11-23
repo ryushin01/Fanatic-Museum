@@ -17,7 +17,7 @@
 
 .decadeTitle {
   font-size: var(--text-2xl);
-  font-weight: 900;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
@@ -32,7 +32,7 @@
 }
 
 .entries {
-  border-top: 1px solid var(--color-text);
+  border-top: 1px solid var(--color-line);
 }
 
 .entry {
@@ -50,14 +50,14 @@
 }
 
 .year {
-  font-weight: 800;
+  font-weight: 500;
   color: var(--color-accent);
   font-variant-numeric: tabular-nums;
 }
 
 .title {
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .title a {

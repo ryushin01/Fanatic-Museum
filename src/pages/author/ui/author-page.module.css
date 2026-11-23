@@ -11,7 +11,7 @@
 }
 
 .facts dd {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .reference {
@@ -25,5 +25,5 @@
 .worksTitle {
   margin-bottom: 16px;
   font-size: var(--text-xl);
-  font-weight: 800;
+  font-weight: 500;
 }

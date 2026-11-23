@@ -18,10 +18,10 @@ const shots = [
   { name: 'works-filter', path: '/works?c=comic', width: 1440, height: 900 },
   { name: 'timeline', path: '/timeline', width: 1440, height: 900 },
   { name: 'authors', path: '/authors', width: 1440, height: 900 },
-  // 전시관: 소설관이 지나가고 라이트노벨관이 들어오는 순간(hall의 제목이 화면의 이 비율 높이에 오게)
-  { name: 'home-halls', path: '/', width: 1440, height: 900, hall: '라이트노벨', at: 0.92 },
+  // 전시관: 구역 머리(가는 선과 '전시관' 이름표)가 화면 위쪽 이 비율 높이에 오게
+  { name: 'home-halls', path: '/', width: 1440, height: 900, hall: '전시관', at: 0.06 },
   { name: 'mobile-home', path: '/', width: 390, height: 844 },
-  { name: 'mobile-halls', path: '/', width: 390, height: 844, hall: '소설', at: 0.32 },
+  { name: 'mobile-halls', path: '/', width: 390, height: 844, hall: '전시관', at: 0.06 },
   { name: 'mobile-work', path: '/works/the-breaker', width: 390, height: 844 },
   { name: 'mobile-dark', path: '/authors/lee-young-do', width: 390, height: 844, dark: true },
   {
@@ -79,7 +79,7 @@ for (const shot of shots.filter((s) => !only || only.includes(s.name))) {
     const loaded = await page.evaluate(
       () =>
         document.getElementById('font-faces')?.disabled === false &&
-        ['500', '700'].every((weight) =>
+        ['500'].every((weight) =>
           [...document.fonts].some(
             (face) =>
               face.family.includes('Museum Classic') &&
