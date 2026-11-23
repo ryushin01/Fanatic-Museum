@@ -30,16 +30,17 @@
 }
 
 .artNumber {
-  font-size: clamp(2.5rem, 12cqi, 7rem);
-  font-weight: 800;
+  font-size: clamp(1.25rem, 22cqi, 7rem);
+  white-space: nowrap;
+  font-weight: 500;
   line-height: 0.9;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
 
 .artTitle {
-  font-size: clamp(0.875rem, 5cqi, 1.5rem);
-  font-weight: 700;
+  font-size: clamp(0.6875rem, 5cqi, 1.5rem);
+  font-weight: 500;
   line-height: 1.3;
 }
 

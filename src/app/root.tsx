@@ -51,7 +51,7 @@ export function meta({ error }: { error?: unknown }) {
 }
 
 /** 페이지 바탕색(global.css의 --color-bg)과 같은 주소창 색 */
-const THEME_COLOR = { light: '#f1efe9', dark: '#0f0f0f' } as const;
+const THEME_COLOR = { light: '#ffffff', dark: '#000000' } as const;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [theme] = useTheme();

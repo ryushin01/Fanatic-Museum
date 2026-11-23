@@ -1,55 +1,135 @@
+/*
+ * 푸터: 테마와 상관없이 검은 바탕·흰 글자. 위쪽에 큰 안내 문장과 청록 버튼(가로 전체),
+ * 아래쪽에 작은 이름표 글자의 링크 두 줄과 오른쪽 소장품 수 표지를 둡니다.
+ */
 .footer {
-  margin-top: clamp(80px, 12vw, 200px);
-  border-top: 1px solid var(--color-line);
-  padding-block: 40px 24px;
+  margin-top: clamp(120px, 16vw, 240px);
+  background: var(--color-invert-bg);
+  color: var(--color-invert-text);
+  --color-text: var(--color-invert-text);
+  --color-bg: var(--color-invert-bg);
+  --color-muted: var(--color-invert-muted);
+  --color-line: #33343c;
+  --color-surface: #16171d;
+  --color-focus: #8ab4f8;
+}
+
+.inner {
+  display: grid;
+  padding: clamp(96px, 12vw, 160px) var(--gutter) 8px;
+}
+
+.cta {
+  display: grid;
+  gap: 24px;
+}
+
+.statement {
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.17;
+  letter-spacing: -0.0375em;
+}
+
+.badge {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  row-gap: 8px;
 }
 
 .top {
   display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .top {
-    grid-template-columns: 2fr 1fr 1fr;
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px var(--gutter);
+  margin-top: clamp(80px, 9vw, 120px);
 }
 
 .lede {
+  grid-column: 1 / -1;
   max-width: 36ch;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+@media (min-width: 1024px) {
+  .top {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: end;
+  }
+
+  .lede {
+    grid-column: 1 / span 4;
+    align-self: end;
+  }
+
+  .top > nav:nth-of-type(1) {
+    grid-column: 6 / span 2;
+  }
+
+  .top > nav:nth-of-type(2) {
+    grid-column: 8 / span 2;
+  }
+
+  .badge {
+    grid-column: 10 / span 3;
+  }
+}
+
+.navTitle {
+  margin-bottom: 8px;
   color: var(--color-muted);
 }
 
 .list {
   display: grid;
-  gap: 4px;
 }
 
 .list a {
-  display: inline-block;
-  padding-block: 6px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-decoration: none;
 }
 
 .list a:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .wordmark {
-  margin-top: 56px;
-  font-size: clamp(2.5rem, 11.5vw, 13rem);
-  font-weight: 900;
-  line-height: 0.85;
+  font-size: clamp(1.5rem, 1rem + 1.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1;
   letter-spacing: -0.05em;
-  text-transform: uppercase;
+}
+
+.bigNumber {
+  font-size: clamp(2rem, 1.4rem + 1.6vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.badge .badgeBar {
+  grid-column: 1 / -1;
+  padding: 4px 4px;
+  background: var(--color-invert-text);
+  color: var(--color-invert-bg);
+  text-align: right;
 }
 
 .bottom {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 16px;
-  margin-top: 24px;
-  font-size: var(--text-xs);
+  gap: 8px 16px;
+  margin-top: 16px;
+  padding-block: 8px;
   color: var(--color-muted);
 }

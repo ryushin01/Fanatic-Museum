@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 
 import { site } from '@/shared/config';
+import { ArrowLink } from '@/shared/ui';
 
 import styles from './site-header.module.css';
 import { ThemeToggle } from './theme-toggle';
@@ -18,17 +19,17 @@ export function SiteHeader() {
 
   return (
     <header className={styles.header}>
-      <div className={`container ${styles.inner}`}>
+      <div className={styles.inner}>
         <Link to="/" className={styles.logo} viewTransition prefetch="intent">
           <img src="/brand/logo.svg" alt="" width={32} height={32} className={styles.logoMark} />
           <span className="visually-hidden">{site.koreanName} 홈</span>
           <span className={styles.logoName} aria-hidden="true">
-            {site.name.toUpperCase()}
+            {site.name.toLowerCase()}
           </span>
         </Link>
         <nav aria-label="주 메뉴" className={styles.nav}>
           <ul>
-            {items.map((item, i) => {
+            {items.map((item) => {
               const exact = pathname === item.to;
               const inSection = pathname === item.match || pathname.startsWith(`${item.match}/`);
               return (
@@ -41,14 +42,18 @@ export function SiteHeader() {
                     aria-current={exact ? 'page' : inSection ? 'true' : undefined}
                   >
                     {item.label}
-                    <sup aria-hidden="true">{i + 1}</sup>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-        <ThemeToggle />
+        <div className={styles.tools}>
+          <ThemeToggle />
+          <ArrowLink to="/works" tone="brand" className={styles.cta}>
+            소장품 보기
+          </ArrowLink>
+        </div>
       </div>
     </header>
   );

@@ -14,7 +14,7 @@
   background: transparent;
   cursor: pointer;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .button[data-hovered] {

@@ -1,83 +1,167 @@
+/*
+ * 홈: 위쪽을 넉넉히 비운 두 줄 제목, 짧은 소개, 선 그림, "지금 전시 중" 칩 줄.
+ * 구역 사이는 크게 띄우고(240px) 맨 위에 가는 선과 작은 이름표를 둡니다.
+ */
 .hero {
-  padding-block: clamp(48px, 9vw, 140px) clamp(40px, 6vw, 96px);
+  display: grid;
+  padding-inline: var(--gutter);
+  padding-top: clamp(96px, 12vw, 176px);
 }
 
-.eyebrow {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: clamp(24px, 4vw, 48px);
+.heroText {
+  display: grid;
+  gap: 24px;
+  max-width: 58rem;
+  margin-bottom: 40px;
 }
 
 .title {
   font-size: var(--text-display);
-  font-weight: 900;
-  line-height: 0.92;
-  letter-spacing: -0.055em;
+  font-weight: 500;
+  line-height: 1.17;
+  letter-spacing: -0.0375em;
 }
 
 .titleLine {
   display: block;
 }
 
-/* 영문 제목은 다크 판타지 글꼴 MedievalSharp(굵기 하나라 굵게 만들지 않음) */
-.titleLatin {
-  font-family: var(--font-display);
+.lede {
+  max-width: 40rem;
+  font-size: var(--text-md);
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.fieldMark {
+  font-size: clamp(2rem, 1.2rem + 3vw, 4rem);
   font-weight: 400;
-  font-synthesis: none;
-  letter-spacing: -0.01em;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
 }
 
-.accent {
-  color: var(--color-accent);
-}
-
-.intro {
+/* "지금 전시 중" 줄: 이름표 + 회색 칩들 + 오른쪽 버튼 */
+.now {
   display: grid;
-  gap: 24px;
-  margin-top: clamp(32px, 5vw, 64px);
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
 }
 
-@media (min-width: 900px) {
-  .intro {
-    grid-template-columns: 1fr 1fr;
+.chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--gutter);
+}
+
+.chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding-inline: 8px;
+  overflow: hidden;
+  background: var(--color-surface);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* 마우스를 올리거나 초점이 오면 검은 판이 아래에서 올라와 전시 수를 보여 줍니다. */
+.chipHover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-text);
+  color: var(--color-bg);
+  translate: 0 101%;
+  transition: translate 360ms var(--ease-out);
+}
+
+.chip:hover .chipHover,
+.chip:focus-visible .chipHover {
+  translate: 0 0;
+}
+
+.chip:focus-visible {
+  outline-offset: -3px;
+}
+
+.nowMore {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .now {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
     align-items: end;
   }
-}
 
-.lede {
-  max-width: 40ch;
-  font-size: var(--text-lg);
-  line-height: 1.6;
-}
+  .now > :global(.label) {
+    grid-column: 1 / -1;
+  }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: start;
-  gap: 8px 40px;
-}
+  .chips {
+    grid-column: 1 / span 9;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
 
-@media (min-width: 900px) {
-  .stats {
-    justify-content: end;
+  .nowMore {
+    grid-column: 10 / span 3;
   }
 }
 
-.stats dt {
-  font-size: var(--text-xs);
-  color: var(--color-muted);
+/* 숫자 줄: 큰 숫자 + 가는 선 + 이름표, 네 칸 */
+.stats {
+  padding-inline: var(--gutter);
+  margin-top: clamp(96px, 16vw, 240px);
 }
 
-.stats dd {
-  font-size: var(--text-xl);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+.statList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px var(--gutter);
+}
+
+@media (min-width: 1024px) {
+  .statList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.statList > div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.statList dt {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-line);
+}
+
+.statList dd {
+  padding-bottom: 12px;
+  font-size: var(--text-big);
+  font-weight: 400;
+  line-height: 1.125;
+  letter-spacing: -0.047em;
 }
 
 .section {
-  margin-top: clamp(72px, 10vw, 160px);
+  padding-inline: var(--gutter);
+  margin-top: clamp(96px, 16vw, 240px);
+}
+
+.headCount {
+  justify-self: start;
 }
 
 .sectionHead {
@@ -85,20 +169,18 @@
   flex-wrap: wrap;
   align-items: end;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-block: clamp(48px, 8vw, 112px) 32px;
 }
 
 .sectionTitle {
   font-size: var(--text-2xl);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  line-height: 1.17;
+  letter-spacing: -0.0375em;
 }
 
 .more {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  font-weight: 600;
+  width: min(100%, calc(25% - var(--gutter)));
+  min-width: 200px;
 }

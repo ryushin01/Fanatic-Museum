@@ -1,22 +1,26 @@
+/*
+ * 소장품 목록: 가는 선으로 나눈 행. 마우스를 올리거나 초점이 오면 행 바탕이 옅은 회색이 됩니다.
+ * 번호·분류는 작은 이름표 글자, 제목은 중간 굵기의 큰 글자입니다.
+ */
 .list {
-  border-top: 1px solid var(--color-text);
+  border-top: 1px solid var(--color-line);
 }
 
 .row {
   position: relative;
   display: grid;
-  grid-template-columns: 3.5rem 1fr;
-  gap: 8px 16px;
-  padding-block: 20px;
+  grid-template-columns: 3rem 1fr;
+  gap: 8px var(--gutter);
+  padding: 16px 8px;
   border-bottom: 1px solid var(--color-line);
-  transition: background-color 200ms var(--ease-out);
+  transition: background-color 240ms var(--ease-out);
 }
 
 @media (min-width: 900px) {
   .row {
-    grid-template-columns: 4.5rem minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 96px;
+    grid-template-columns: 4rem minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.6fr) 80px;
     align-items: start;
-    padding-block: 28px;
+    padding-block: 16px;
   }
 }
 
@@ -26,16 +30,17 @@
 }
 
 .number {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-accent);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
 }
 
 .title {
-  font-size: var(--text-xl);
-  font-weight: 800;
-  line-height: 1.2;
+  font-size: var(--text-lg);
+  font-weight: 500;
+  line-height: 1.33;
   letter-spacing: -0.02em;
 }
 
@@ -61,8 +66,8 @@
 
 .original {
   display: block;
-  margin-top: 4px;
-  font-size: var(--text-sm);
+  margin-top: 2px;
+  font-size: var(--text-xs);
   font-weight: 400;
   color: var(--color-muted);
 }
@@ -70,22 +75,31 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   grid-column: 2;
 }
 
 .tag {
-  padding: 2px 8px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  font-size: var(--text-xs);
+  padding: 4px 8px;
+  background: var(--color-surface);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
+}
+
+.row:hover .tag,
+.row:focus-within .tag {
+  background: var(--color-surface-strong);
 }
 
 .summary {
   grid-column: 2;
   color: var(--color-muted);
   font-size: var(--text-sm);
+  line-height: 1.43;
 }
 
 .thumb {
