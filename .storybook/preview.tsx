@@ -22,7 +22,8 @@ const preview: Preview = {
   decorators: [withRouter],
   parameters: {
     layout: 'fullscreen',
-    a11y: { test: 'error' },
+    // 사용자 지시(2026-11-23)로 글자 대비(color-contrast)만 끄고 나머지 규칙은 오류로 검사합니다.
+    a11y: { test: 'error', config: { rules: [{ id: 'color-contrast', enabled: false }] } },
   },
   tags: ['autodocs'],
 };

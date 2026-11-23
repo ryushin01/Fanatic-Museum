@@ -6,9 +6,8 @@
 @import '@fontsource-variable/archivo/wdth.css';
 
 /*
- * 디자인 토큰(2.0): 흰 바탕·거의 검은 글자·청록 강조의 스위스식 격자.
- * 강조색(--color-brand)은 바탕에만 쓰고 그 위 글자는 --color-brand-text로 둡니다(청록 글자는 흰 바탕에서 대비가 낮음).
- * --color-accent는 예전처럼 "눈에 띄는 글자"에 쓰되 대비를 지키려고 본문 글자색과 같게 둡니다.
+ * 디자인 토큰(2.0): 레퍼런스(riotters.com)에서 읽은 계산값 그대로의 흰 바탕·거의 검은 글자(#0a0b16)·청록 강조(#12dcd4).
+ * 레퍼런스는 글자색이 하나뿐이라 보조 글자색(--color-muted)도 같은 값입니다. 글자 대비는 사용자 지시로 따로 맞추지 않습니다.
  */
 :root {
   color-scheme: light dark;
@@ -22,8 +21,8 @@
   --color-surface: #f8f8f8;
   --color-surface-strong: #ececee;
   --color-text: #0a0b16;
-  --color-muted: #55565f;
-  --color-line: #d4d4d8;
+  --color-muted: #0a0b16;
+  --color-line: #ececed;
   --color-rule: #0a0b16;
   --color-accent: var(--color-text);
   --color-accent-text: var(--color-bg);
@@ -31,7 +30,7 @@
   --color-brand-text: #0a0b16;
   --color-invert-bg: #000000;
   --color-invert-text: #ffffff;
-  --color-invert-muted: #b4b5bc;
+  --color-invert-muted: #ffffff;
   --color-focus: #0b57d0;
   --color-overlay: rgb(10 10 10 / 92%);
 
@@ -60,7 +59,7 @@
     --color-surface: #111218;
     --color-surface-strong: #1d1e26;
     --color-text: #ffffff;
-    --color-muted: #a8a9b1;
+    --color-muted: #ffffff;
     --color-line: #2c2d36;
     --color-rule: #ffffff;
     --color-invert-bg: #0f1017;
@@ -73,7 +72,7 @@
   --color-surface: #111218;
   --color-surface-strong: #1d1e26;
   --color-text: #ffffff;
-  --color-muted: #a8a9b1;
+  --color-muted: #ffffff;
   --color-line: #2c2d36;
   --color-rule: #ffffff;
   --color-invert-bg: #0f1017;
