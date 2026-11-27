@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { makeImage } from '@/shared/lib/test/fixtures';
@@ -26,6 +26,15 @@ describe('WorkCover', () => {
     const art = container.querySelector('[aria-hidden="true"]');
     expect(art).toHaveTextContent('007');
     expect(art).toHaveTextContent('창세기전');
+  });
+
+  it('이미지 파일을 받지 못하면(보관함에 없거나 네트워크가 끊김) 자리 표시 그래픽으로 바꾼다', () => {
+    const { container } = render(
+      <WorkCover number={3} title="사에카노" accent="#e8789a" image={makeImage(1)} />,
+    );
+    fireEvent.error(screen.getByRole('img', { name: '테스트 작품 일러스트 1' }));
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(container.querySelector('[aria-hidden="true"]')).toHaveTextContent('003');
   });
 
   it('밝은 대표색에는 어두운 글자를 쓴다', () => {

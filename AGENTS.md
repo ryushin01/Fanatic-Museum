@@ -55,7 +55,7 @@ pnpm test:e2e       # Playwright + axe, 320~1440px, 글자 200%, 키보드, 오�
 pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 ```
 
-- **오프라인 E2E**(`e2e/offline.spec.ts`, `pnpm test:e2e`에 포함): localhost 밖 요청을 모두 막고 `.env` 없이 빌드한 사이트의 주요 화면·정적 API가 뜨는지, 실패한 요청이 0개인지 봅니다. 외부에서 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 실패하므로, 꼭 필요하면 실패해도 화면이 보이게 만들고 그 주소만 허용합니다.
+- **오프라인 E2E**(`e2e/offline.spec.ts`, `pnpm test:e2e`에 포함, 따로 `pnpm test:offline`): localhost 밖 요청을 모두 막고 `.env`·보관함 이미지 없이 빌드한 사이트의 모든 화면·404·주요 상태·정적 API가 내용과 함께 뜨는지, 실패한 요청이 0개인지, axe 위반이 없는지 봅니다. 운영 배포본은 `pnpm test:offline:prod`. 이미지를 받지 못하면 `useImageFailures`(`shared/lib`)로 자리 표시 그래픽·안내로 바꿉니다. 외부에서 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 실패하므로, 꼭 필요하면 실패해도 화면이 보이게 만들고 그 주소만 허용합니다.
 - **Testing Library 원칙:** 구현 세부가 아니라 사용자가 보는 동작을 검사하고, 요소는 역할·이름(`getByRole`)으로 찾습니다. 단위·컴포넌트는 Vitest + Testing Library(`@testing-library/react`, `user-event`, `jest-dom`), 화면 흐름은 Playwright E2E, 접근성은 axe(`@axe-core/playwright`, Storybook `addon-a11y`)로 검사합니다. 버그를 고치면 고치기 전에 실패하는 테스트를 함께 넣습니다.
 
 ## 5. 코드 스타일

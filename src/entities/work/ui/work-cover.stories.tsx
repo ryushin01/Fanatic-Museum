@@ -32,3 +32,14 @@ export const LightAccent: Story = {
 export const WithImage: Story = {
   args: { image: sampleImage(1) },
 };
+
+/** 이미지 목록에는 있지만 파일을 받지 못했을 때(보관함에서 지움, 네트워크 끊김): 자리 표시 그래픽으로 바뀝니다. */
+export const MissingFile: Story = {
+  args: {
+    image: {
+      ...sampleImage(1),
+      src: '/media/__missing__/1.webp',
+      srcSet: '/media/__missing__/1.webp 1200w',
+    },
+  },
+};

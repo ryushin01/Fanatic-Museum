@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Button, Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
 import type { WorkImage } from '@/shared/api';
+import { useImageFailures } from '@/shared/lib';
 import { StepButtons } from '@/shared/ui';
 
 import styles from './image-viewer.module.css';
@@ -38,6 +39,8 @@ export function ImageViewer({
 }: ImageViewerProps) {
   const image = index === null ? undefined : images[index];
   const total = images.length;
+  // 썸네일은 받았어도 큰 변환본을 받지 못할 수 있습니다(보관함에서 지움, 네트워크 끊김).
+  const { failed, track } = useImageFailures();
 
   // 열려 있는 동안 좌우 화살표 키로 넘깁니다.
   useEffect(() => {
@@ -70,8 +73,15 @@ export function ImageViewer({
                 </Button>
               </div>
               <figure className={styles.stage}>
-                {image && (
+                {image && failed.has(image.src) && (
+                  <p className={styles.missing} role="status">
+                    이 이미지를 불러오지 못했습니다. 네트워크가 끊겼거나 로컬 보관함에 파일이
+                    없습니다.
+                  </p>
+                )}
+                {image && !failed.has(image.src) && (
                   <m.img
+                    {...track(image.src)}
                     key={image.src}
                     layoutId={layoutId === undefined ? undefined : `${layoutId}-${index}`}
                     transition={{ layout: instant ? { duration: 0 } : LAYOUT_TRANSITION }}
