@@ -11,6 +11,19 @@ const MIN = 60_000;
 const NOW = Date.UTC(2026, 10, 13, 6, 0);
 
 describe('restartReason', () => {
+  it('생존 신호가 없으면 시작 시각, 그것도 없으면 지금을 마지막으로 보고, 원인 없는 오류도 error', () => {
+    const opts = { now: NOW, bootAt: NOW - 60 * MIN };
+    expect(restartReason({ startedAt: NOW - 3 * MIN, ended: 'signal' }, opts)).toEqual({
+      kind: 'signal',
+      downMs: 3 * MIN,
+    });
+    expect(restartReason({ ended: 'error' }, opts)).toEqual({
+      kind: 'error',
+      downMs: 0,
+      detail: '',
+    });
+  });
+
   it('처음 실행이면 first', () => {
     expect(restartReason(null, { now: NOW, bootAt: NOW - 60 * MIN })).toEqual({
       kind: 'first',
@@ -65,6 +78,27 @@ describe('describeRestart', () => {
     });
     expect(describeRestart({ kind: 'crash', downMs: 2 * MIN }, 10).subtitle).toBe(
       '예기치 않게 멈췄다가 다시 시작했습니다',
+    );
+  });
+
+  it('처음·오류(원인 있음·없음)·수동·신호·완료 뒤 문구를 고른다', () => {
+    expect(describeRestart({ kind: 'first', downMs: 0 }, 1).body).toBe(
+      '지금까지 1.0GB를 받아 두었습니다.',
+    );
+    expect(describeRestart({ kind: 'error', downMs: MIN, detail: 'ECONNRESET' }, 2).body).toBe(
+      '약 1분 멈춰 있었습니다. 원인: ECONNRESET. 지금까지 2.0GB.',
+    );
+    expect(describeRestart({ kind: 'error', downMs: MIN, detail: '' }, 2).body).toBe(
+      '약 1분 멈춰 있었습니다. 지금까지 2.0GB.',
+    );
+    expect(describeRestart({ kind: 'manual', downMs: MIN }, 2).subtitle).toBe(
+      '멈췄던 다운로더를 다시 켜 이어 받습니다',
+    );
+    expect(describeRestart({ kind: 'signal', downMs: MIN }, 2).subtitle).toBe(
+      '종료됐다가 다시 시작했습니다',
+    );
+    expect(describeRestart({ kind: 'rerun', downMs: MIN }, 2).body).toBe(
+      '지난번에 끝까지 받은 뒤입니다. 지금까지 2.0GB.',
     );
   });
 });

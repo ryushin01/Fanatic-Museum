@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.11.1-12dcd4)
+![version](https://img.shields.io/badge/version-1.11.2-12dcd4)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -92,16 +92,18 @@ pnpm test:offline           # localhost 밖 요청을 모두 막고 모든 화�
 pnpm test:offline:prod      # 운영 배포본에서 바깥 요청(Sentry 등)을 막아도 같은 내용이 보이는지 검사
 ```
 
-| 명령                                   | 설명                                                                              |
-| -------------------------------------- | --------------------------------------------------------------------------------- |
-| `pnpm build` / `preview`               | 정적 사전 렌더링 빌드 / 빌드 결과 미리보기(`http://localhost:4173`)               |
-| `pnpm build:all`                       | 앱과 Storybook(`/storybook`)을 함께 빌드                                          |
-| `pnpm media:download` / `media:build`  | 작품 이미지를 `~/Documents/Archive/Fanatic-Museum/`에 받기 / 화면용 변환본 만들기 |
-| `pnpm lint` / `lint:fsd` / `typecheck` | ESLint / FSD 검사 / 타입 검사                                                     |
-| `pnpm test` / `test:e2e`               | 단위·스토리 테스트 / 프로덕션 빌드 E2E(오프라인 검사 포함)                        |
-| `pnpm size` / `lhci`                   | 번들 크기 예산 / Lighthouse 예산                                                  |
-| `pnpm api:types`                       | OpenAPI 문서에서 타입 다시 생성                                                   |
-| `pnpm og:build`                        | 공유 미리보기 이미지(`public/og/`) 다시 만들기                                    |
+| 명령                                        | 설명                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------- |
+| `pnpm build` / `preview`                    | 정적 사전 렌더링 빌드 / 빌드 결과 미리보기(`http://localhost:4173`)               |
+| `pnpm build:all`                            | 앱과 Storybook(`/storybook`)을 함께 빌드                                          |
+| `pnpm media:download` / `media:build`       | 작품 이미지를 `~/Documents/Archive/Fanatic-Museum/`에 받기 / 화면용 변환본 만들기 |
+| `pnpm lint` / `lint:fsd` / `typecheck`      | ESLint / FSD 검사 / 타입 검사                                                     |
+| `pnpm test` / `test:e2e`                    | 단위·스토리 테스트 / 프로덕션 빌드 E2E(오프라인 검사 포함)                        |
+| `pnpm size` / `lhci`                        | 번들 크기 예산 / Lighthouse 예산                                                  |
+| `pnpm check`                                | CI와 같은 검사 전부(커버리지·시각 회귀 포함)                                      |
+| `pnpm test:coverage` / `test:visual:docker` | 커버리지 기준 / 시각 회귀(Playwright 공식 Linux 이미지)                           |
+| `pnpm api:types`                            | OpenAPI 문서에서 타입 다시 생성                                                   |
+| `pnpm og:build`                             | 공유 미리보기 이미지(`public/og/`) 다시 만들기                                    |
 
 ## 프로젝트 구조
 
