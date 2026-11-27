@@ -1,3 +1,4 @@
+import * as m from 'motion/react-m';
 import { useEffect } from 'react';
 import { Button, Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
@@ -6,6 +7,9 @@ import { StepButtons } from '@/shared/ui';
 
 import styles from './image-viewer.module.css';
 
+/** 썸네일 ↔ 크게 보기 공유 레이아웃 전환(배경이 깔리는 240ms 페이드와 같은 감속 곡선) */
+export const LAYOUT_TRANSITION = { duration: 0.32, ease: [0.22, 1, 0.36, 1] } as const;
+
 export interface ImageViewerProps {
   title: string;
   images: readonly WorkImage[];
@@ -13,13 +17,25 @@ export interface ImageViewerProps {
   index: number | null;
   onIndexChange: (index: number) => void;
   onClose: () => void;
+  /** 썸네일과 같은 layoutId 앞부분(`${layoutId}-${번호}`). 주면 썸네일에서 커지며 열립니다. */
+  layoutId?: string;
+  /** true면 전환 없이 바로 바꿉니다(크게 보기 안에서 넘긴 뒤). */
+  instant?: boolean;
 }
 
 /**
  * 이미지를 화면 가득 크게 보는 대화상자.
  * 좌우 화살표 키와 이전·다음 버튼으로 넘기고, Esc나 닫기 버튼으로 닫습니다.
  */
-export function ImageViewer({ title, images, index, onIndexChange, onClose }: ImageViewerProps) {
+export function ImageViewer({
+  title,
+  images,
+  index,
+  onIndexChange,
+  onClose,
+  layoutId,
+  instant = false,
+}: ImageViewerProps) {
   const image = index === null ? undefined : images[index];
   const total = images.length;
 
@@ -55,7 +71,10 @@ export function ImageViewer({ title, images, index, onIndexChange, onClose }: Im
               </div>
               <figure className={styles.stage}>
                 {image && (
-                  <img
+                  <m.img
+                    key={image.src}
+                    layoutId={layoutId === undefined ? undefined : `${layoutId}-${index}`}
+                    transition={{ layout: instant ? { duration: 0 } : LAYOUT_TRANSITION }}
                     className={styles.image}
                     src={image.src}
                     srcSet={image.srcSet}

@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.9.0-12dcd4)
+![version](https://img.shields.io/badge/version-1.10.0-12dcd4)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -59,6 +59,7 @@
 | 프레임워크 | React Router 8(프레임워크 모드, 정적 사전 렌더링), React 19, TypeScript 7                                                                   |
 | 상태 관리  | MobX 7 + mobx-react-lite(소장품 찾기의 검색 조건·결과 스토어)                                                                               |
 | UI·접근성  | React Aria Components, CSS Modules, 웹 폰트(Archivo·국립박물관문화재단 클래식체, 공유 이미지는 MedievalSharp), CSS scroll-snap 스와이프     |
+| 애니메이션 | Motion(`motion/react`, `LazyMotion` + `m`): 전시 띠 끌어 넘기기(drag·관성), 갤러리 크게 보기 공유 레이아웃 전환(`layoutId`)                 |
 | API        | OpenAPI 3.1 문서와 openapi-typescript 타입 생성, 정적 JSON API                                                                              |
 | 검색·공유  | canonical·Open Graph·JSON-LD(schema.org), 웹 앱 매니페스트, sitemap·robots                                                                  |
 | 모니터링   | Sentry(`@sentry/react-router`), web-vitals                                                                                                  |

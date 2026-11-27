@@ -105,17 +105,62 @@ test('전시 띠의 다음을 빠르게 두 번 누르면 두 칸 넘어간다',
   await strip.getByRole('button', { name: '다음' }).focus();
   await page.keyboard.press('Enter');
   await page.keyboard.press('Enter');
-  // 스크롤이 멈추면 세 번째 소장품이 띠의 맨 앞(붙는 자리)에 옵니다.
+  // 띠가 멈추면 세 번째 소장품이 띠의 맨 앞(붙는 자리)에 옵니다.
   await expect
     .poll(() =>
       strip.locator('ol').evaluate((track) => {
         const third = track.children[2]!;
-        const padding = parseFloat(getComputedStyle(track).scrollPaddingInlineStart) || 0;
-        const left = third.getBoundingClientRect().left - track.getBoundingClientRect().left;
+        const viewport = track.parentElement!;
+        const padding = parseFloat(getComputedStyle(viewport).paddingLeft) || 0;
+        const left = third.getBoundingClientRect().left - viewport.getBoundingClientRect().left;
         return Math.abs(left - padding);
       }),
     )
     .toBeLessThanOrEqual(1);
+});
+
+test('전시 띠를 마우스로 끌어 놓으면 가까운 소장품에 붙고, 끈 자리의 링크는 열리지 않는다', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const strip = page.locator('section', { has: page.getByRole('heading', { name: '전시실' }) });
+  const track = strip.locator('ol');
+  await track.scrollIntoViewIfNeeded();
+  // 끌기 기능은 하이드레이션 뒤에 따로 받으므로, 받기 전에 끌었으면 다시 끕니다.
+  await expect(async () => {
+    const box = (await track.boundingBox())!;
+    const y = box.y + 80;
+    await page.mouse.move(box.x + box.width * 0.8, y);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i += 1) await page.mouse.move(box.x + box.width * 0.8 - i * 40, y);
+    await page.mouse.up();
+    await expect(strip.getByRole('button', { name: '이전' })).toBeEnabled({ timeout: 1000 });
+  }).toPass();
+  await expect(strip.getByRole('button', { name: '이전' })).toBeEnabled();
+  await expect(page).toHaveURL(/\/$/);
+  // 놓은 뒤에는 관성으로 멈춘 자리에서 가장 가까운 소장품(첫 번째 다음)이 띠의 맨 앞에 붙습니다.
+  await expect
+    .poll(() =>
+      track.evaluate((el) => {
+        const viewport = el.parentElement!;
+        const start = viewport.getBoundingClientRect().left;
+        const padding = parseFloat(getComputedStyle(viewport).paddingLeft) || 0;
+        const items = Array.from(el.children).slice(1);
+        return Math.min(
+          ...items.map((item) => Math.abs(item.getBoundingClientRect().left - start - padding)),
+        );
+      }),
+    )
+    .toBeLessThanOrEqual(1);
+});
+
+test('전시 띠 밖의 소장품에 Tab으로 초점이 가면 띠가 그 소장품을 보여 준다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const strip = page.locator('section', { has: page.getByRole('heading', { name: '전시실' }) });
+  const links = strip.getByRole('list').getByRole('link');
+  await links.last().focus();
+  await expect(links.last()).toBeInViewport({ ratio: 0.9 });
 });
 
 test('전시 띠를 키보드로 끝까지 넘겨도 초점이 이전 버튼에 남는다', async ({ page }) => {

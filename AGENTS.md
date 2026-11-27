@@ -19,6 +19,7 @@
   - 라우트 모듈(`src/app/routes/*.tsx`)은 페이지 슬라이스를 다시 내보내기만 하고, 로더는 페이지의 `index.server.ts`에서 내보냅니다.
   - 빌드에서만 도는 코드는 `*.server.ts`로 두고 `index.server.ts`로 공개합니다(소장품 데이터 `works`가 클라이언트 번들에 실리지 않게).
 - 상태 관리: 소장품 찾기의 검색 조건·결과만 MobX(`mobx`, `mobx-react-lite`)로 다룹니다. `WorkFilterStore`(`pages/works/model`)는 `observable`·`computed`, 컴포넌트는 `observer`. 스토어는 화면마다 새로 만들고 모듈 전역에 두지 않습니다(서버·요청 사이 공유 금지). 다른 상태는 억지로 옮기지 않습니다.
+- 애니메이션: Motion(`motion/react`). 루트 `MotionProvider`(`src/app/motion`)가 `MotionConfig reducedMotion="user"`로 감싸고, 쓰는 부품은 `shared/motion`의 `MotionFeatures`(`LazyMotion strict` + `domMax`)로 감싸 `motion/react-m`의 `m.*`만 씁니다(`shared/ui`·`shared/lib`에 두면 모든 페이지 JS에 실림). 전시 띠 끌기(`useStripDrag`), 갤러리 크게 보기 `layoutId` 전환에 씁니다.
 - 미리 그린 HTML과 다르게 그릴 값(주소의 검색 조건 등)은 하이드레이션이 끝난 뒤(`useHydrated()`)에 씁니다.
 
 ## 3. 설치·개발 명령

@@ -19,6 +19,7 @@ import { SiteHeader } from '@/widgets/site-header';
 
 import { FONT_FACE_CSS, FontLoader, MUSEUM_CLASSIC_FILES } from './fonts/font-loader';
 import { reportError } from './monitoring';
+import { MotionProvider } from './motion/motion-provider';
 import { RouteAnnouncer } from './navigation/route-announcer';
 import './styles/global.css';
 
@@ -88,15 +89,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <FontLoader />
-        <a className="skip-link" href="#main">
-          본문 바로가기
-        </a>
-        <SiteHeader />
-        <main id="main" tabIndex={-1}>
-          {children}
-        </main>
-        <SiteFooter workCount={root?.workCount} />
-        <RouteAnnouncer />
+        <MotionProvider>
+          <a className="skip-link" href="#main">
+            본문 바로가기
+          </a>
+          <SiteHeader />
+          <main id="main" tabIndex={-1}>
+            {children}
+          </main>
+          <SiteFooter workCount={root?.workCount} />
+          <RouteAnnouncer />
+        </MotionProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
