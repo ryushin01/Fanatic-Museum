@@ -39,22 +39,26 @@ pnpm build && pnpm preview   # http://localhost:4173 (vite preview 대신 sirv)
 
 ## 4. 검사·테스트 명령
 
-CI(`.github/workflows/ci.yml`)가 도는 순서입니다. PR 전에 로컬에서 같은 순서로 돌립니다.
+`pnpm check`(`scripts/check.mjs`) 하나로 CI와 같은 검사를 같은 순서로 돌립니다. CI(`.github/workflows/ci.yml`)도 단계별로 `pnpm check <단계>`를 부릅니다(`static`·`build`·`storybook`·`e2e`·`visual`·`lhci`, `pnpm check e2e -- --shard=1/2`처럼 인자를 넘김). PR 전에 로컬에서 `pnpm check`를 돌립니다.
 
 ```bash
+pnpm check          # 아래를 차례로(시각 회귀는 Docker, Lighthouse는 파일로만 남김)
 pnpm format:check   # Prettier
 pnpm lint           # ESLint (jsx-a11y strict)
 pnpm lint:fsd       # Steiger
 pnpm api:check      # OpenAPI 생성 타입이 커밋된 것과 같은지
 pnpm typecheck
-pnpm test           # Vitest 단위·컴포넌트
+pnpm test:coverage  # Vitest 단위·컴포넌트 + 커버리지 기준(로직 계층 80%, 전체 기준선)
 pnpm build:all      # 앱 + Storybook(build/client/storybook)
-pnpm size           # size-limit 예산
-pnpm test:storybook # 모든 스토리를 Chromium에서 그리고 axe 검사
+pnpm size           # size-limit 예산(첫 화면 JS 125 · 전체 JS 260 · CSS 40 kB)
+pnpm test:storybook # 모든 스토리를 Chromium에서 그리고 axe 검사(위반은 오류)
 pnpm test:e2e       # Playwright + axe, 320~1440px, 글자 200%, 키보드, 오프라인
+pnpm test:visual:docker # 시각 회귀(Playwright 공식 Linux 이미지, colima 등 Docker 필요)
 pnpm lhci           # Lighthouse CI(성능 0.9, 접근성 1.0, LCP 2.5초 등)
 ```
 
+- **커버리지**(`@vitest/coverage-v8`, `vitest.config.ts`): `shared/lib`, 각 슬라이스의 `model`·`api`, 다운로더 순수 함수(`scripts/media/run-state.mjs`)는 80% 아래로 내려가면 실패합니다. 전체는 기준선 아래로 내려가지 못하고, 올라가면 기준선 숫자를 올립니다. CI는 표를 실행 요약에 씁니다.
+- **시각 회귀**(`e2e/visual`, `playwright.visual.config.ts`): 주요 화면(데스크톱·모바일 × 라이트·다크)과 모든 스토리(데스크톱 × 라이트·다크)를 기준 이미지와 비교합니다. 움직임 줄이기와 `animations: 'disabled'`로 Motion·CSS 애니메이션을 멈춥니다. 화면을 바꾸면 `pnpm test:visual:docker --update-snapshots`로 기준 이미지를 다시 만들어 함께 커밋합니다(macOS에서 만든 이미지는 쓰지 않음).
 - **오프라인 E2E**(`e2e/offline.spec.ts`, `pnpm test:e2e`에 포함, 따로 `pnpm test:offline`): localhost 밖 요청을 모두 막고 `.env`·보관함 이미지 없이 빌드한 사이트의 모든 화면·404·주요 상태·정적 API가 내용과 함께 뜨는지, 실패한 요청이 0개인지, axe 위반이 없는지 봅니다. 운영 배포본은 `pnpm test:offline:prod`. 이미지를 받지 못하면 `useImageFailures`(`shared/lib`)로 자리 표시 그래픽·안내로 바꿉니다. 외부에서 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 실패하므로, 꼭 필요하면 실패해도 화면이 보이게 만들고 그 주소만 허용합니다.
 - **Testing Library 원칙:** 구현 세부가 아니라 사용자가 보는 동작을 검사하고, 요소는 역할·이름(`getByRole`)으로 찾습니다. 단위·컴포넌트는 Vitest + Testing Library(`@testing-library/react`, `user-event`, `jest-dom`), 화면 흐름은 Playwright E2E, 접근성은 axe(`@axe-core/playwright`, Storybook `addon-a11y`)로 검사합니다. 버그를 고치면 고치기 전에 실패하는 테스트를 함께 넣습니다.
 

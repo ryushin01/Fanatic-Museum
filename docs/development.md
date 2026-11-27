@@ -130,10 +130,15 @@ pnpm build && pnpm preview
 | `pnpm size`                                             | 번들 크기 예산(size-limit)                                                                          |
 | `pnpm lhci`                                             | Lighthouse CI 예산(성능 0.9, 접근성 1.0, LCP 2.5초 등)                                              |
 | `pnpm format:check` / `lint` / `lint:fsd` / `typecheck` | Prettier / ESLint / Steiger / 타입 검사                                                             |
+| `pnpm test:coverage`                                    | 단위 테스트 + 커버리지 기준(로직 계층 80%, 전체 기준선)                                             |
+| `pnpm test:visual:docker`                               | 시각 회귀(Playwright 공식 Linux 이미지에서 화면·스토리 비교)                                        |
+| `pnpm check`                                            | CI와 같은 검사 전부(`pnpm check static build`처럼 단계를 고를 수 있음)                              |
 
 오프라인 검사(`e2e/offline.spec.ts`, `pnpm test:offline`)는 localhost 밖으로 나가는 요청을 모두 막고(`route.abort`) 사전 렌더링한 모든 화면(홈·소장품·카테고리 전시관·작품 상세 30점·작가·연표·소개)과 없는 주소(404)가 h1과 본문을 보여 주는지, 글꼴 로딩 화면이 걷히는지, 막히거나 실패한 요청·런타임 오류가 하나도 없는지, axe 위반이 없는지 봅니다. 주요 상태(홈 전시 띠 넘기기, 초성 검색·분류·정렬·결과 없음·새로 고침, 작품 상세의 자리 표시 그래픽과 이전·다음, 어두운 테마, 404에서 돌아가기)와 갤러리 크게 보기·이미지 파일을 받지 못한 경우(같은 사이트의 Storybook 스토리, 코드로 만든 예시 이미지)도 봅니다. `.env`와 로컬 보관함 이미지 없이 빌드한 결과로 돌므로 비밀값 없는 실행도 함께 확인합니다. `E2E_BASE_URL`을 주면(`pnpm test:offline:prod`) 그 주소만 열고 나머지 바깥 요청(Sentry 등)을 막은 채 같은 검사를 돌립니다. 바깥에서 무언가를 불러오는 코드(CDN 글꼴·스크립트, 외부 이미지, 분석 도구)를 더하면 이 검사가 실패합니다. 꼭 필요하면 요청이 실패해도 화면이 그대로 보이게 만들고 검사에서 그 주소만 허용합니다. 모든 화면의 axe 검사는 이 파일이 맡습니다(예전 `e2e/a11y.spec.ts`를 합침). 다른 서버와 포트가 겹치면 `E2E_PORT=4300 pnpm test:e2e`처럼 바꿉니다.
 
-CI(GitHub Actions)는 위 단계를 모두 돌립니다. Dependabot이 의존성을 매주 확인합니다. 개발 도구가 끌어오는 옛 버전의 보안 권고(`pnpm audit`)는 `pnpm-workspace.yaml`의 `overrides`로 고쳐진 버전에 맞춥니다.
+CI(GitHub Actions)는 `pnpm check <단계>`를 작업별로 나눠 함께 돌립니다: `static`(형식·린트·타입·커버리지)·`build`(빌드·번들 예산)·`storybook`은 바로 시작하고, `e2e`(2개로 샤딩)·`visual`(Playwright 공식 이미지 컨테이너)·`lighthouse`는 `build`가 올린 `build/client`를 받아 다시 씁니다. pnpm 저장소·Vite·Storybook·Playwright 브라우저는 캐시하고(토큰이 필요한 원격 캐시는 쓰지 않음), 같은 브랜치에 새로 푸시하면 이전 실행을 취소하며(`concurrency`), 문서만 바꾸면 돌지 않습니다(`paths-ignore`). 커버리지 표는 실행 요약에 쓰고, 실패할 때만 리포트·차이 이미지를 7일 보관으로 올립니다.
+
+시각 회귀 기준 이미지(`e2e/visual/__screenshots__`)는 CI와 같은 `mcr.microsoft.com/playwright` 이미지에서 만듭니다. 로컬에는 colima 등 Docker가 있어야 하고 `pnpm test:visual:docker --update-snapshots`로 갱신합니다. 컨테이너의 `/tmp`는 `--tmpfs`로 메모리에 두어 Docker 디스크가 가득 차도 브라우저가 뜨게 합니다. Dependabot이 의존성을 매주 확인합니다. 개발 도구가 끌어오는 옛 버전의 보안 권고(`pnpm audit`)는 `pnpm-workspace.yaml`의 `overrides`로 고쳐진 버전에 맞춥니다.
 
 ## PR 미리보기 배포
 

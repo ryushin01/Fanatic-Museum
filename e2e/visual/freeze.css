@@ -1,0 +1,12 @@
+/* 시각 회귀 검사에서만 씁니다: 움직임과 깜빡임을 멈춰 같은 화면을 얻습니다. */
+*,
+*::before,
+*::after {
+  animation-play-state: paused !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+.font-loader {
+  display: none !important;
+}

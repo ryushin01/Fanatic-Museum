@@ -1,52 +1,140 @@
 name: CI
 
+# 문서만 바꾼 커밋은 검사하지 않습니다(앱·Storybook·API에 들어가지 않음).
 on:
   push:
     branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.github/dependabot.yml']
   pull_request:
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.github/dependabot.yml']
 
+# 같은 브랜치에 새로 푸시하면 이전 실행을 취소합니다.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# 각 작업은 로컬과 같은 `pnpm check <단계>`(scripts/check.mjs)를 부릅니다. 로컬에서 전부: pnpm check
 jobs:
-  check:
-    name: Format · Lint · FSD · API · Typecheck · Test · Build · Size · Storybook · E2E · Lighthouse
+  static:
+    name: Format · Lint · FSD · API · Typecheck · Test(커버리지)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-
-      # pnpm 버전은 package.json의 packageManager를 따릅니다.
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
-      - run: pnpm lint
-      - run: pnpm lint:fsd
-      # OpenAPI 문서와 생성된 타입이 어긋나면 실패합니다.
-      - run: pnpm api:check
-      - run: pnpm typecheck
-      - run: pnpm test
-      # 앱(사전 렌더링)과 Storybook(build/client/storybook)을 함께 빌드합니다.
-      - run: pnpm build:all
-      - run: pnpm size
-      - run: pnpm exec playwright install --with-deps chromium
-      # 모든 스토리를 실제 브라우저에서 그리고 접근성 검사를 돌립니다.
-      - run: pnpm test:storybook
-      # 오프라인 검사(e2e/offline.spec.ts)도 여기서 돕니다: localhost 밖 요청을 모두 막고 .env 없이 빌드한 사이트를 봅니다.
-      - run: pnpm test:e2e
-      - run: pnpm lhci
+      - uses: ./.github/actions/setup
+      - run: pnpm check static
+      - name: 커버리지 표를 요약에 씀
+        if: always() && hashFiles('coverage/coverage-summary.json') != ''
+        run: node scripts/ci/coverage-summary.mjs
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: reports
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  build:
+    name: Build · Size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      # Vite·Storybook 캐시(의존성 사전 번들 등)
+      - uses: actions/cache@v6
+        with:
+          path: |
+            node_modules/.vite
+            node_modules/.cache
+          key: vite-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: vite-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+      # 앱(사전 렌더링)과 Storybook(build/client/storybook)을 함께 빌드하고 번들 예산을 봅니다.
+      - run: pnpm check build
+      # E2E·시각 회귀·Lighthouse가 같은 빌드 결과를 다시 씁니다.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: build-client
+          path: build/client/
+          retention-days: 1
+
+  storybook:
+    name: Storybook(axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          playwright: 'true'
+      # 모든 스토리를 실제 브라우저에서 그리고 접근성 검사(오류면 실패)를 돌립니다.
+      - run: pnpm check storybook
+
+  e2e:
+    name: E2E ${{ matrix.shard }}/2
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          playwright: 'true'
+      - uses: actions/download-artifact@v8
+        with:
+          name: build-client
+          path: build/client/
+      # 오프라인 검사(e2e/offline.spec.ts)도 여기서 돕니다: localhost 밖 요청을 모두 막고 .env 없이 빌드한 사이트를 봅니다.
+      - run: pnpm check e2e -- --shard=${{ matrix.shard }}/2
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-report-${{ matrix.shard }}
           path: |
             test-results/
             playwright-report/
-            .lighthouseci/
+          retention-days: 7
+
+  visual:
+    name: 시각 회귀
+    needs: build
+    runs-on: ubuntu-latest
+    # 기준 이미지를 만든 것과 같은 Playwright 공식 이미지에서 비교합니다(pnpm test:visual:docker).
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v8
+        with:
+          name: build-client
+          path: build/client/
+      - run: pnpm check visual
+      # 실패하면 차이 이미지(기준·실제·차이)가 test-results에 남습니다.
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: visual-diff
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v8
+        with:
+          name: build-client
+          path: build/client/
+      - run: pnpm check lhci
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: lighthouse-report
+          path: .lighthouseci/
           retention-days: 7
