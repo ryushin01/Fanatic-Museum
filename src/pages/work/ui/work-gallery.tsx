@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import { WorkCover } from '@/entities/work';
 import type { Work } from '@/shared/api';
 import { useSnapIndex } from '@/shared/lib';
+import { MotionFeatures } from '@/shared/motion';
 import { StepButtons } from '@/shared/ui';
 
 import { ImageViewer, LAYOUT_TRANSITION } from './image-viewer';
@@ -47,66 +48,68 @@ export function WorkGallery({ work }: WorkGalleryProps) {
   }
 
   return (
-    <section className={styles.gallery} aria-roledescription="캐러셀" aria-labelledby={headingId}>
-      <div className={styles.head}>
-        <h2 id={headingId} className="label">
-          전시 이미지 <span className="num">{images.length}</span>장
-        </h2>
-        <StepButtons index={index} count={images.length} onChange={goTo} controls={trackId}>
-          <p className="num" aria-live="polite" aria-atomic="true">
-            <span className="visually-hidden">이미지 </span>
-            {index + 1} / {images.length}
-          </p>
-        </StepButtons>
-      </div>
-      <m.div id={trackId} ref={trackRef} className={styles.track} layoutScroll>
-        {images.map((image, i) => (
-          <div
-            key={image.src}
-            className={styles.slide}
-            role="group"
-            aria-roledescription="슬라이드"
-            aria-label={`${i + 1} / ${images.length}`}
-          >
-            <button
-              type="button"
-              className={styles.open}
-              onClick={() => {
-                setMoved(false);
-                setViewing(i);
-              }}
+    <MotionFeatures>
+      <section className={styles.gallery} aria-roledescription="캐러셀" aria-labelledby={headingId}>
+        <div className={styles.head}>
+          <h2 id={headingId} className="label">
+            전시 이미지 <span className="num">{images.length}</span>장
+          </h2>
+          <StepButtons index={index} count={images.length} onChange={goTo} controls={trackId}>
+            <p className="num" aria-live="polite" aria-atomic="true">
+              <span className="visually-hidden">이미지 </span>
+              {index + 1} / {images.length}
+            </p>
+          </StepButtons>
+        </div>
+        <m.div id={trackId} ref={trackRef} className={styles.track} layoutScroll>
+          {images.map((image, i) => (
+            <div
+              key={image.src}
+              className={styles.slide}
+              role="group"
+              aria-roledescription="슬라이드"
+              aria-label={`${i + 1} / ${images.length}`}
             >
-              <m.img
-                layoutId={`${layoutId}-${i}`}
-                // 크게 보기가 열려 있는 동안 넘겨서 썸네일이 되돌아올 때는 바로 제자리로 옵니다.
-                transition={{ layout: viewing === null ? LAYOUT_TRANSITION : { duration: 0 } }}
-                src={image.src}
-                srcSet={image.srcSet}
-                sizes="(min-width: 768px) 60vw, 90vw"
-                width={image.width}
-                height={image.height}
-                alt={`${image.alt}, 크게 보기`}
-                loading={i < 2 ? 'eager' : 'lazy'}
-                fetchPriority={i === 0 ? 'high' : 'auto'}
-                decoding="async"
-              />
-            </button>
-          </div>
-        ))}
-      </m.div>
-      <ImageViewer
-        title={work.title}
-        images={images}
-        index={viewing}
-        layoutId={layoutId}
-        instant={moved}
-        onIndexChange={(i) => {
-          setMoved(true);
-          setViewing(i);
-          goTo(i);
-        }}
-        onClose={() => setViewing(null)}
-      />
-    </section>
+              <button
+                type="button"
+                className={styles.open}
+                onClick={() => {
+                  setMoved(false);
+                  setViewing(i);
+                }}
+              >
+                <m.img
+                  layoutId={`${layoutId}-${i}`}
+                  // 크게 보기가 열려 있는 동안 넘겨서 썸네일이 되돌아올 때는 바로 제자리로 옵니다.
+                  transition={{ layout: viewing === null ? LAYOUT_TRANSITION : { duration: 0 } }}
+                  src={image.src}
+                  srcSet={image.srcSet}
+                  sizes="(min-width: 768px) 60vw, 90vw"
+                  width={image.width}
+                  height={image.height}
+                  alt={`${image.alt}, 크게 보기`}
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                  fetchPriority={i === 0 ? 'high' : 'auto'}
+                  decoding="async"
+                />
+              </button>
+            </div>
+          ))}
+        </m.div>
+        <ImageViewer
+          title={work.title}
+          images={images}
+          index={viewing}
+          layoutId={layoutId}
+          instant={moved}
+          onIndexChange={(i) => {
+            setMoved(true);
+            setViewing(i);
+            goTo(i);
+          }}
+          onClose={() => setViewing(null)}
+        />
+      </section>
+    </MotionFeatures>
   );
 }

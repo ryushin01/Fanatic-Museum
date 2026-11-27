@@ -47,8 +47,8 @@ function nearest({ points, max }: Snaps, position: number) {
  * 번호로 옮기는 함수를 돌려줍니다. 트랙패드 가로 스크롤과 Tab 초점 이동도 띠를 옮깁니다.
  *
  * `trackRef`와 `dragProps`는 띠(항목의 부모)에, `viewportProps`는 띠를 감싼 창에 줍니다.
- * 창은 하이드레이션 전에는 브라우저 가로 스크롤(scroll-snap)로 넘기고, 그 뒤 `data-drag`가 붙으면
- * `overflow-x: clip`으로 바꿔 끌기만 씁니다.
+ * 창은 하이드레이션 전(사전 렌더링 HTML)에는 브라우저 가로 스크롤(scroll-snap)로 넘기고,
+ * 그 뒤 `data-drag`가 붙으면 `overflow-x: clip`으로 바꿔 끌기만 씁니다. 띠는 `MotionFeatures` 안에 둡니다.
  */
 export function useStripDrag<T extends HTMLElement>(count: number) {
   const trackRef = useRef<T>(null);
@@ -58,7 +58,8 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
   const indexRef = useRef(0);
   const draggedRef = useRef(false);
   const reduce = useReducedMotionConfig() ?? false;
-  const hydrated = useHydrated();
+  // 하이드레이션이 끝나 끌기로 바꿨는지
+  const ready = useHydrated();
 
   const select = useCallback((next: number) => {
     indexRef.current = next;
@@ -71,7 +72,10 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
       if (!track) return;
       const point = measure(track).points[next];
       if (point === undefined) return;
-      if (reduce) {
+      if (!ready) {
+        // 하이드레이션 전에는 브라우저 스크롤로 옮깁니다(창의 scroll-padding이 여백을 맞춤).
+        track.parentElement?.scrollTo({ left: point, behavior: reduce ? 'auto' : 'smooth' });
+      } else if (reduce) {
         x.stop();
         x.set(-point);
       } else {
@@ -79,7 +83,7 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
       }
       select(next);
     },
-    [reduce, select, x],
+    [ready, reduce, select, x],
   );
 
   // 화면 크기가 바뀌면 옮길 수 있는 거리를 다시 재고, 보던 항목을 그대로 맨 앞에 둡니다.
@@ -105,7 +109,7 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
   }, []);
   useEffect(() => {
     const track = trackRef.current;
-    if (!hydrated || !track) return;
+    if (!ready || !track) return;
     const snaps = measure(track);
     const focused = Array.from(track.children).findIndex((item) =>
       item.contains(document.activeElement),
@@ -115,7 +119,7 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
     if (next < 0) return;
     x.set(-(snaps.points[next] ?? 0));
     select(next);
-  }, [hydrated, select, x]);
+  }, [ready, select, x]);
 
   // 트랙패드 가로 스크롤(또는 Shift+휠)로도 띠를 옮기고, 멈추면 가까운 항목에 붙입니다.
   useEffect(() => {
@@ -198,7 +202,7 @@ export function useStripDrag<T extends HTMLElement>(count: number) {
     onFocus,
   } as const;
 
-  const viewportProps = { 'data-drag': hydrated ? '' : undefined };
+  const viewportProps = { 'data-drag': ready ? '' : undefined };
 
   return { trackRef, index, goTo, dragProps, viewportProps };
 }

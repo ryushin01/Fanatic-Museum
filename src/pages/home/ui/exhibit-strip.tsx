@@ -6,6 +6,7 @@ import { findCategory } from '@/entities/category';
 import { WorkCover } from '@/entities/work';
 import type { Work } from '@/shared/api';
 import { padNumber } from '@/shared/lib';
+import { MotionFeatures } from '@/shared/motion';
 import { StepButtons } from '@/shared/ui';
 
 import { useStripDrag } from './use-strip-drag';
@@ -22,7 +23,15 @@ export interface ExhibitStripProps {
  * 소장품 표지를 가로로 늘어놓은 전시 띠.
  * 손가락·마우스로 끌어 넘기면 관성으로 가까운 표지에 붙고(Motion drag), 버튼·트랙패드·Tab으로도 넘깁니다.
  */
-export function ExhibitStrip({ title, description, works }: ExhibitStripProps) {
+export function ExhibitStrip(props: ExhibitStripProps) {
+  return (
+    <MotionFeatures>
+      <Strip {...props} />
+    </MotionFeatures>
+  );
+}
+
+function Strip({ title, description, works }: ExhibitStripProps) {
   const headingId = useId();
   const listId = useId();
   const { trackRef, index, goTo, dragProps, viewportProps } = useStripDrag<HTMLOListElement>(
