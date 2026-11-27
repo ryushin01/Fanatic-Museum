@@ -1,3 +1,4 @@
+import * as m from 'motion/react-m';
 import { useId, useState } from 'react';
 
 import { WorkCover } from '@/entities/work';
@@ -5,7 +6,7 @@ import type { Work } from '@/shared/api';
 import { useSnapIndex } from '@/shared/lib';
 import { StepButtons } from '@/shared/ui';
 
-import { ImageViewer } from './image-viewer';
+import { ImageViewer, LAYOUT_TRANSITION } from './image-viewer';
 
 import styles from './work-gallery.module.css';
 
@@ -16,13 +17,17 @@ export interface WorkGalleryProps {
 /**
  * 작품 이미지 캐러셀(WAI-ARIA APG Carousel 패턴, 자동 넘김 없음).
  * 손가락으로 밀거나 이전·다음 버튼으로 넘기고, 이미지를 누르면 크게 봅니다.
+ * 크게 보기는 누른 썸네일이 그 자리에서 커지며 열리고(Motion layoutId), 닫으면 썸네일 자리로 돌아갑니다.
  */
 export function WorkGallery({ work }: WorkGalleryProps) {
   const { images } = work;
   const trackId = useId();
   const headingId = useId();
   const { trackRef, index, goTo } = useSnapIndex<HTMLDivElement>(images.length);
+  const layoutId = useId();
   const [viewing, setViewing] = useState<number | null>(null);
+  // 크게 보기 안에서 넘긴 뒤에는 썸네일에서 날아오지 않고 바로 바꿉니다.
+  const [moved, setMoved] = useState(false);
 
   if (images.length === 0) {
     return (
@@ -54,7 +59,7 @@ export function WorkGallery({ work }: WorkGalleryProps) {
           </p>
         </StepButtons>
       </div>
-      <div id={trackId} ref={trackRef} className={styles.track}>
+      <m.div id={trackId} ref={trackRef} className={styles.track} layoutScroll>
         {images.map((image, i) => (
           <div
             key={image.src}
@@ -63,8 +68,18 @@ export function WorkGallery({ work }: WorkGalleryProps) {
             aria-roledescription="슬라이드"
             aria-label={`${i + 1} / ${images.length}`}
           >
-            <button type="button" className={styles.open} onClick={() => setViewing(i)}>
-              <img
+            <button
+              type="button"
+              className={styles.open}
+              onClick={() => {
+                setMoved(false);
+                setViewing(i);
+              }}
+            >
+              <m.img
+                layoutId={`${layoutId}-${i}`}
+                // 크게 보기가 열려 있는 동안 넘겨서 썸네일이 되돌아올 때는 바로 제자리로 옵니다.
+                transition={{ layout: viewing === null ? LAYOUT_TRANSITION : { duration: 0 } }}
                 src={image.src}
                 srcSet={image.srcSet}
                 sizes="(min-width: 768px) 60vw, 90vw"
@@ -78,12 +93,15 @@ export function WorkGallery({ work }: WorkGalleryProps) {
             </button>
           </div>
         ))}
-      </div>
+      </m.div>
       <ImageViewer
         title={work.title}
         images={images}
         index={viewing}
+        layoutId={layoutId}
+        instant={moved}
         onIndexChange={(i) => {
+          setMoved(true);
           setViewing(i);
           goTo(i);
         }}

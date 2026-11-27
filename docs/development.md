@@ -107,8 +107,10 @@ pnpm build && pnpm preview
 
 ## 접근성
 
-- 갤러리는 WAI-ARIA APG 캐러셀 패턴(자동 넘김 없음)입니다. 터치 스와이프는 CSS scroll-snap이 처리하고, 이전·다음 버튼과 위치 안내(`aria-live`)를 함께 둡니다.
-- 전시 띠·갤러리·크게 보기의 이전·다음 버튼은 `shared/ui`의 `StepButtons` 하나입니다. 초점이 있던 버튼이 끝에서 비활성되면 반대쪽 버튼으로 초점을 옮깁니다. 버튼으로 옮기는 동안(부드러운 스크롤)에는 지나가는 항목으로 번호를 바꾸지 않아(`useSnapIndex`), 빠르게 연달아 눌러도 누른 만큼 넘어갑니다.
+- 갤러리는 WAI-ARIA APG 캐러셀 패턴(자동 넘김 없음)입니다. 터치 스와이프는 CSS scroll-snap이 처리하고, 이전·다음 버튼과 위치 안내(`aria-live`)를 함께 둡니다. 썸네일을 누르면 Motion `layoutId` 공유 레이아웃 전환으로 그 자리에서 커지며 크게 보기가 열리고, 닫으면 보던 이미지의 썸네일 자리로 돌아갑니다(크게 보기 안에서 넘길 때는 전환 없이 바로 바꿈). 초점 가두기·되돌리기는 React Aria `Dialog`가 그대로 맡습니다.
+- 홈 전시 띠는 Motion `drag`(`useStripDrag`)로 손가락·마우스로 끌어 넘기고, 놓으면 관성으로 가장 가까운 표지에 붙습니다. 트랙패드 가로 스크롤은 띠를 옮긴 뒤 멈추면 붙이고, Tab으로 띠 밖의 표지에 초점이 가면 그 표지를 보여 줍니다. 띠를 감싼 창은 `overflow-x: clip`이라 브라우저가 몰래 스크롤하지 않습니다. 끈 뒤 놓은 자리의 링크는 열리지 않습니다.
+- Motion은 루트의 `MotionProvider`(`src/app/motion`)가 `LazyMotion`(`domMax`를 따로 받음, `strict`라 `m` 컴포넌트만 씀)과 `MotionConfig reducedMotion="user"`(움직임 줄이기에서 위치·크기 전환을 끔)로 감쌉니다. Storybook도 같은 공급자로 그립니다.
+- 전시 띠·갤러리·크게 보기의 이전·다음 버튼은 `shared/ui`의 `StepButtons` 하나입니다. 초점이 있던 버튼이 끝에서 비활성되면 반대쪽 버튼으로 초점을 옮깁니다. 버튼으로 옮기는 동안(부드러운 스크롤)에는 지나가는 항목으로 번호를 바꾸지 않아(갤러리 `useSnapIndex`, 전시 띠 `useStripDrag`), 빠르게 연달아 눌러도 누른 만큼 넘어갑니다.
 - 화면을 옮기면 `RouteAnnouncer`가 새 페이지 제목을 상태 영역(`role="status"`)으로 알립니다. 누른 링크가 사라져 초점을 잃었으면 본문(`main`)으로 초점을 옮깁니다.
 - 움직임 줄이기에서는 화면 전환(View Transitions) 애니메이션도 끕니다. 원제는 `lang="ja"`/`"en"`으로 표시합니다(`OriginalTitle`).
 - 버튼·검색·토글·대화상자는 React Aria Components로 만듭니다.

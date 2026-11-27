@@ -66,29 +66,28 @@
   text-decoration: none;
 }
 
+/* 띠를 끌어 옮기는 창. clip이라 초점이 가도 브라우저가 몰래 스크롤하지 않습니다. */
+.viewport {
+  /* clip은 스크롤 상자가 아니라 격자 칸의 최소 너비가 내용만큼 커지므로 0으로 둡니다. */
+  min-width: 0;
+  overflow-x: clip;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  padding-bottom: 8px;
+}
+
 .track {
+  position: relative;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 88%;
   gap: var(--gutter);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  margin-inline: calc(var(--gutter) * -1);
-  padding-inline: var(--gutter);
-  padding-bottom: 8px;
-  scrollbar-width: none;
 }
 
 @media (min-width: 768px) {
   .track {
     grid-auto-columns: calc((100% - var(--gutter) * 3) / 2);
   }
-}
-
-.item {
-  scroll-snap-align: start;
 }
 
 .link {
