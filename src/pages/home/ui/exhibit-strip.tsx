@@ -25,7 +25,9 @@ export interface ExhibitStripProps {
 export function ExhibitStrip({ title, description, works }: ExhibitStripProps) {
   const headingId = useId();
   const listId = useId();
-  const { trackRef, index, goTo, dragProps } = useStripDrag<HTMLOListElement>(works.length);
+  const { trackRef, index, goTo, dragProps, viewportProps } = useStripDrag<HTMLOListElement>(
+    works.length,
+  );
 
   return (
     <section className={styles.strip} aria-labelledby={headingId}>
@@ -49,7 +51,7 @@ export function ExhibitStrip({ title, description, works }: ExhibitStripProps) {
           </p>
         </StepButtons>
       </div>
-      <div className={styles.viewport}>
+      <div className={styles.viewport} {...viewportProps}>
         <m.ol id={listId} ref={trackRef} className={styles.track} {...dragProps}>
           {works.map((work, i) => (
             <li key={work.slug}>

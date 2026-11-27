@@ -119,30 +119,36 @@ test('전시 띠의 다음을 빠르게 두 번 누르면 두 칸 넘어간다',
     .toBeLessThanOrEqual(1);
 });
 
-test('전시 띠를 마우스로 끌어 놓으면 다음 소장품에 붙고, 끈 자리의 링크는 열리지 않는다', async ({
+test('전시 띠를 마우스로 끌어 놓으면 가까운 소장품에 붙고, 끈 자리의 링크는 열리지 않는다', async ({
   page,
 }) => {
   await page.goto('/');
   const strip = page.locator('section', { has: page.getByRole('heading', { name: '전시실' }) });
   const track = strip.locator('ol');
   await track.scrollIntoViewIfNeeded();
-  const box = (await track.boundingBox())!;
-  const y = box.y + 80;
-  await page.mouse.move(box.x + box.width * 0.8, y);
-  await page.mouse.down();
-  for (let i = 1; i <= 10; i += 1) await page.mouse.move(box.x + box.width * 0.8 - i * 40, y);
-  await page.mouse.up();
+  // 끌기 기능은 하이드레이션 뒤에 따로 받으므로, 받기 전에 끌었으면 다시 끕니다.
+  await expect(async () => {
+    const box = (await track.boundingBox())!;
+    const y = box.y + 80;
+    await page.mouse.move(box.x + box.width * 0.8, y);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i += 1) await page.mouse.move(box.x + box.width * 0.8 - i * 40, y);
+    await page.mouse.up();
+    await expect(strip.getByRole('button', { name: '이전' })).toBeEnabled({ timeout: 1000 });
+  }).toPass();
   await expect(strip.getByRole('button', { name: '이전' })).toBeEnabled();
   await expect(page).toHaveURL(/\/$/);
-  // 놓은 뒤에는 두 번째 소장품이 띠의 맨 앞에 붙습니다.
+  // 놓은 뒤에는 관성으로 멈춘 자리에서 가장 가까운 소장품(첫 번째 다음)이 띠의 맨 앞에 붙습니다.
   await expect
     .poll(() =>
       track.evaluate((el) => {
         const viewport = el.parentElement!;
+        const start = viewport.getBoundingClientRect().left;
         const padding = parseFloat(getComputedStyle(viewport).paddingLeft) || 0;
-        const left =
-          el.children[1]!.getBoundingClientRect().left - viewport.getBoundingClientRect().left;
-        return Math.abs(left - padding);
+        const items = Array.from(el.children).slice(1);
+        return Math.min(
+          ...items.map((item) => Math.abs(item.getBoundingClientRect().left - start - padding)),
+        );
       }),
     )
     .toBeLessThanOrEqual(1);

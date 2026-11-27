@@ -66,14 +66,26 @@
   text-decoration: none;
 }
 
-/* 띠를 끌어 옮기는 창. clip이라 초점이 가도 브라우저가 몰래 스크롤하지 않습니다. */
+/*
+ * 띠를 끌어 옮기는 창. 하이드레이션 전에는 브라우저 가로 스크롤(scroll-snap)로 넘기고,
+ * 그 뒤(data-drag)에는 clip으로 바꿔 Motion 끌기만 씁니다. clip이면 초점이 가도 브라우저가 몰래 스크롤하지 않습니다.
+ */
 .viewport {
-  /* clip은 스크롤 상자가 아니라 격자 칸의 최소 너비가 내용만큼 커지므로 0으로 둡니다. */
+  /* 격자 칸 안에서 띠 내용만큼 넓어지지 않게 합니다(clip은 스크롤 상자가 아니라 최소 너비가 내용만큼 커짐). */
   min-width: 0;
-  overflow-x: clip;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
   margin-inline: calc(var(--gutter) * -1);
   padding-inline: var(--gutter);
   padding-bottom: 8px;
+}
+
+.viewport[data-drag] {
+  overflow-x: clip;
+  scroll-snap-type: none;
 }
 
 .track {
@@ -82,6 +94,10 @@
   grid-auto-flow: column;
   grid-auto-columns: 88%;
   gap: var(--gutter);
+}
+
+.track > li {
+  scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
