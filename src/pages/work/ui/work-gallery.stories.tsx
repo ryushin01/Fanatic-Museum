@@ -40,3 +40,21 @@ export const WithImages: Story = {
 export const Placeholder: Story = {
   args: { work: makeWork({ title: '창세기전 시리즈', number: 7, accent: '#8a6a2b' }) },
 };
+
+/** 일부 파일을 받지 못했을 때: 받지 못한 이미지는 빼고 남은 이미지만 보여 줍니다. */
+export const MissingFiles: Story = {
+  args: {
+    work: makeWork({
+      title: '신세기 GPX 사이버 포뮬러',
+      images: [
+        {
+          ...sampleImage(1),
+          src: '/media/__missing__/1.webp',
+          srcSet: '/media/__missing__/1.webp 1200w',
+        },
+        sampleImage(2, '#1f6fb2', 'landscape'),
+        sampleImage(3, '#2c4a9a'),
+      ],
+    }),
+  },
+};

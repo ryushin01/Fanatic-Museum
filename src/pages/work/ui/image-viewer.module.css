@@ -52,6 +52,12 @@
   padding-inline: var(--gutter);
 }
 
+.missing {
+  max-width: 36ch;
+  text-align: center;
+  line-height: 1.6;
+}
+
 .image {
   max-width: 100%;
   max-height: 100%;

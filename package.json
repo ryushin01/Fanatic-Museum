@@ -1,6 +1,6 @@
 {
   "name": "fanatic-museum",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.16.1",
@@ -64,6 +64,8 @@
     "test": "vitest run --project unit",
     "test:storybook": "vitest run --project storybook",
     "test:e2e": "playwright test",
+    "test:offline": "playwright test e2e/offline.spec.ts",
+    "test:offline:prod": "E2E_BASE_URL=https://fanatic-museum-ryushin01.vercel.app playwright test e2e/offline.spec.ts",
     "api:types": "openapi-typescript openapi/archive.yaml -o src/shared/api/schema.d.ts",
     "media:download": "node scripts/media/download.mjs",
     "media:build": "node scripts/media/build-variants.mjs",

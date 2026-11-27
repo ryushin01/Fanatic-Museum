@@ -1,5 +1,5 @@
 import type { WorkImage } from '@/shared/api';
-import { isLightColor, padNumber } from '@/shared/lib';
+import { isLightColor, padNumber, useImageFailures } from '@/shared/lib';
 
 import styles from './work-cover.module.css';
 
@@ -19,6 +19,7 @@ export interface WorkCoverProps {
 
 /**
  * 작품 대표 이미지. 로컬 이미지가 없으면 번호와 제목으로 만든 자리 표시 그래픽을 보여 줍니다.
+ * 이미지 목록에는 있지만 파일을 받지 못해도(보관함에서 지움, 네트워크 끊김) 같은 그래픽으로 바꿉니다.
  */
 export function WorkCover({
   number,
@@ -30,17 +31,20 @@ export function WorkCover({
   priority = false,
   alt,
 }: WorkCoverProps) {
+  const { failed, track } = useImageFailures();
+  const shown = image && !failed.has(image.src) ? image : undefined;
   return (
     <div className={styles.cover} style={ratio ? { ['--ratio' as string]: ratio } : undefined}>
-      {image ? (
+      {shown ? (
         <img
+          {...track(shown.src)}
           className={styles.image}
-          src={image.src}
-          srcSet={image.srcSet}
+          src={shown.src}
+          srcSet={shown.srcSet}
           sizes={sizes}
-          width={image.width}
-          height={image.height}
-          alt={alt ?? image.alt}
+          width={shown.width}
+          height={shown.height}
+          alt={alt ?? shown.alt}
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"

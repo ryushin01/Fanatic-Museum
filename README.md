@@ -1,7 +1,7 @@
 # Fanatic Museum - 서브컬처 대장정
 
 [![CI](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/Fanatic-Museum/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.11.0-12dcd4)
+![version](https://img.shields.io/badge/version-1.11.1-12dcd4)
 ![Storybook](https://img.shields.io/badge/Storybook-10-FF4785?logo=storybook&logoColor=white)
 
 애니메이션, 게임, 라이트 노벨, 판타지 소설, 만화·웹툰, 피규어, 프라모델까지. 한 사람의 서브컬처 대장정을 소장품처럼 번호를 붙여 전시하는 박물관입니다.
@@ -84,9 +84,12 @@ pnpm dev    # http://localhost:5173
 
 사이트는 네트워크가 끊겨도 그대로 보입니다. 소장품 데이터는 빌드할 때 HTML과 정적 JSON(`/api/works.json`)에 들어가고, 글꼴·아이콘은 같은 사이트에서 주며(외부 CDN 없음), 작품 이미지는 배포본에 없고 대표색과 번호로 그린 자리 표시 그래픽을 씁니다(저작권 때문, [소장품 이미지](docs/development.md#소장품-이미지)). 바깥 주소는 README·작가 페이지의 링크(나무위키 등)뿐이고, 화면을 그리는 데 쓰지 않습니다.
 
+로컬 보관함 이미지가 있어도 파일을 받지 못하면(보관함에서 지움, 네트워크 끊김) 그 이미지만 같은 자리 표시 그래픽으로 바뀌고, 크게 보기에서는 불러오지 못했다는 안내를 보여 줍니다.
+
 ```bash
-pnpm build && pnpm preview                    # 한 번 빌드한 뒤에는 네트워크 없이 http://localhost:4173
-pnpm exec playwright test e2e/offline.spec.ts # localhost 밖 요청을 모두 막고 주요 화면을 검사
+pnpm build && pnpm preview  # 한 번 빌드한 뒤에는 네트워크 없이 http://localhost:4173
+pnpm test:offline           # localhost 밖 요청을 모두 막고 모든 화면·주요 상태를 axe와 함께 검사
+pnpm test:offline:prod      # 운영 배포본에서 바깥 요청(Sentry 등)을 막아도 같은 내용이 보이는지 검사
 ```
 
 | 명령                                   | 설명                                                                              |

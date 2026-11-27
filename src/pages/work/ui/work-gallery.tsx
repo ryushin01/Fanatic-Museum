@@ -3,7 +3,7 @@ import { useId, useState } from 'react';
 
 import { WorkCover } from '@/entities/work';
 import type { Work } from '@/shared/api';
-import { useSnapIndex } from '@/shared/lib';
+import { useImageFailures, useSnapIndex } from '@/shared/lib';
 import { MotionFeatures } from '@/shared/motion';
 import { StepButtons } from '@/shared/ui';
 
@@ -19,9 +19,11 @@ export interface WorkGalleryProps {
  * 작품 이미지 캐러셀(WAI-ARIA APG Carousel 패턴, 자동 넘김 없음).
  * 손가락으로 밀거나 이전·다음 버튼으로 넘기고, 이미지를 누르면 크게 봅니다.
  * 크게 보기는 누른 썸네일이 그 자리에서 커지며 열리고(Motion layoutId), 닫으면 썸네일 자리로 돌아갑니다.
+ * 받지 못한 이미지(보관함에서 지움, 네트워크 끊김)는 빼고, 하나도 없으면 자리 표시 그래픽을 보여 줍니다.
  */
 export function WorkGallery({ work }: WorkGalleryProps) {
-  const { images } = work;
+  const { failed, track } = useImageFailures();
+  const images = work.images.filter((image) => !failed.has(image.src));
   const trackId = useId();
   const headingId = useId();
   const { trackRef, index, goTo } = useSnapIndex<HTMLDivElement>(images.length);
@@ -79,6 +81,7 @@ export function WorkGallery({ work }: WorkGalleryProps) {
                 }}
               >
                 <m.img
+                  {...track(image.src)}
                   layoutId={`${layoutId}-${i}`}
                   // 크게 보기가 열려 있는 동안 넘겨서 썸네일이 되돌아올 때는 바로 제자리로 옵니다.
                   transition={{ layout: viewing === null ? LAYOUT_TRANSITION : { duration: 0 } }}

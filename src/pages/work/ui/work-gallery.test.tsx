@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
@@ -49,5 +49,30 @@ describe('WorkGallery', () => {
 
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('받지 못한 이미지는 빼고 남은 이미지만 보여 준다', () => {
+    render(<WorkGallery work={makeWork({ images: [1, 2, 3].map(makeImage) })} />);
+    fireEvent.error(screen.getByRole('img', { name: '테스트 작품 일러스트 2, 크게 보기' }));
+    expect(screen.getByRole('heading', { name: /전시 이미지 2장/ })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /일러스트 2/ })).toBeNull();
+  });
+
+  it('이미지를 하나도 받지 못하면 자리 표시 그래픽과 안내로 바꾼다', () => {
+    render(<WorkGallery work={makeWork({ images: [1, 2].map(makeImage) })} />);
+    for (const img of screen.getAllByRole('img')) fireEvent.error(img);
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByText(/로컬 보관함에만 있습니다/)).toBeInTheDocument();
+  });
+
+  it('크게 보기에서 큰 이미지를 받지 못하면 안내를 보여 주고 대화상자는 그대로 쓸 수 있다', async () => {
+    const user = userEvent.setup();
+    render(<WorkGallery work={makeWork({ images: [1, 2].map(makeImage) })} />);
+    await user.click(screen.getByRole('button', { name: '테스트 작품 일러스트 1, 크게 보기' }));
+    const dialog = await screen.findByRole('dialog', { name: '테스트 작품 이미지 크게 보기' });
+    fireEvent.error(within(dialog).getByRole('img', { name: '테스트 작품 일러스트 1' }));
+    expect(within(dialog).getByRole('status')).toHaveTextContent('이 이미지를 불러오지 못했습니다');
+    await user.keyboard('{ArrowRight}');
+    expect(within(dialog).getByRole('img', { name: '테스트 작품 일러스트 2' })).toBeInTheDocument();
   });
 });
